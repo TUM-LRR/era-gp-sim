@@ -197,8 +197,8 @@ void GuiProject::saveText() {
 }
 
 void GuiProject::saveTextAs(const QUrl& path) {
-  auto qName = path.path();
-  _defaultTextFileSavePath = qName;
+  auto qName = path.toLocalFile();
+  _defaultTextFileSavePath = path;
   auto name = qName.toStdString();
   auto text = _editorComponent.getText().toStdString();
   try {
@@ -211,7 +211,7 @@ void GuiProject::saveTextAs(const QUrl& path) {
 }
 
 void GuiProject::loadText(const QUrl& path) {
-  auto qName = path.path();
+  auto qName = path.toLocalFile();
   auto filePath = qName.toStdString();
   std::string text;
   try {

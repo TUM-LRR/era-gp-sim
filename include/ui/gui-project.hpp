@@ -336,7 +336,7 @@ class GuiProject : QObject {
   /**
    * The default path to save the text of this project to.
    */
-  QString _defaultTextFileSavePath;
+  QUrl _defaultTextFileSavePath;
 
   /**
    * A shared pointer to the snapshot component.
