@@ -41,6 +41,8 @@ class MemoryValue;
 
 namespace Utility {
 
+extern std::string _configPath;
+
 template <typename T>
 struct CompletelyOrdered {
   virtual bool operator==(const T &other) const noexcept = 0;
@@ -417,9 +419,6 @@ bool contains(const Range &range, T &&element) {
 
   return iterator != end(range);
 }
-
-const std::string &rootPath();
-
 std::string joinPaths(const std::string &single);
 
 template <typename... Tail>
@@ -440,8 +439,9 @@ std::string joinPaths(const std::string &first,
 }
 
 template <typename... Paths>
-std::string joinToRoot(Paths &&... paths) {
-  return joinPaths(rootPath(), std::forward<Paths>(paths)...);
+std::string joinToConfigPath(Paths &&... paths) {
+  assert::that(!_configPath.empty());
+  return joinPaths(_configPath, std::forward<Paths>(paths)...);
 }
 
 std::string loadFromFile(const std::string &filePath);

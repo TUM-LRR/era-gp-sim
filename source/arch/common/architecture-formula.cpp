@@ -67,7 +67,7 @@ bool ArchitectureFormula::isValid() const noexcept {
 }
 
 std::string ArchitectureFormula::getPath() const noexcept {
-  return Utility::joinToRoot("isa", getFolderName());
+  return Utility::joinToConfigPath("isa", getFolderName());
 }
 
 std::string ArchitectureFormula::getFolderName() const noexcept {

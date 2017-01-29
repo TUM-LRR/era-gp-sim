@@ -67,8 +67,22 @@ struct ProgramExecutionFixture : public ::testing::Test {
     _project = std::make_unique<ProjectModule>(formula, memory, "riscv");
   }
 
+  const std::string& rootPath() {
+    static const std::string query("era-gp-sim");
+    static std::string root;
+
+    if (root.empty()) {
+      // Hope it exists
+      root = __FILE__;
+
+      auto index = root.rfind(query) + query.length();
+      root.erase(index);
+    }
+
+    return root;
+  }
   void loadFile(const std::string& name) {
-    auto path = Utility::joinToRoot(Utility::joinPaths(TEST_FILE_DIR, name));
+    auto path = Utility::joinPaths(rootPath(), TEST_FILE_DIR, name);
     _input = Utility::loadFromFile(path);
   }
 
