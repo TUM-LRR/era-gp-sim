@@ -15,10 +15,8 @@ DATA_CONFIG=$ERA_SIM_ROOT/installer/packages/erasim.config/data/config.7z
 cd $ERA_SIM_ROOT
 mkdir build
 cd build
-TMP=$CMAKE_PREFIX_PATH
-export CMAKE_PREFIX_PATH=$2
-cmake ..
-export CMAKE_PREFIX_PATH=$TMP
+make clean
+cmake .. -DCMAKE_PREFIX_PATH=$2
 make -j4
 if [ $ERRNO -lt 0 ]
 then 
