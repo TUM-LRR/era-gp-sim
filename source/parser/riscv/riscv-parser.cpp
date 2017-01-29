@@ -223,9 +223,13 @@ const SyntaxInformation RiscvParser::getSyntaxInformation() {
   // Matches expressions operators and brackets
   info.addSyntaxRegex(
       R"([\+\-%\*\/\(\)\|\^&=!<>~_]+)", SyntaxInformation::Token::Immediate);
-  // Matches Numbers optionally starting with '0x' or '0b'
+  // Matches Numbers
   info.addSyntaxRegex(
-      R"(\b(?:0[xb])?[0-9]+)", SyntaxInformation::Token::Immediate);
+      R"(\b[0-9]+\b)", SyntaxInformation::Token::Immediate);
+  info.addSyntaxRegex(
+      R"(\b0b[01]+\b)", SyntaxInformation::Token::Immediate);
+  info.addSyntaxRegex(
+      R"(\b0x[0-9a-fA-F]+\b)", SyntaxInformation::Token::Immediate);
 
   // Matches string literals
   info.addSyntaxRegex(R"(".*")", SyntaxInformation::Token::Immediate);
