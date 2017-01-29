@@ -28,7 +28,7 @@
 /**
  * Holds information about a data type.
  *
- * This is useful only for libraries that explicitly define different
+ * This is useful only for instruction sets that explicitly define different
  * data-types, like x86, where there are `qword`, `dword`, `word` and `byte`
  * types. Other architectures like RISC-V don't really have different data types
  * in the sense that you can modify an instruction by adding these data type
@@ -37,7 +37,7 @@
  *
  * A data type is defined by a name and size in bits, e.g. (dword, 32).
  *
- * The class' interface is intended to support the BuilderInterface pattern
+ * The class' interface is intended to support the Builder.
  */
 class DataTypeInformation : public InformationInterface {
  public:
@@ -96,7 +96,7 @@ class DataTypeInformation : public InformationInterface {
   const std::string& getName() const;
 
   /**
-   * Returns whether the data type has any name set.
+   * \returns Whether the data type has any name set.
    */
   bool hasName() const noexcept;
 
@@ -105,19 +105,17 @@ class DataTypeInformation : public InformationInterface {
    *
    * \param size The new size for the data type, in bits.
    *
-   * \return The current data type object.
+   * \returns The current data type object.
    */
   DataTypeInformation& size(size_t size);
 
   /**
-   * Returns the size of the data type.
-   *
-   * \return The size of the data type.
+   * \returns The size of the data type.
    */
   size_t getSize() const;
 
   /**
-   * Returns whether the data type has any size set.
+   * \returns whether the data type has any size set.
    */
   bool hasSize() const noexcept;
 

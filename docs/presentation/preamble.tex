@@ -54,6 +54,33 @@
   morecomment=[l]{;},
 }
 
+\lstdefinelanguage{ISA}{
+  alsoletter=-,
+  morekeywords={
+    alignment-behavior,
+    byte-size,
+    endianness,
+    extends,
+    format,
+    funct3,
+    id,
+    instructions,
+    key,
+    length,
+    mnemonic,
+    name,
+    opcode,
+    operand,
+    registers,
+    signed-representation,
+    size,
+    units,
+    word-size,
+  },
+  sensitive=false,
+  morecomment=[l]{\#}
+}
+
 \lstdefinestyle{C++}{%
 	basicstyle=\ttfamily\footnotesize,
 	language=C++,
@@ -71,6 +98,23 @@
 	tabsize=2,
   extendedchars=true
 }
+
+\lstdefinestyle{isa}{%
+	basicstyle=\ttfamily\scriptsize,
+	language=isa,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	numbers=none,
+	keywordstyle=\color{magenta},
+	commentstyle=\color{gray},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=2,
+  extendedchars=true
+}
+
 
 \lstdefinestyle{risc-v_Assembler}{
   basicstyle=\ttfamily\footnotesize\selectfont,
