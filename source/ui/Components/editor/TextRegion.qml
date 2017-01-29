@@ -54,7 +54,7 @@ TextEdit {
       textRegion.convertRawLineNumberToDisplayLineNumber(newCursorLine);
     if (cursorLine !== newCursorLine) {
       cursorLine = newCursorLine;
-      editor.cursorLineChanged(newCursorLine - 1);
+      editor.cursorLineChanged(newCursorLine);
     }
 
     updateHelpTooltip();
@@ -90,7 +90,7 @@ TextEdit {
   // Tooltips: A small '?' Symbol is placed under the cursor, if there is help
   // available. By hovering over it, the help text can be overlayed.
   function updateHelpTooltip() {
-    var help = guiProject.getCommandHelp(cursorLine - 1);
+    var help = guiProject.getCommandHelp(cursorLine);
     if (help.length === 0) {
       _toolTip.hideIcon();
       return;
