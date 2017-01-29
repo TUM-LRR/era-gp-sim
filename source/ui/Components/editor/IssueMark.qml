@@ -230,6 +230,6 @@ Item {
 
     // Adds a new issue item to the current issueMark.
     function addIssueItem(message, lineNumber, issueType) {
-        issueLineHighlight.addIssueItem(message, issueType);
+        issueLineHighlight.addIssueItem(message, lineNumber, issueType);
     }
 }
