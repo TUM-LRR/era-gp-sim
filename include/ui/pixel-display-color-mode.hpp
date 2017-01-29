@@ -50,6 +50,8 @@ struct ColorMode {
       Optional<OutputComponent *>, Options &, std::shared_ptr<QImage>)>;
   using UpdateAllColorsFunction = std::function<void(
       Optional<OutputComponent *>, Options &, std::shared_ptr<QImage>)>;
+  using CheckErrorsFunction =
+      std::function<void(Optional<OutputComponent *>, Options &)>;
 
   // RGB:
   const static GetPixelFunction RGBGetPixel;
@@ -59,6 +61,7 @@ struct ColorMode {
   const static UpdateMemoryFunction RGBUpdateMemory;
   const static UpdateAllPixelsFunction RGBUpdateAllPixels;
   const static UpdateAllColorsFunction RGBUpdateAllColors;
+  const static CheckErrorsFunction RGBCheckErrors;
   // Monochrome
   const static GetPixelFunction MonochromeGetPixel;
   const static GetColorFunction MonochromeGetColor;
@@ -67,38 +70,50 @@ struct ColorMode {
   const static UpdateMemoryFunction MonochromeUpdateMemory;
   const static UpdateAllPixelsFunction MonochromeUpdateAllPixels;
   const static UpdateAllColorsFunction MonochromeUpdateAllColors;
+  const static CheckErrorsFunction MonochromeCheckErrors;
 
   /**
    * \brief returns the color of the pixel at (x,y)
    */
   GetPixelFunction getPixel;
+
   /**
    * \brief returns the color from the color Table at the index index
    */
   GetColorFunction getColor;
+
   /**
    * \brief returns the color of the pixel at (x,y) fetching the data from the
    *        prefetched Buffer buffer
    */
   GetPixelFromBufferFunction getPixelFromBuffer;
+
   /**
    * \brief returns the color from the color Table at the index index fetching
    *        the data from the prefetched Buffer buffer
    */
   GetColorFromBufferFunction getColorFromBuffer;
+
   /**
    * \brief updates the image wherever the given change in memory modified the
    *        image
    */
   UpdateMemoryFunction updateMemory;
+
   /**
    * \brief updates all pixels of the image
    */
   UpdateAllPixelsFunction updateAllPixels;
+
   /**
    * \brief updates all colors of the image
    */
   UpdateAllColorsFunction updateAllColors;
+
+  /**
+   * checks for errors
+   */
+  CheckErrorsFunction checkErrors;
 
   /**
    * \brief loads a pointer from memory

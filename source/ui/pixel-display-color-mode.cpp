@@ -169,6 +169,7 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
     size_t amount) -> void {
   size_t cellSize = 8;      // TODO
   size_t pointerSize = 32;  // TODO
+  size_t memSize = (*memoryAccess)->getMemoryAccess().getMemorySize().get();
   size_t pointerSizeInByte = (pointerSize + cellSize - 1) / cellSize;
   size_t pixelBufferPointer = o.pixelBaseAddress;
   bool hasAlreadyUpdatedAllPixels = false;
@@ -193,6 +194,9 @@ const ColorMode::UpdateMemoryFunction ColorMode::RGBUpdateMemory = [](
         (o.tight ? ((sizeInBit * o.width * o.height + cellSize - 1) / cellSize)
                  : (((sizeInBit + cellSize - 1) / cellSize + o.freeBytes) *
                     o.height * o.width));
+    if (pixelBufferPointer + pixelBufferSize >= memSize) {
+      o.setError(2);
+    }
     if (address < pixelBufferPointer + pixelBufferSize &&
         address + amount > pixelBufferPointer) {
       // At least some pixel have changed
@@ -264,6 +268,20 @@ const ColorMode::UpdateAllColorsFunction ColorMode::RGBUpdateAllColors = [](
     Optional<OutputComponent *> memoryAccess,
     Options &o,
     std::shared_ptr<QImage> image) -> void {};
+
+const ColorMode::CheckErrorsFunction ColorMode::RGBCheckErrors = [](
+    Optional<OutputComponent *> memoryAccess, Options &o) -> void {
+  size_t pointerSize = 4;
+  if (memoryAccess) {
+    size_t memSize = (*memoryAccess)->getMemoryAccess().getMemorySize().get();
+    if (o.pixelBaseAddress + pointerSize >= memSize) {
+      o.setError(1);
+      return;
+    }
+  } else {
+    o.setError(0);
+  }
+};
 
 // Monochrome*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
 const ColorMode::GetPixelFunction ColorMode::MonochromeGetPixel = [](
@@ -343,6 +361,7 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
     size_t amount) -> void {
   size_t cellSize = 8;      // TODO
   size_t pointerSize = 32;  // TODO
+  size_t memSize = (*memoryAccess)->getMemoryAccess().getMemorySize().get();
   size_t pointerSizeInByte = (pointerSize + cellSize - 1) / cellSize;
   size_t pixelBufferPointer = o.pixelBaseAddress;
   bool hasAlreadyUpdatedAllPixels = false;
@@ -361,8 +380,11 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
                                                   o);
     }
   }
-  size_t pixelBufferSize = (o.width * o.height + cellSize - 1) / cellSize;
   if (!hasAlreadyUpdatedAllPixels) {
+    size_t pixelBufferSize = (o.width * o.height + cellSize - 1) / cellSize;
+    if (pixelBufferPointer + pixelBufferSize >= memSize) {
+      o.setError(2);
+    }
     if (address < pixelBufferPointer + pixelBufferSize &&
         address + amount > pixelBufferPointer) {
       // At least some pixel have changed
@@ -408,11 +430,14 @@ const ColorMode::UpdateMemoryFunction ColorMode::MonochromeUpdateMemory = [](
                                                   o);
     }
   }
-  constexpr size_t colorCount = 2;
-  constexpr size_t colorSizeInBit = 32;
-  size_t colorSizeInByte = (colorSizeInBit + cellSize - 1) / cellSize;
-  size_t colorBufferSize = colorCount * colorSizeInByte;
   if (!hasAlreadyUpdatedAllColors) {
+    constexpr size_t colorCount = 2;
+    constexpr size_t colorSizeInBit = 32;
+    size_t colorSizeInByte = (colorSizeInBit + cellSize - 1) / cellSize;
+    size_t colorBufferSize = colorCount * colorSizeInByte;
+    if (colorBufferPointer + colorBufferSize >= memSize) {
+      o.setError(3);
+    }
     if (address < colorBufferPointer + colorBufferSize &&
         address + amount > colorBufferPointer) {
       // At least some colors have changed
@@ -468,6 +493,21 @@ const ColorMode::UpdateAllColorsFunction ColorMode::MonochromeUpdateAllColors =
   }
 };
 
+const ColorMode::CheckErrorsFunction ColorMode::MonochromeCheckErrors = [](
+    Optional<OutputComponent *> memoryAccess, Options &o) -> void {
+  size_t pointerSize = 4;
+  if (memoryAccess) {
+    size_t memSize = (*memoryAccess)->getMemoryAccess().getMemorySize().get();
+    if (o.pixelBaseAddress + pointerSize >= memSize ||
+        o.colorBaseAddress + pointerSize >= memSize) {
+      o.setError(1);
+      return;
+    }
+  } else {
+    o.setError(0);
+  }
+};
+
 // ColorMode*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*-_-*
 ColorMode Options::RGB{ColorMode::RGBGetPixel,
                        ColorMode::RGBGetColor,
@@ -475,12 +515,14 @@ ColorMode Options::RGB{ColorMode::RGBGetPixel,
                        ColorMode::RGBGetColorFromBuffer,
                        ColorMode::RGBUpdateMemory,
                        ColorMode::RGBUpdateAllPixels,
-                       ColorMode::RGBUpdateAllColors};
+                       ColorMode::RGBUpdateAllColors,
+                       ColorMode::RGBCheckErrors};
 ColorMode Options::Monochrome{ColorMode::MonochromeGetPixel,
                               ColorMode::MonochromeGetColor,
                               ColorMode::MonochromeGetPixelFromBuffer,
                               ColorMode::MonochromeGetColorFromBuffer,
                               ColorMode::MonochromeUpdateMemory,
                               ColorMode::MonochromeUpdateAllPixels,
-                              ColorMode::MonochromeUpdateAllColors};
+                              ColorMode::MonochromeUpdateAllColors,
+                              ColorMode::MonochromeCheckErrors};
 }

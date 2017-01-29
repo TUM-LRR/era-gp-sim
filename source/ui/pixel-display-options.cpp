@@ -32,7 +32,7 @@ const std::string Options::errorMessages[] = {
     "Pointer outside Memory",
     "The Pixel Buffer is at least partially outside Memory",
     "The Color Buffer is at least partially outside Memory",
-    "A Buffers starting address is outside Memory",
+    "Trying to access Memory out of range",
 };
 
 
@@ -80,14 +80,17 @@ void Options::updateMemory(Optional<OutputComponent *> memoryAccess,
                            std::shared_ptr<QImage> image,
                            std::size_t address,
                            std::size_t amount) {
+  checkErrors(memoryAccess);
   getColorMode().updateMemory(memoryAccess, *this, image, address, amount);
 }
 void Options::updateAllPixels(Optional<OutputComponent *> memoryAccess,
                               std::shared_ptr<QImage> image) {
+  checkErrors(memoryAccess);
   getColorMode().updateAllPixels(memoryAccess, *this, image);
 }
 void Options::updateAllColors(Optional<OutputComponent *> memoryAccess,
                               std::shared_ptr<QImage> image) {
+  checkErrors(memoryAccess);
   getColorMode().updateAllColors(memoryAccess, *this, image);
 }
 
@@ -120,4 +123,9 @@ void Options::handleErrors(const pixelDisplayErrorFunction &errFun) {
   }
   errFun(resolved, stream.str());
 }
+
+void Options::checkErrors(Optional<OutputComponent *> memoryAccess){
+  getColorMode().checkErrors(memoryAccess, *this);
+}
+
 }

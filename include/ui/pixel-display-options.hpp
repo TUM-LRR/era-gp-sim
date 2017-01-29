@@ -79,7 +79,7 @@ struct Options {
    * 1:pointer outside memory
    * 2:pixelBuffer outside Memory
    * 3:colorBuffer outside Memory
-   * 4:bufferStart address not in Memory
+   * 4:trying to access Memory out of range
    */
   std::vector<bool> errorVector = std::vector<bool>(maxError, false);
 
@@ -175,6 +175,12 @@ struct Options {
    */
   void updateAllColors(Optional<OutputComponent *> memoryAccess,
                        std::shared_ptr<QImage> image);
+
+  /**
+   * checks whether there may occure some errors in drawing
+   * \param memoryAccess source to load the data from
+   */
+  void checkErrors(Optional<OutputComponent *> memoryAccess);
 
   /**
    * \brief sets the error with the index index to true
