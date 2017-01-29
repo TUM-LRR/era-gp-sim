@@ -1,4 +1,8 @@
- 
+; controlling the lightstrip with the left and right arrows on your keyboard!
+; settigns: lightstrip with 8 lights and address at 0x04
+;           keyboard input at address 0x00
+
+
 .section data
 .resb 4 							; keyboard input at address 0x00
 .resb 1 							; lightstrip output at address 0x04
