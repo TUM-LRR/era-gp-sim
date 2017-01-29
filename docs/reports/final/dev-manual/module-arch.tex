@@ -206,6 +206,7 @@ Die Oberklasse jedes Knotens ist die Klasse \texttt{AbstractSyntaxTreeNode}.
 Folgende Methoden werden von ihr vorgegeben:
 
 \begin{itemize}
+	\label{dev-manual-arch-node-functions}
 	\item \textbf{\texttt{getValue(MemoryAccess\&)}}: Diese Methode führt den
 	darunter liegenden Syntax Baum aus, und ruft ggf. rekursiv dieselbe Methode
 	bei den Kindknoten auf. Je nach Knotentyp variiert der Rückgabewert: So gibt
@@ -237,7 +238,10 @@ Folgende Methoden werden von ihr vorgegeben:
 	\item \textbf{\texttt{assemble()}}: Wandelt einen Syntax Baum in die
 	Binärdarstellung der Architektur um. Diese Darstellung ist lediglich zur
 	Visualisierung für den Benutzer vorgesehen, die eigentliche Simulation der
-	Instruktionen wird über den Syntax Baum vorgenommen.
+	Instruktionen wird über den Syntax Baum vorgenommen. Ein Registerknoten x5 
+	gibt z.B. \texttt{00101} (also 5 als Binärzahl der Länge n), ein Konstantenknoten gibt seinen Wert
+	zurück. Der Instruktionsknoten (die Wurzel) gibt anschließend die
+	zusammengefügte, komplette assemblierte Instruktion zurück.
 
 	\item \textbf{\texttt{getIdentifier()}}: Gibt den Typ eines Knotens als
 	Zeichenkette zurück. Beispielsweise geben Instruktionen ihren entsprechenden
