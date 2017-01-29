@@ -17,10 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/ui.hpp"
+
 #include <QUrl>
 #include <string>
-
-#include "ui/ui.hpp"
 
 #include "arch/common/architecture-formula.hpp"
 #include "common/assert.hpp"
@@ -28,6 +28,8 @@
 #include "common/utility.hpp"
 #include "parser/common/final-representation.hpp"
 #include "ui/input-text-model.hpp"
+#include "ui/output-component.hpp"
+#include "ui/pixel-display-painted-item.hpp"
 #include "ui/settings.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/theme.hpp"
@@ -59,6 +61,7 @@ Ui::id_t Ui::addProject(QQuickItem* tabItem,
                         const QString& architecture,
                         const QString& optionName,
                         const QString& parser) {
+  // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
   // Add all extensions which are defined for this option
@@ -243,6 +246,9 @@ void Ui::_registerCustomTypes() {
   qRegisterMetaType<FinalRepresentation>();
   qRegisterMetaType<Status>();
   qRegisterMetaType<id_t>("id_t");
+  qRegisterMetaType<OutputComponent*>("OutputComponentPointer");
+  qmlRegisterType<PixelDisplayPaintedItem>(
+      "eragpsim.pixeldisplaypainteditem", 1, 0, "PixelDisplayPaintedItem");
 }
 
 bool Ui::_setupEngine() {

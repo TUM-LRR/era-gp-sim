@@ -81,6 +81,12 @@ Item {
                 outputItemIndex: 2
             }
         }
+        Tab {
+            title: "Buttons/Pixel Display Icon"
+            PixelDisplay {
+                outputItemIndex: 3
+            }
+        }
 
 
 

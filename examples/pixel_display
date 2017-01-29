@@ -1,0 +1,170 @@
+;
+;This is designed for pixel-display 192x160, Monochrome
+;you also have to make sure to have enough memory >9kb
+;the resolution of the pixel display can be adjusted via 
+;x_res and y_res
+;
+.section data
+.equ sleept, 250
+.equ x_res, 192
+.equ y_res, 160
+.equ row_size, x_res/8
+.equ ball_initial_dx, 128+8; 128=0
+.equ ball_initial_dy, 128+8; 128=0
+;this measurements are in bytes
+.equ x_offset_left, 0
+.equ x_offset_right, 1
+.equ y_offset_top, 0
+.equ y_offset_bot, 1
+
+pixel_buffer_pointer: .word 0x00
+color_buffer_pointer: .word 0x00
+color_buffer: .resw 2
+pixel_buffer_a: .resb x_res*y_res/8
+pixel_buffer_b: .resb x_res*y_res/8
+
+.section text
+start:
+init_variables:
+;calculate horizontal playing field size and store in x6
+addi x6, x0, x_res
+addi x1, x0, 3
+srl x6, x6, x1 ;shift right: divides by 8
+addi x1, x0, x_offset_left
+addi x1, x1, x_offset_right ; add horizontal offsets
+sub x6, x6, x1 ;subtract horizontal offsets
+;calculate vertical playing field size and store in x7
+addi x7, x0, y_res
+addi x1, x0, 3
+srl x7, x7, x1 ;shift right: divides by 8
+addi x1, x0, y_offset_top
+addi x1, x1, y_offset_bot ; add vertical offsets
+sub x7, x7, x1 ;subtract vertical offsets
+;place ball in middle of field
+;calculate horizontal ball position and store in x1
+add x2, x0, x6 ;load horizontal playing field size
+addi x1, x0, 2
+sll x2, x2, x1 ;/2*8
+;calculate vertical ball position and store in x2
+add x3, x0, x7 ;load vertical playing field size
+sll x3, x3, x1 ;/2*8
+;init ball speed in x4 and x5
+addi x4, x0, ball_initial_dx
+addi x5, x0, ball_initial_dy
+;init display
+;init addess of front pixel buffer in x8
+li x8, pixel_buffer_a
+;init addess of back pixel buffer in x9
+li x9, pixel_buffer_b
+;init color buffer
+li x1, 0xFF000000
+li x10, color_buffer
+sw x1, x10, 0
+li x1, 0xFFFFFFFF
+sw x1, x10, 4
+;set the color buffer pointer
+li x1, color_buffer_pointer
+sw x10, x1, 0
+;set the pixel buffer pointer
+li x1, pixel_buffer_pointer
+sw x8, x1, 0
+
+loop:
+add x14, x20, x0
+add x20, x21, x0
+addi x1, x0, 0x00
+jal x31, set_color
+jal x31, update
+jal x31, calc_ball_address
+add x21, x14, x0
+addi x1, x0, 0xFF
+jal x31, set_color
+jal x31, flip
+jal x0, loop
+
+
+flip:
+addi x1, x8, 0; mov x8->x1
+addi x8, x9, 0; mov x9->x8
+addi x9, x1, 0; mov x1->x9
+li x1, pixel_buffer_pointer
+sw x8, x1, 0
+jalr x0, x31, 0
+
+
+update:
+;move ball
+addi x1, x0, 128 ;128=0
+addi x11, x0, 3 ;shr 8
+;move horizontally
+add x10, x2, x4
+bltu x10, x1, update_left_blip
+add x2, x2, x4
+sub x2, x2, x1
+sll x10, x6, x11
+bgeu x2, x10, update_right_blip
+;move vertically
+update_vertically:
+add x10, x3, x5
+bltu x10, x1, update_top_blip
+add x3, x3, x5
+sub x3, x3, x1
+sll x10, x7, x11
+bgeu x3, x10, update_bot_blip
+jalr x0, x31, 0
+
+update_left_blip:
+sub x2, x1, x10
+sub x4, x1, x4
+add x4, x4, x1
+jal x0, update_vertically
+update_right_blip:
+add x10, x10, x10
+sub x2, x10, x2
+sub x4, x1, x4
+add x4, x4, x1
+jal x0, update_vertically
+update_top_blip:
+sub x3, x1, x10
+sub x5, x1, x5
+add x5, x5, x1
+jalr x0, x31, 0
+update_bot_blip:
+add x10, x10, x10
+sub x3, x10, x3
+sub x5, x1, x5
+add x5, x5, x1
+jalr x0, x31, 0
+
+
+calc_ball_address:
+;calculates address of ball in memory
+;calculate address with offset
+addi x1, x0, 3
+srl x14, x2, x1
+srl x15, x3, x1
+addi x14, x14, x_offset_left
+addi x15, x15, y_offset_top
+;calculate offset in memory
+addi x1, x0, row_size * 8
+mul x1, x1, x15
+add x14, x14, x1; (x,y)=x+y*x_size
+add x14, x14, x9
+jalr x0, x31, 0
+
+
+set_color:
+sb x1, x14, 0 * row_size
+sb x1, x14, 1 * row_size
+sb x1, x14, 2 * row_size
+sb x1, x14, 3 * row_size
+sb x1, x14, 4 * row_size
+sb x1, x14, 5 * row_size
+sb x1, x14, 6 * row_size
+sb x1, x14, 7 * row_size
+jalr x0, x31, 0
+
+
+end:
+nop ; Just to stop the execution
+; simucrash "finished" would also be fine

@@ -16,10 +16,10 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-#include "ui/output-component.hpp"
 #include "core/conversions.hpp"
 #include "core/memory-manager.hpp"
 #include "core/memory-value.hpp"
+#include "ui/output-component.hpp"
 
 OutputComponent::OutputComponent(MemoryManager &memoryManager,
                                  MemoryAccess &memoryAccess,
@@ -42,6 +42,8 @@ OutputComponent::OutputComponent(MemoryManager &memoryManager,
       QVariant(QMap<QString, QVariant>{{"type", "TextConsole"},
                                        {"baseAddress", QVariant(0)},
                                        {"textMode", QVariant(0)}}));
+  _outputItemsInformation.push_back(
+      QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}}));
 }
 
 
@@ -126,4 +128,8 @@ OutputComponent::getTextFromMemory(int start, QString currentText, int mode) {
 
 int OutputComponent::getMemorySize() {
   return _memoryAccess.getMemorySize().get();
+}
+
+MemoryAccess &OutputComponent::getMemoryAccess() {
+  return _memoryAccess;
 }

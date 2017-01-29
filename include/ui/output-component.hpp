@@ -122,6 +122,12 @@ class OutputComponent : public QObject {
     */
   Q_INVOKABLE int getMemorySize();
 
+  /**
+   \brief returns the MemoryAccess
+   \return The MemoryAccess
+   */
+  MemoryAccess &getMemoryAccess();
+
  private:
   /// Interface for accessing memory content.
   MemoryAccess _memoryAccess;
