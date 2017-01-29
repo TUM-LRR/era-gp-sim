@@ -10,8 +10,8 @@ Des Weiteren wird erläutert, welche Philosophie hinter der Auswahl an Werkzeuge
 steckt, von der wir uns erhoffen, dass zukünftige Entwickler diese fortsetzen.
 
 \subsection{Git}
-Bei der Entwicklung von Software im Team ist es zwingend Notwendig, viele verschiedene Versionen
-der selben Software zu verwalten. Deshalb haben wir uns für
+Bei der Entwicklung von Software im Team ist es zwingend notwendig, viele verschiedene Versionen
+derselben Software zu verwalten. Deshalb haben wir uns für
 \textit{Git}\footnote{\url{https://git-scm.com/}} als Versionskontrollsystem entschieden. \\
 Das allein beschreibt allerdings noch nicht, \textit{wie} wir Git verwenden. Daher haben wir uns für
 die folgenden Systeme entschieden:
@@ -68,14 +68,14 @@ sowie möglichst wenige externe Bibliotheken verwenden.
 Wir arbeiten mit folgenden Compilern:
 
 \begin{itemize}
-	\item \textit{g++ >= 5}
-	\item \textit{clang++ >= 3.7}
+	\item \textit{g++ $\geq$ 5}
+	\item \textit{clang++ $\geq$ 3.7}
 \end{itemize}
 
 \subsubsection{Bibliotheken}
 
 Die einzige, für das Endprodukt benötigte Abhängigkeit ist \textit{Qt}\footnote{\url{https://www.qt.io/}}
->= 5.6 in Kombination mit QtQuick >= 2.6. Wir verwenden Qt zur Erstellung der grafischen Oberfläche,
+$\geq$ 5.6 in Kombination mit QtQuick $\geq$ 2.6. Wir verwenden Qt zur Erstellung der grafischen Oberfläche,
 haben aber grundsätzlich eine strikte Trennung zwischen Code der GUI und dem Rest des Simulators.
 Durch diese Trennung wäre es möglich, den Simulator auch ohne Qt zur Verfügung zu stellen, z.B.
 mit einer anderen Grafikbibliothek oder als Kommandozeilenprogramm. \\

@@ -5,7 +5,7 @@
 Die grafische Benutzeroberfläche des Simulators besteht aus einer Reihe von
 Komponenten, die sich innerhalb des gegebenen Rasters nahezu beliebig anordnen
 lassen. Diese Aufteilung in Komponenten spiegelt sich auch in der
-Implementierung der GUI wieder, indem jede der wählbaren Komponente einer
+Implementierung der GUI wieder, da jede der wählbaren Komponente einer
 QML-Komponente entspricht. Dazu gehören Snapshots, Hilfe, Register, Speicher,
 Input und Output (siehe auch Abbildung \ref{fig:gui-composition}).
 
@@ -21,7 +21,7 @@ durch die Splitview-Komponente mit vier nebeneinander angeordneten Teilbereichen
 voller Höhe realisiert ist. Jeder dieser Teilbereiche ist wiederum in zwei
 übereinander angeordnete Bereiche unterteilt, verwirklicht durch die
 InnerSplitviews bzw. die InnerSplitviewsEditor. Letztere QML-Komponente ist eine
-spezielle Ausprägung, die im oberen Teilbereich den Editor anzeigt, welcher,
+spezielle Ausprägung, die im oberen Teilbereich den Editor anzeigt, der,
 anders als alle anderen Komponenten, nicht variabel positionierbar ist.
 
 Die inneren Splitviews bestehen schließlich aus einem SplitViewItem, welches
@@ -89,7 +89,7 @@ vom Qt-Framework innerhalb der GUI-fernen Module Core, Parser und Architektur
 entstehen sollen, kann diese Funktion nicht von Klassen des Cores übernommen
 werden. Aus diesem Grund übernehmen einige der zu den QML-Komponenten gehörigen
 C++-Klassen der GUI die Aufgabe des Modells und werden folglich von
-Qt-Modell-Klassen wie etwa \texttt{QAbstractItemModel} abgeleitet. Ausgenommen
+Qt-Modell-Klassen wie etwa \texttt{QAbstractItemModel} abgeleitet. Mit Ausnahme
 von Cache-Zwecken halten diese Modelle selbst keine veränderbaren Daten
 (Registerwerte, Speicherwerte etc.), sondern holen diese über das zugehörige
 Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
@@ -99,7 +99,7 @@ Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
 
 Der Simulator unterstützt das gleichzeitige Laden mehrerer unabhängiger
 Projekte. Diese werden jeweils durch eine \texttt{GUIProject}-Instanz
-repräsentiert, welches Komponenten-über\-grei\-fen\-de Funktionalitäten für ein
+repräsentiert, welche Komponenten-über\-grei\-fen\-de Funktionalitäten für ein
 Projekt zur Verfügung stellt.
 
 Im \texttt{GUIProject} werden mitunter die C++-Klassen der QML-Komponente
@@ -109,13 +109,13 @@ Qt-Mechanismen verwendet, und der GUI.
 
 Bei der Initialisierung der C++-Klassen übergibt das \texttt{GUIProject} diesen
 die benötigten Instanzen der Interface-Klassen (\texttt{MemoryAccess} und
-\texttt{ArchitectureAccess} etc).
+\texttt{ArchitectureAccess} etc.).
 
 Datenaustausch ausgehend vom Core hin zu den QML-Komponenten in der GUI hat
 nicht den Scheduler zwischengeschaltet, sondern verläuft über das
 \texttt{GUIProject} in zwei Schritten. Im ersten Schritt ruft der Core einen
 Callback auf, der im \texttt{ProjectModule} gesetzt wird (näher Informationen im
-Abschnitt /Core/). Das \texttt{GUIProject} leitet im zweiten Schritt den im
+Abschnitt \ref{Dev-Kapitel: Core}). Das \texttt{GUIProject} leitet im zweiten Schritt den im
 \texttt{GUIProject} eingehenden Callback mit Hilfe des Qt-eigenen
 Signal-Slot-Mechanismus an die Instanzen der C++-Klassen der QML-Komponenten
 weiter. Diese Umleitung ist auch deshalb notwendig, um die eingehende Nachricht,
@@ -130,7 +130,7 @@ Damit die QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen
 können, werden deren Instanzen im \texttt{GUIProject} zum projektspezifischen
 \texttt{QQMLContext} hinzugefügt, beispielsweise die Klasse
 \texttt{RegisterModel} als Context-Property \texttt{registerModel}. Auf die
-Properties dieses Kontexts kann über die zugehörige Bezeichnung (bspw.
+Properties dieses Kontexts kann über die zugehörige Bezeichnung (im vorigen Beispiel: 
 \texttt{registerModel}) global in jeder QML-Datei zugegriffen werden. Die
 Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes
 \texttt{GUIProject} seinen eigenen Kontext erhält.
@@ -142,6 +142,6 @@ QML-Komponenten genutzt, die keinem einzelnen Projekt zugeordnet sind, um auf
 Methoden der C++-Komponenten zuzugreifen. Die Toolbar beispielsweise nutzt die
 \texttt{ui} Context-Property, um die Methode \texttt{run} aufzurufen, wenn der
 Ausführungsbutton gedrückt wurde. Zielen diese Methoden auf einzelne Projekte
-ab, wie bei \texttt{run} der Fall, so muss zudem der Index des aktiven Projekts
+ab, wie es bei \texttt{run} der Fall ist, so muss zudem der Index des aktiven Projekts
 mit angegeben werden, damit in der \texttt{Ui}-Klasse das richtige Projekt
 gewählt werden kann.
