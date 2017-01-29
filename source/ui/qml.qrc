@@ -125,6 +125,7 @@
         <file>Icons/Settings Icon Pressed@2x.png</file>
         <file>Icons/Settings Icon.png</file>
         <file>Icons/Settings Icon@2x.png</file>
+        <file>Icons/Warning.svg</file>
         <file>InnerSplitviews.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
         <file>Js/TextUtility.js</file>

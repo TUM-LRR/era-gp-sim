@@ -18,23 +18,25 @@
 
 import QtQuick 2.6
 
+import Theme 1.0
 import "../Common/"
 
 Rectangle {
   id: pixelDisplayError
-  radius: 3
+  radius: Theme.pixelDisplay.error.radius
   visible: false
 
   Image {
     id: errorIcon
     anchors.fill: parent
 
-    source: "../editor/Issue Icons/Error Icon.png"
+    source: "../../Icons/Warning.svg"
   }
 
   ToolTip {
     id: errorTooltip
     anchors.fill: parent
+    permanentOnClick: false
   }
 
   Connections {
@@ -43,12 +45,10 @@ Rectangle {
     onPixelDisplayError: {
       errorTooltip.text = errorMessage;
       pixelDisplayError.visible = true;
-      console.log("An error occured in the pixel display");
     }
 
     onPixelDisplayErrorResolved: {
       pixelDisplayError.visible = false;
-      console.log("error resolved");
     }
   }
 

@@ -54,6 +54,7 @@ Item {
     property alias toolTipText: _toolTipText
 
     property bool moveTooltipWithMouse: false;
+    property bool permanentOnClick: true;
 
     // Functions
     function showToolTip() {
@@ -161,13 +162,14 @@ Item {
                     transientScrollBars: true
                 }
 
+                onActiveFocusChanged: focus = (activeFocus && permanentOnClick);
 
                 onFocusChanged: {
-                    if(focus) {
+                    if(focus && permanentOnClick) {
                         _toolTipRect.color = backgroundColorOnFocus;
                         _toolTipRect.border.color = borderColorOnFocus;
                     }
-                    if(!focus) {
+                    if(!focus && permanentOnClick) {
                         _toolTipRect.color = backgroundColor;
                         _toolTipRect.border.color = borderColor;
                         if(!_toolTipHitArea.containsMouse) {

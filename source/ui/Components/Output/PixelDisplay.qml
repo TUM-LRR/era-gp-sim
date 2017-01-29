@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Window 2.0
 import QtQuick.Controls 1.4
 import eragpsim.pixeldisplaypainteditem 1.0
+import Theme 1.0
 
 Item {
     property var outputItemIndex: 3
@@ -16,16 +17,17 @@ Item {
         id: pixeldisplaypainteditemid
         anchors.fill: parent
         outputComponentPointer : outputComponent
+
+        PixelDisplayError {
+          anchors.margins: Theme.pixelDisplay.error.margins
+          anchors.top: parent.top
+          anchors.left: parent.left
+
+          width: Theme.pixelDisplay.error.width
+          height: Theme.pixelDisplay.error.height
+        }
     }
 
-    PixelDisplayError {
-      anchors.margins: 10
-      anchors.bottom: parent.bottom
-      anchors.right: parent.right
-
-      width: 40
-      height: 40
-    }
 
     // Connect the output item to signals that the model might send.
     Connections {
