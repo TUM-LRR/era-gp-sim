@@ -111,7 +111,8 @@ void readInstruction(const CodePosition& position,
                      const PositionedStringVector& labels,
                      const RiscvParser::RiscvRegex& lineRegex,
                      CompileErrorList& errors,
-                     IntermediateRepresentator& intermediate) {
+                     IntermediateRepresentator& intermediate,
+                     bool hidden) {
   PositionedStringVector sources, targets;
 
   auto isDirective = lineRegex.isDirective();
@@ -126,6 +127,9 @@ void readInstruction(const CodePosition& position,
   auto instruction = lineRegex.getInstruction();
 
   auto interval = getCommandInterval(instruction, labels, sources, targets);
+
+  if (hidden) interval = {};
+
   if (isDirective) {
     RiscVDirectiveFactory::create(
         interval, labels, instruction, sources, intermediate, errors);
@@ -139,7 +143,8 @@ void readInstruction(const CodePosition& position,
 
 void readText(const std::string& text,
               CompileErrorList& errors,
-              IntermediateRepresentator& intermediate) {
+              IntermediateRepresentator& intermediate,
+              bool hidden = false) {
   std::istringstream stream(text);
   CodePosition position;
   RiscvParser::RiscvRegex lineRegex;
@@ -159,7 +164,8 @@ void readText(const std::string& text,
       }
 
       if (lineRegex.hasInstruction()) {
-        readInstruction(position, labels, lineRegex, errors, intermediate);
+        readInstruction(
+            position, labels, lineRegex, errors, intermediate, hidden);
 
         labels.clear();
       }
@@ -172,10 +178,11 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
   IntermediateRepresentator intermediate;
   CompileErrorList errors;
 
-  // We append all built-in macros to our text.
-  auto extendedText = text + "\n" + _architecture.getBuiltinMacros();
+  // First we parse the builtin macros
+  readText(_architecture.getBuiltinMacros(), errors, intermediate, true);
 
-  readText(extendedText, errors, intermediate);
+  // Then we parse the user text
+  readText(text, errors, intermediate);
 
   auto byteAlignment =
       _architecture.getWordSize() / _architecture.getByteSize();

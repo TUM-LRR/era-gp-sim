@@ -24,7 +24,6 @@ import Theme 1.0
 import "../Common"
 import "../../Js/TextUtility.js" as TextUtility
 
-
 ScrollView {
   id: scrollView
   verticalScrollBarPolicy: Qt.ScrollBarAsNeeded

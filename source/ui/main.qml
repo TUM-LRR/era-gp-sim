@@ -214,8 +214,6 @@ ApplicationWindow {
     selectExisting: false
     selectFolder: false
     selectMultiple: false
-    onAccepted: {
-      ui.saveTextAs(tabView.currentProjectId(), fileDialog.fileUrl);
-    }
+    onAccepted: onAcceptedFunction(fileDialog.fileUrl);
   }
 }

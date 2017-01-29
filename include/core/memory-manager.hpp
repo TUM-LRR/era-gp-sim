@@ -57,10 +57,18 @@ class MemoryManager : public Proxy<Project> {
    * Set the callback which is used to signal the gui that the memory was
    * updated
    *
-   * \param callback std::function<void(int)>
+   * \param callback std::function<void(size_t, size_t)>
    *
    */
   POST(setUpdateMemoryCallback)
+
+  /**
+   * Set the callback which is used to signal the gui that the memory size
+   * changed.
+   *
+   * \param callback std::function<void(size_t)>
+   */
+  POST(setUpdateMemorySizeCallback)
 
   /**
    * Set the callback which is used to notify the gui of an error.

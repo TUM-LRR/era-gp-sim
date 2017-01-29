@@ -33,6 +33,17 @@ const CompileErrorVector& CompileErrorList::errors() const noexcept {
   return _errors;
 }
 
+CompileErrorVector& CompileErrorList::errors() noexcept {
+  return _errors;
+}
+
+void CompileErrorList::pushCompileErrorInternal(
+    CompileErrorSeverity severity,
+    const CodePositionInterval& interval,
+    const Translateable& message) {
+  addRaw({std::make_shared<Translateable>(message), interval, severity});
+}
+
 // Some internal helper methods.
 namespace {
 bool existsError(const CompileErrorVector& errors,

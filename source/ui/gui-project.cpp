@@ -84,6 +84,9 @@ GuiProject::GuiProject(
         emit this->memoryChanged(address, length);
       });
 
+  _projectModule.getMemoryManager().setUpdateMemorySizeCallback(
+      [this](auto newSize) { emit this->memorySizeChanged(newSize); });
+
   _projectModule.getParserInterface().setThrowErrorCallback(
       [this](const Translateable& message) { this->_throwError(message); });
 
@@ -117,6 +120,12 @@ GuiProject::GuiProject(
                    SIGNAL(memoryChanged(std::size_t, std::size_t)),
                    &_outputComponent,
                    SLOT(updateMemory(std::size_t, std::size_t)),
+                   Qt::QueuedConnection);
+
+  QObject::connect(this,
+                   SIGNAL(memorySizeChanged(std::size_t)),
+                   &_memoryModel,
+                   SLOT(onMemorySizeChanged(std::size_t)),
                    Qt::QueuedConnection);
 
   QObject::connect(
