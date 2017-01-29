@@ -275,10 +275,12 @@ Item {
 
     // Accepts a given line number inside the editor and factors out all blank lines inserted for macro expansions.
     function convertRawLineNumberToDisplayLineNumber(text, rawLineNumber) {
-        var lineNumber = 0;
-        for (var lineIndex = 0; lineIndex < rawLineNumber; ++lineIndex) {
-            if (!isPositionInsideMacroBlankLine(text, TextUtility.getLineStartForLine(text, lineIndex))) {
-                lineNumber++;
+        var lineNumber = rawLineNumber;
+        for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
+            var macro = macros[macroIndex];
+            var macroRawLine = convertDisplayLineNumberToRawLineNumber((macro["startLine"]));
+            if (macroRawLine < lineNumber && macro["collapsed"] === false) {
+                lineNumber -= Number(macro["lineCount"]);
             }
         }
         return lineNumber;
