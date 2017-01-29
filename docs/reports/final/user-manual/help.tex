@@ -5,7 +5,38 @@
 Im folgenden werden Fehlermeldungen aufgelistet, die bei der Benutzung des Simulators auftreten können.
 Eine Übersicht über die Übersetzungsfehler von RISC-V gibt es in \autoref{user-manual-riscv-errors}.
 
-\begin{tabular}{|l|l|l|}
-	\hline
-	Fehlermeldung & häufigster Grund des Fehlers & Mögliche Lösung\\
-\end{tabular}
+\begin{itemize}
+    \item \textbf{Fehler beim Starten von \erasim} Falls einer dieser Fehler
+    auftritt, deutet dies auf eine kaputte oder fehlende Installation des
+    \texttt{\$Home/.erasim} Ordners hin. Daher wird in diesem Fall Empfohlen,
+    eine Neuinstallation mit Hilfe des Installers vorzunehmen.
+        \begin{itemize}
+            \item Could not find settings directory
+            \item Could not open settings file for loading
+            \item Contents of settings are empty. Why?
+            \item {[...]} when creating settings file
+            \item Could not open settings file for writing
+            \item Could not write to settings file
+        \end{itemize}
+    \item \textbf{Fehler beim Laden von Themes} Falls beim Laden einer Theme
+    einer der folgenden Fehler auftritt, deutet dies auf eine fehlerhafte
+    Installation der Themes oder auf generell fehlerhafte Themes hin. Themes
+    werden aus dem \texttt{\$HOME/.erasim/themes} Ordner geladen. Eine
+    Neuinstallation sollte diese Fehler beheben. Zu beachten ist, dass Fehler
+    dieser Art auch beim Programmstart auftreten können, da zu diesem Zeitpunkt
+    auch eine Theme geladen wird.
+        \begin{itemize}
+            \item Could not find theme directory
+            \item Could not find theme {[...]}
+            \item Could not open theme {[...]}
+            \item Contents of theme {[...]}
+        \end{itemize}
+    \item \textbf{Fehler beim Laden/Speichern von Snapshots oder Textdateien}
+    Falls in dieser Situation ein Fehler auftritt, sollte überprüft werden, ob
+    die entsprechenden Dateien existieren und passende Zugriffsrechte haben.
+    Snapshots werden unter dem in den Einstellungen festgelegten Pfad
+    gespeichert.
+    \item \textbf{Fehler bei der Ausführung des Programms} Während der
+    Ausführung können \textit{Runtime Errors} auftreten. Dies deutet auf einen
+    Fehler im Assembler-Code hin, beispielsweise eine falsche Sprungadresse.
+\end{itemize}
