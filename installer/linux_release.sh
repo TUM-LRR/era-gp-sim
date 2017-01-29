@@ -26,10 +26,13 @@ fi
 
 # Successful build
 
-# Now we zip the data for base (exe & isa-Files)
-7z a $DATA_BASE $ERA_SIM_ROOT/build/bin/$ERA_SIM_EXE $ERA_SIM_ROOT/isa
-# Then zip the data for config (.erasim & themes)
-7z a $DATA_CONFIG $ERA_SIM_ROOT/.erasim $ERA_SIM_ROOT/themes
+# Now we zip the data for base (exe)
+7z a $DATA_BASE $ERA_SIM_ROOT/build/bin/$ERA_SIM_EXE
+# Then zip the data for config (isa & themes)
+mkdir $ERA_SIM_ROOT/build/linux_release/.erasim
+cp $ERA_SIM_ROOT/isa $ERA_SIM_ROOT/build/linux_release/.erasim/
+cp $ERA_SIM_ROOT/themes $ERA_SIM_ROOT/build/linux_release/.erasim/
+7z a $DATA_CONFIG $ERA_SIM_ROOT/build/linux_release/.erasim
 
 # Now we run the binarycreator utility
 $1 -c $ERA_SIM_ROOT/installer/config/config.xml -p $ERA_SIM_ROOT/installer/packages/ $ERA_SIM_ROOT/releases/$3
@@ -37,4 +40,5 @@ $1 -c $ERA_SIM_ROOT/installer/config/config.xml -p $ERA_SIM_ROOT/installer/packa
 # Cleanup
 rm $DATA_BASE
 rm $DATA_CONFIG
+rm $ERA_SIM_ROOT/build/linux_release/.erasim
 
