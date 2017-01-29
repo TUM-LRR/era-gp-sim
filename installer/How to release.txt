@@ -1,0 +1,25 @@
+We use the Qt-Installer Framework for the installer.
+Prerequisites:
+
++ Download the prebuilt framework (https://download.qt.io/official_releases/qt-installer-framework/2.0.3/)
+  The os name in the framework specifies for which os the installer is generated
+
++ Install 7zip command line utility
+  Linux: packages "p7zip-full" and "p7zip-rar"
+
+  If you cannot install a 7zip utility, this is fine. The automated scripts won't work though
+
+
+The general steps to do:
+* Build an new clean version of era-sim
+* Zip era-sim executable and isa-Folder into packages/erasim.base/data/<archive name>.7z
+* Zip .erasim, put the archive into packages/erasim.config/data/<archive name>.7z
+* Call the binarycreator-tool of the downloaded prebuilt framework:
+  <path_from_here_to_binary_creator>/binarycreator -c config/config.xml -p packages <Output file name>
+* Remove the zipped data packages
+
+
+Release script:
+Linux:
+	call linux_release.sh <path_to_binary_creator> <cmake prefix path> <Output file name>
+	Note: The installscript puts the output file into the releases folder
