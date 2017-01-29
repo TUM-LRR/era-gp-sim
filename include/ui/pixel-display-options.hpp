@@ -22,6 +22,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include "common/optional.hpp"
 

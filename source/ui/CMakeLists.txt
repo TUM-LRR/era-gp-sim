@@ -12,7 +12,7 @@ set(UI_SOURCES
   gui-project.cpp
   snapshot-component.cpp
   output-component.cpp
-  color-mode.cpp
+  pixel-display-color-mode.cpp
   pixel-display-options.cpp
   pixel-display-painted-item.cpp
   input-button-model.cpp
@@ -32,7 +32,7 @@ set(UI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/ui/ui.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/snapshot-component.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/output-component.hpp
-  ${CMAKE_SOURCE_DIR}/include/ui/color-mode.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/pixel-display-color-mode.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/pixel-display-options.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/pixel-display-painted-item.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/input-button-model.hpp

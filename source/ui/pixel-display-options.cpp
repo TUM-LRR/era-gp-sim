@@ -17,12 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui/pixel-display-options.hpp"
+
 #include <QImage>
 #include <sstream>
 
 #include "common/assert.hpp"
-#include "ui/color-mode.hpp"
-#include "ui/pixel-display-options.hpp"
+#include "ui/pixel-display-color-mode.hpp"
 
 namespace colormode {
 
@@ -114,7 +115,7 @@ void Options::handleErrors(const pixelDisplayErrorFunction &errFun) {
       resolved &= !errorVector[i];
       errorVector[i] = false;
       stream << "PixelDisplayError " << i << " occured:" << errorMessages[i]
-             << "\n";
+             << "<br>";
     }
   }
   errFun(resolved, stream.str());
