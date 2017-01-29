@@ -10,50 +10,50 @@ Des Weiteren wird erläutert, welche Philosophie hinter der Auswahl an Werkzeuge
 steckt, von der wir uns erhoffen, dass zukünftige Entwickler diese fortsetzen.
 
 \subsection{Git}
-Bei der Entwicklung von Software im Team ist es zwingend Notwendig, viele verschiedene Versionen
-der selben Software zu verwalten. Deshalb haben wir uns für
-\textit{Git}\footnote{\url{https://git-scm.com/}} als Versionskontrollsystem entschieden. \\
-Das allein beschreibt allerdings noch nicht, \textit{wie} wir Git verwenden. Daher haben wir uns für
-die folgenden Systeme entschieden:
+Bei der Entwicklung von Software im Team ist es zwingend Notwendig, viele
+verschiedene Versionen der selben Software zu verwalten. Deshalb haben wir uns
+für \textit{Git}\footnote{\url{https://git-scm.com/}} als Versionskontrollsystem
+entschieden. \\
+Das allein beschreibt allerdings noch nicht, \textit{wie} wir Git verwenden.
+Daher haben wir uns für die folgenden Systeme entschieden:
 
 \subsubsection{Gitflow}
 
-\textit{Gitflow}\footnote{\url{https://www.atlassian.com/git/tutorials/comparing-workflows/}} ist
-ein beliebtes Modell der Git-Nutzung, welches vor allem bei der Verwaltung von großen Projekten
-zum Einsatz kommt. Die von uns genutzte Variante lässt sich wie folgt beschreiben:
-
-\todo[inline]{Ich bin hier schon mal einen Schritt weiter gegangen und hab noch eine Unterscheidung
-zwischen dev und master Branch eingefügt. So wollten wir das ja ursprünglich machen, aber aus
-Bequemlichkeit nutzen wir nur den master. Falls nach der Abgabe noch Änderungen vorgenommen werden,
-sollten wir das dann nach dem "richtigen" Modell machen.}
+\textit{Gitflow}\footnote{\url{https://www.atlassian.com/git/tutorials/comparing-workflows/}}
+ist ein beliebtes Modell der Git-Nutzung, welches vor allem bei der Verwaltung
+von großen Projekten zum Einsatz kommt. Die von uns genutzte Variante lässt sich
+wie folgt beschreiben:
 
 \begin{itemize}
-	\item Es gibt einen \textit{Master}-Branch, der immer die aktuellste, stabile Version enthält.
-	\item Es gibt einen \textit{Development}-Branch, der den aktuellen Stand bei der Entwicklung
-	einer neuen Version enthält. Der Code ist ebenfalls stabil, wenn auch manche Funktionen noch
-	nicht vollständig sein können.
-	\item Die einzelnen Aufgaben werden isoliert in einer \textit{Feature}-Branch bearbeitet.
-	\item Ist eine Aufgabe fertig, so wird der entsprechende Feature Branch in den Development
-	Branch gemerged.
-	\item Ist eine neue Version auf dem Development Branch fertiggestellt, so wird die Development
-	Branch in den Master Branch gemerged.
+	\item Es gibt einen \textit{Master}-Branch, der immer die aktuellste,
+	stabile Version enthält.
+	\item Es gibt einen \textit{Development}-Branch, der den aktuellen Stand
+	bei der Entwicklung einer neuen Version enthält. Der Code ist ebenfalls
+	stabil, wenn auch manche Funktionen noch nicht vollständig sein können.
+	\item Die einzelnen Aufgaben werden isoliert in einem \textit{Feature}-Branch
+	bearbeitet.
+	\item Ist eine Aufgabe fertig, so wird der entsprechende Feature Branch in
+	den Development Branch gemerged.
+	\item Ist eine neue Version auf dem Development Branch fertiggestellt, so
+	wird der Development Branch in den Master Branch gemerged.
 \end{itemize}
 
 \subsubsection{Github}
 
-\todo[inline]{Das hier geht schon in Richtung Projektleiterbericht, ich denke es ist aber trzdm sinnvoll,
-hier ein paar Worte zu verlieren, da es schließlich zur Entwicklung dazugehört}
-
-Wir nutzen \textit{Github}\footnote{\url{https://github.com/}} as Filehoster des Simulators. Neben
-Gründen wie der großen Bekanntheit von Github und der auch für Einsteiger geeigneten grafischen
-Oberfläche, sind vor allem folgenden Funktionen hilfreich bei der Entwicklung:
+Wir nutzen \textit{Github}\footnote{\url{https://github.com/}} as Filehoster des
+Simulators. Neben Gründen wie der großen Bekanntheit von Github und der auch für
+Einsteiger geeigneten grafischen Oberfläche, sind vor allem folgenden Funktionen
+hilfreich bei der Entwicklung:
 
 \begin{itemize}
-	\item \textit{Issues}: Die im vorherigen Kapitel genannten Aufgaben werden mit einem Issue
-	verwaltet. Über die Nummer eines Issues lässt sich der Status der Entwicklung verfolgen.
-	\item \textit{Pull Requests}: Nach der Fertigstellung einer Feature Branch wird ein Pull Request
-	erstellt, sodass andere Entwickler ein Code Review anfertigen können.
-	\item Integration von Tools wie \textit{Waffle}\footnote{\url{https://waffle.io/}} und
+	\item \textit{Issues}: Die im vorherigen Kapitel genannten Aufgaben werden
+	mit einem Issue verwaltet. Über die Nummer eines Issues lässt sich der
+	Status der Entwicklung verfolgen.
+	\item \textit{Pull Requests}: Nach der Fertigstellung einer Feature Branch
+	wird ein Pull Request erstellt, sodass andere Entwickler ein Code Review
+	anfertigen können.
+	\item Integration von Tools wie
+	\textit{Waffle}\footnote{\url{https://waffle.io/}} und
 	\textit{Travis CI}\footnote{\url{https://travis-ci.org/}}
 \end{itemize}
 
@@ -84,6 +84,7 @@ in der aktuellen Version ausschließlich in Englisch verfügbar, uns war es aber
 auch andere Sprachen unterstützen zu können. Somit verwenden wir die von Qt zur Verfügung gestellten
 Mittel, Nutzer sichtbare Nachrichten übersetzbar zu machen, auch in allen anderen Modulen außerhalb
 der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
+\footnote{\url{http://doc.qt.io/qt-5/qtquick-internationalization.html}}
 
 \subsubsection{Code Style}
 
@@ -112,7 +113,7 @@ dokumentiert. Diese Dokumentation ist weitaus ausführlicher als dieser Bericht 
 ist essentiell für die Weiterentwicklung des Simulators. Neben der einfachsten
 Möglichkeit, die Kommentare im Quellcode zu lesen, ist es mit Doxygen ebenfalls möglich,
 eine HTML bzw. \LaTeX Version zu generieren. Dazu wechselt man in das \texttt{docs/}
-Verzeichnis und führt den Befehl \texttt{doxygen} aus, welcher anschließend die
+Verzeichnis und führt das Programm \texttt{doxygen} aus, welches anschließend die
 Dokumentation generiert.
 
 \subsection{Build Umgebung}
@@ -134,15 +135,18 @@ verfügbar, unter Ubuntu erst ab Ubuntu 16.10.
 
 \begin{itemize}
 	\item \textbf{Debian basierte Betriebssysteme:} \\
-	\todo[inline]{Funktioniert nicht in Ubuntu 16.*}
 	\begin{lstlisting}
 apt install build-essential cmake git qtdeclarative5-dev
 	\end{lstlisting}
+	\textit{Anmerkung zu Ubuntu 16.10}: Obwohl dort die benötigte Version in den
+	Paketquellen verfügbar ist, startet das Programm nach dem Build Vorgang
+	aufgrund eines SEGFAULTs in einer Qt Bibliothek nicht. Wir konnten die
+	Ursache des Fehlers nicht identifizieren und empfehlen eine manuelle
+	Installation von Qt.
 
 	\item \textbf{Arch Linux:} \\
 	\begin{lstlisting}
-pacman -S base-devel cmake git qt5-declarative \
- qt5-graphicaleffects qt5-quickcontrols
+pacman -S base-devel cmake git qt5-declarative qt5-graphicaleffects qt5-quickcontrols
 	\end{lstlisting}
 \end{itemize}
 
@@ -193,13 +197,16 @@ eine virtuelle Maschine mit einem Linux für die Entwicklung verwendet werden.
 
 \subsection{CMake / Make}
 \label{dev-report-cmake-build}
-Um auch den Build Prozess unabhängig vom Betriebssystem durchzuführen, haben wir uns für
-\textit{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake generiert die benötigten
-\texttt{Makefiles} für jedes Betriebssystem bzw. jeden Compiler neu, welche anschließend
-von \textit{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt werden können.
+Um auch den Build Prozess unabhängig vom Betriebssystem durchzuführen, haben wir
+uns für \textit{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake
+generiert die benötigten \texttt{Makefiles} für jedes Betriebssystem bzw. jeden
+Compiler neu, welche anschließend von
+\textit{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt
+werden können.
 
-Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende Build Umgebung
-aufgesetzt werden. Anschließend kann man mit den Folgenden Befehlen einen Clean Build erzeugen:
+Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende
+Build Umgebung aufgesetzt werden. Anschließend kann man mit den Folgenden
+Befehlen einen Clean Build erzeugen:
 
 \begin{lstlisting}[language=bash, keywords={}]
 # Projekt herunterladen
@@ -225,8 +232,8 @@ make -j 4
 ./bin/era-sim
 \end{lstlisting}
 
-Hat man Qt manuell installiert, ist es ggf. notwendig, den Installationspfad bei der
-Ausführung von CMake zu spezifizieren.
+Hat man Qt manuell installiert, ist es ggf. notwendig, den Installationspfad
+bei der Ausführung von CMake zu spezifizieren.
 
 \begin{lstlisting}[language=bash, keywords={}]
 # Wurde z.B. der Ordner ~/Qt5.7.0 bei der manuellen
@@ -244,27 +251,29 @@ Oberfläche von QtCreator erzeugt werden.
 
 \subsection{Tests}
 
-Wir nutzten das \textit{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
-zur Automatisierung unserer Tests. Die Tests befinden sich im \texttt{tests/} Verzeichnis, gruppiert
-nach ihren Modulen. Da Tests der grafischen Oberfläche zu komplex wären, haben wir uns auf die übrigen
-Module des Simulators beschränkt, deren korrekte Funktionalität in jeweils separaten Unit Tests
-überprüft wird.
+Wir nutzten das \textit{Google Test}\footnote{\url{https://github.com/google/googletest}}
+Framework zur Automatisierung unserer Tests. Die Tests befinden sich im
+\texttt{tests/} Verzeichnis, gruppiert nach ihren Modulen. Da Tests der
+grafischen Oberfläche zu komplex wären, haben wir uns auf die übrigen Module des
+Simulators beschränkt, deren korrekte Funktionalität in jeweils separaten Unit
+Tests überprüft wird.
 
-Um ein einheitliches Ergebnis bei den Tests zu erzielen, nutzen wir das Continuous Integration Tool
-\textit{Travis CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hoch geladenen
-Commit ein Clean Build angefertigt, der alle verfügbaren Tests durchführt. Das Ergebnis dieses Tests
-wird auf Github veröffentlicht und ist bindend. Die Tests werden sowohl mit g++, als auch mit clang
-durchgeführt. \\
+Um ein einheitliches Ergebnis bei den Tests zu erzielen, nutzen wir das
+Continuous Integration Tool \textit{Travis CI}\footnote{\url{https://travis-ci.org/}}.
+Dabei wird nach jedem hoch geladenen Commit ein Clean Build angefertigt, der
+alle verfügbaren Tests durchführt. Das Ergebnis dieses Tests wird auf Github
+veröffentlicht und ist bindend. Die Tests werden sowohl mit g++, als auch mit
+clang durchgeführt. \\
 Die Konfiguration von Travis befindet sich in der Datei \texttt{.travis.yml}
 
-Die Tests können auch lokal ausgeführt werden. Dazu wechselt man mit \texttt{cd} in das Build
-Verzeichnis und nutzt das von CMake mitgelieferte Programm \texttt{ctest} um die Tests zu starten.
-Um die Testgeschwindigkeit zu erhöhen empfiehlt es sich, mit der \texttt{-j} Option die Anzahl
-der Jobs zu erhöhen.
+Die Tests können auch lokal ausgeführt werden. Dazu wechselt man mit \texttt{cd}
+in das Build Verzeichnis und nutzt das von CMake mitgelieferte Programm
+\texttt{ctest} um die Tests zu starten. Um die Testgeschwindigkeit zu erhöhen
+empfiehlt es sich, mit der \texttt{-j} Option die Anzahl der Jobs zu erhöhen.
 
 \subsection{Projektstruktur}
 
-In diesem Kapitel wird die Funktion jedes Ordners beschrieben.
+In diesem Unterabschnitt wird die Funktion jedes Ordners beschrieben.
 
 \begin{itemize}
 	\item \textbf{\texttt{docs/}} enthält die Dokumentation von \erasim, also
