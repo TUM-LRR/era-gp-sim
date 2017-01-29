@@ -54,4 +54,4 @@ if (ERA_SIM_BUILD_GUI)
   target_link_libraries(era-sim era-sim-core)
 
   qt5_use_modules(era-sim Widgets Qml Quick)
-endif()
+endif ()
