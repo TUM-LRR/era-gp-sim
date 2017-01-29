@@ -1,8 +1,7 @@
 \subsection{Architektur}
 
 \todo[inline]{
-	* Architecture Description Language \\
-	* Teilung common/riscv \\
+	* Architecture Description Language
 }
 
 Die Architektur (kurz: \textit{Arch}) kümmert sich um die Ausführung der
@@ -13,9 +12,10 @@ werden kann. Eine Architektur wird in \texttt{YAML} Konfigurationsdateien
 beschrieben, und anschließend in das Programm geladen. \\
 Da wir uns gegen die Ausführung von Maschinencode entschieden haben, bietet
 die Architektur eine abstraktere Darstellung von Assembler Programmen in Form
-eines Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
-Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
-Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
+eines Syntaxbaums. Neben der syntaktischen Überprüfung des Parsers, validiert
+die Architektur die semantische Korrektheit einer Instruktion, und stellt bei
+Fehlern entsprechende Nachrichten zur Verfügung, die dem Nutzer helfen sollen,
+das Problem zu beheben.
 
 Eine Übersicht über die Schnittstellen des Architekturmoduls bietet
 \autoref{fig:arch-overview} (Die verwendeten Klassennahmen stimmen nicht mit denen
@@ -60,9 +60,9 @@ im Quellcode überein, es geht hier nur um das Prinzip).
 	\label{fig:arch-overview}
 \end{figure}
 
-Die Architektur ist in einen allgemeinen Teil (im Folgenden \textbf{common})
+Die Architektur ist in einen allgemeinen Teil (im Folgenden \textbf{common}
 genannt) und in einen Architektur-spezifischen Teil (benannt nach der
-entsprechenden Architektur, z.B. \textbf{riscv} aufgeteilt. Die Schnittstelle
+entsprechenden Architektur, z.B. \textbf{riscv}) aufgeteilt. Die Schnittstelle
 ist so konzeptioniert, dass andere Module nichts von der konkreten Architektur
 mitbekommen, und lässt sich folgendermaßen charakterisieren: \\ Das
 \textit{Architecture} Objekt stellt allgemeine Informationen über die geladene
@@ -114,8 +114,32 @@ Implementation abläuft, wird im Folgenden erläutert.
 
 \subsubsection{Syntax Tree}
 
-Der Syntax Baum mit durch Vererbung implementiert und in \textit{common} und
-\textit{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
+Die Architektur soll in der Lage sein, beliebig komplexe Assembler Instruktionen
+in einem einheitlichen Format modellieren zu können. Deshalb haben wir uns für
+die Verwendung eines Syntaxbaums zur Darstellung einer Instruktion
+entschieden. \\
+Eine beispielhafte Ausprägung eines Syntaxbaums, der folgende x86 Instruktion
+modelliert, ist in \autoref{fig:arch-syntax-tree-example} gegeben.
+\begin{x86}
+add eax, [4*ebx+8]
+\end{x86}
+
+\begin{figure}[H]
+	\begin{center}
+	\begin{tikzpicture}
+	\Tree [.{\texttt{add}} \texttt{eax} [.{Memory Access} [.{Addition} [.{Multiplication} 4 \texttt{ebx} ] 8 ] ] ]
+	\end{tikzpicture}
+	\end{center}
+
+	\caption{Beispielhafter Syntaxbaum}
+	\label{fig:arch-syntax-tree-example}
+\end{figure}
+
+Aufbauend auf diesem Konzept, haben wir verschiedene Knotentypen
+herausgearbeitet, die im Folgenden erläutert werden.
+
+Der Syntaxbaum wird durch Vererbung implementiert und in \textbf{common} und
+\textbf{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
 Übersicht bietet \autoref{fig:arch-syntax-tree}
 
 \begin{figure}[H]
@@ -154,7 +178,7 @@ Der Syntax Baum mit durch Vererbung implementiert und in \textit{common} und
 		\end{pgfonlayer}
 		\end{tikzpicture}
 	\end{center}
-	\caption{Klassendiagramm Syntax Baum}
+	\caption{Klassendiagramm Syntaxbaum}
 	\label{fig:arch-syntax-tree}
 \end{figure}
 
@@ -166,8 +190,8 @@ Die aufgeführten Klassen haben folgende Funktion:
   und definiert, welche Methoden die Unterklassen implementieren müssen. Des
   Weiteren enthält sie eine Liste an etwaige Kindknoten.
 
-  \item \textbf{ImmediateNode} repräsentiert einen \textit{Immediate}-Wert, also
-  einen Wert, der direkt im Assembler Quelltext angegeben ist. Architekturen
+  \item \textbf{ImmediateNode} repräsentiert einen konstanten Wert (Immediate),
+  also einen Wert, der direkt im Assembler Quelltext angegeben ist. Architekturen
   stellen im Allgemeinen keine Spezialisierung eines Immediate Wertes zur
   Verfügung, weshalb diese Klasse vollständig im common Teil implementiert
   werden kann.
@@ -176,22 +200,18 @@ Die aufgeführten Klassen haben folgende Funktion:
   Konkret wird er für die Implementierung der Crash Instruktion verwendet.
 
 	\item \textbf{AbstractRegisterNode} repräsentiert ein Register in der
-	Instruktion. In RISC-V muss die Assemblierung speziell behandelt werden,
-	weshalb es einen speziellen RegisterNode für RISC-V gibt.
+	Instruktion. Um die Architekturen-spezifische Assemblierung der
+	Register zu unterstützen, ist diese Klasse abstrakt implementiert.
 
 	\item \textbf{AbstractInstructionNode} ist die oberste Ebene eines jeden
-	Syntax Baums und repräsentiert die auszuführende Instruktion.
+	Syntaxbaums und repräsentiert die auszuführende Instruktion.
 
 \end{itemize}
 
 Mit diesen Knotentypen lassen sich alle RISC-V Instruktionen modellieren. Nicht
 RISC Architekturen stellen aber häufig die Möglichkeit bereit, einen
 Speicherzugriff während einer anderen Instruktion durchzuführen. Ein Beispiel in
-x86:
-
-\begin{x86}
-add eax, [ebx*2+2]
-\end{x86}
+x86 wurde bereits in \autoref{fig:arch-syntax-tree-example} aufgeführt.
 
 Um diese Instruktionen modellieren zu können, wurden folgende Knotentypen
 konzeptioniert, die jedoch nicht im Quellcode definiert sind:
@@ -207,7 +227,7 @@ Folgende Methoden werden von ihr vorgegeben:
 
 \begin{itemize}
 	\item \textbf{\texttt{getValue(MemoryAccess\&)}}: Diese Methode führt den
-	darunter liegenden Syntax Baum aus, und ruft ggf. rekursiv dieselbe Methode
+	darunter liegenden Syntaxbaum aus, und ruft ggf. rekursiv dieselbe Methode
 	bei den Kindknoten auf. Je nach Knotentyp variiert der Rückgabewert: So gibt
 	beispielsweise ein Instruktionsknoten die Adresse der nächsten Instruktion
 	zurück, ein Register seinen aktuellen Wert und ein Immediateknoten die
@@ -234,10 +254,10 @@ Folgende Methoden werden von ihr vorgegeben:
 	Weiteren lässt es sich so verhindert, dass geschützte Speicherbereiche
 	von Store Instruktionen beschrieben werden.
 
-	\item \textbf{\texttt{assemble()}}: Wandelt einen Syntax Baum in die
+	\item \textbf{\texttt{assemble()}}: Wandelt einen Syntaxbaum in die
 	Binärdarstellung der Architektur um. Diese Darstellung ist lediglich zur
 	Visualisierung für den Benutzer vorgesehen, die eigentliche Simulation der
-	Instruktionen wird über den Syntax Baum vorgenommen.
+	Instruktionen wird über den Syntaxbaum vorgenommen.
 
 	\item \textbf{\texttt{getIdentifier()}}: Gibt den Typ eines Knotens als
 	Zeichenkette zurück. Beispielsweise geben Instruktionen ihren entsprechenden
@@ -248,17 +268,16 @@ Folgende Methoden werden von ihr vorgegeben:
 
 Die Aufgabe einer konkreten Architektur besteht nun darin, die eben beschriebenen
 Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In
-\autoref{sec:extension} wird darauf genauer eingegangen. \\
-Um nun Objekte des Syntax Baums zu erzeugen, wird die Node Factory benötigt, auf
-die im Folgenden eingegangen wird.
+\autoref{sec:extension} wird darauf genauer eingegangen.
 
 \subsubsection{Node Factory}
 \label{module-arch-node-factory}
 
-Mit der \textit{Node Factory} wird der bereits beschriebene Syntax Baum erzeugt.
+Mit der \textit{Node Factory} wird der bereits beschriebene Syntaxbaum erzeugt.
 Um nach außen ein Architektur-unabhängiges Interface zu bieten, basiert die
-Node Factory dem \textit{Abstract Factory Pattern} und wird als Diagramm in
-\autoref{fig:arch-node-factory} dargestellt.
+Node Factory dem \textit{Abstract Factory Pattern}
+\footnote{\url{https://de.wikipedia.org/wiki/Fabrikmethode}} und wird als
+Diagramm in \autoref{fig:arch-node-factory} dargestellt.
 
 \begin{figure}[H]
 	\begin{center}
@@ -283,14 +302,14 @@ Node Factory dem \textit{Abstract Factory Pattern} und wird als Diagramm in
 		\node (data-riscv) [class, below = of reg-riscv] {riscv::DataNodeFactory};
 		\node (riscv) [below = of data-riscv] {\textbf{riscv}};
 
-		\draw[inheritance-arrow] (instr-riscv) edge (instr-abstr);
+		\draw[inheritance-arrow] (instr-riscv) edge node [yshift=3mm] {erben} (instr-abstr);
 		\draw[inheritance-arrow] (imm-riscv) edge (imm-abstr);
 		\draw[inheritance-arrow] (reg-riscv) edge (reg-abstr);
 		\draw[inheritance-arrow] (data-riscv) edge (data-abstr);
 
 		\begin{pgfonlayer}{background}
 		\path (instr-abstr.west |- instr-abstr.north)+(-1,0.5) node (a1) {};
-		\path (arithmetic-abstr.east |- arithmetic-abstr.south)+(+1,-1.5) node (a2) {};
+		\path (arithmetic-abstr.east |- arithmetic-abstr.south)+(+0.7,-1.5) node (a2) {};
 		\path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
 		\end{pgfonlayer}
 
@@ -326,10 +345,10 @@ Fehlen einer Factory signalisieren, dass sie einen Knotentyp nicht unterstützen
 Bisher wurde fast ausschließlich die Schnittstelle beschrieben. Diese Sektion
 soll einen Einblick in unsere Gedanken bei der RISC-V Implementation geben.
 
-Zunächst etwas zur Implementation der Instruktionen. RISC-V definiert wiederum
-eine eigene abstrakte Oberklasse \texttt{riscv::InstructionNode}, von der alle
-weiteren Instruktionsknoten abgeleitet sind. Dies dient der Vermeidung von
-Redundanz, da Methoden wie \texttt{assemble()} und
+Zunächst etwas zur Implementation der Instruktionen. Für RISC-V definieren
+wir wiederum eine eigene abstrakte Oberklasse \texttt{riscv::InstructionNode},
+von der alle weiteren Instruktionsknoten abgeleitet sind. Dies dient der
+Vermeidung von Redundanz, da Methoden wie \texttt{assemble()} und
 \texttt{getInstructionDocumentation()} für alle Instruktionen angewandt werden
 können. Des Weiteren definiert die Klasse hilfreiche Methoden, die in den
 Unterklassen verwendet werden, um zum Beispiel die Validierung der Operanden
@@ -348,14 +367,14 @@ weit abstrahiert, dass die konkreten Anwendung der Operation effektiv in einen
 einzeiligen Lamda Ausdruck reduziert werden kann. Diese findet sich in der Datei
 \texttt{integer-instructions.hpp}.
 
-Ein weiteres Konzept der RISC-V Instruktionen basiert auf der Unterstützung
-unterschiedlicher Wortgrößen. Derzeit bietet RISC-V ausgiebige Unterstützung für
-32 und 64 Bit, in Zukunft soll 128 Bit folgen. Um zu verhindern, dass
-Instruktionen für jede Wortgröße neu geschrieben werden müssen, nutzen wir C++
-Templates, um die Wortgröße einer Instruktion zu spezifizieren. So wird in der
-Node Factory von RISC-V eine Fallunterscheidung nach der verwendeten Wortgröße
-gemacht, und dann der entsprechende Zahlentyp als Template Parameter gesetzt
-(für 32 Bit z.B. \texttt{std::uint32\_t} und für 64 Bit
+Ein weiteres Konzept der RISC-V Implementation von Instruktionen basiert auf der
+Unterstützung unterschiedlicher Wortgrößen. Derzeit bietet RISC-V ausgiebige
+Unterstützung für 32 und 64 Bit, in Zukunft soll 128 Bit folgen. Um zu
+verhindern, dass Instruktionen für jede Wortgröße neu geschrieben werden müssen,
+nutzen wir C++ Templates, um die Wortgröße einer Instruktion zu spezifizieren.
+So wird in der Node Factory von RISC-V eine Fallunterscheidung nach der
+verwendeten Wortgröße gemacht, und dann der entsprechende Zahlentyp als Template
+Parameter gesetzt (für 32 Bit z.B. \texttt{std::uint32\_t} und für 64 Bit
 \texttt{std::uint64\_t}). Sollte die Entwicklung der 128 Bit Version von RISC-V
 voranschreiten, so könnte man das mit dem aktuellen C++ Standard nicht abdecken,
 da kein 128 Bit Zahlentyp definiert ist. Man könnte dann aber eine vereinfachte
