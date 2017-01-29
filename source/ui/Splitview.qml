@@ -31,7 +31,7 @@ SplitView {
     faktor: 2
     quotient: 3
     usual1: "snapshots"
-    usual2: "input"
+    usual2: "inputoutput"
 
   }
 
@@ -41,7 +41,7 @@ SplitView {
     id: splitView2
     faktor: 2
     quotient: 3
-    usual2: "output"
+    usual2: "inputoutput"
   }
 
   InnerSplitviews {

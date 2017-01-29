@@ -450,13 +450,6 @@
         }
     },
     "input": {
-        "tabBar": {
-            "background": "white",
-            "border": {
-                "color": "#BDBDBD",
-                "width": 1
-            }
-        },
         "keyInput": {
             "background": "white",
             "inactive": {
@@ -517,6 +510,8 @@
         "background": "transparent",
         "tabBar": {
             "background": "white",
+            "iconMargin": 20,
+            "iconHeight": 26,
             "border": {
                 "color": "#BDBDBD",
                 "width": 1
