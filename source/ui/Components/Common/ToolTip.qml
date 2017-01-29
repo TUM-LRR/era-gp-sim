@@ -202,6 +202,9 @@ Item {
                                 wrapMode = TextEdit.WordWrap;
                             }
                         }
+                        onTextChanged: {
+                          wrapMode = TextEdit.NoWrap;
+                        }
                     }
                 }
             }

@@ -17,17 +17,16 @@ Item {
         id: pixeldisplaypainteditemid
         anchors.fill: parent
         outputComponentPointer : outputComponent
-
-        PixelDisplayError {
-          anchors.margins: Theme.pixelDisplay.error.margins
-          anchors.top: parent.top
-          anchors.left: parent.left
-
-          width: Theme.pixelDisplay.error.width
-          height: Theme.pixelDisplay.error.height
-        }
     }
 
+    PixelDisplayError {
+      anchors.margins: Theme.pixelDisplay.error.margins
+      anchors.top: parent.top
+      anchors.left: parent.left
+
+      width: Theme.pixelDisplay.error.width
+      height: Theme.pixelDisplay.error.height
+    }
 
     // Connect the output item to signals that the model might send.
     Connections {

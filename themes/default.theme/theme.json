@@ -530,7 +530,10 @@
             "margins": 10,
             "width": 15,
             "height": 15,
-            "radius": 3
+            "radius": 3,
+            "color": "transparent",
+            "borderColor": "transparent",
+            "iconColor": "#FF4081"
         }
     }
 }

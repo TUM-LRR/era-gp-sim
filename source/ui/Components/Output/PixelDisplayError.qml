@@ -17,6 +17,7 @@
 */
 
 import QtQuick 2.6
+import QtGraphicalEffects 1.0
 
 import Theme 1.0
 import "../Common/"
@@ -25,12 +26,20 @@ Rectangle {
   id: pixelDisplayError
   radius: Theme.pixelDisplay.error.radius
   visible: false
+  color: Theme.pixelDisplay.error.color
+  border.color: Theme.pixelDisplay.error.borderColor
 
   Image {
     id: errorIcon
     anchors.fill: parent
 
-    source: "../../Icons/Warning.svg"
+    source: "../../Icons/error.svg"
+  }
+
+  ColorOverlay {
+    anchors.fill: errorIcon
+    source: errorIcon
+    color: Theme.pixelDisplay.error.iconColor
   }
 
   ToolTip {
