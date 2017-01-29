@@ -44,13 +44,13 @@ erstellt werden kann. Sind bereits andere Projekte geöffnet so kann ein weitere
 Tastaturbefehl Strg-N (Cmd-N auf macOS) angelegt werden.
 
 Neben dem Projektnamen muss für ein Projekt auch die Architektur angegeben
-werden, also die simuliert werden soll. Diese beinflusst im Wesentlichen, welche
+werden, die simuliert werden soll. Diese beeinflusst im Wesentlichen, welche
 Assembler-Instruktionen und Register zur Verfügung stehen.
 
-Darüberhinaus kann die Hauptspeichergröße frei gewählt werden, wobei der Wert
+Darüber hinaus kann die Hauptspeichergröße frei gewählt werden, wobei der Wert
 zwischen 4 und 1.048.576 Byte liegen muss.
 
-Mit der Wahl der Syntax wird die Art und Weise, wie Assembler-Instrukionen
+Mit der Wahl der Syntax wird die Art und Weise, wie Assembler-Instruktionen
 geschrieben werden, festgelegt. Eine Syntax unterscheidet sich von der anderen
 beispielsweise in der Art, wie der Immediate-Teil einer Instruktion geschrieben
 wird. Der verfügbare Instruktionssatz selbst wird dadurch nicht beeinflusst.
@@ -94,7 +94,7 @@ einfach wieder zum Ausgangszustand zurückkehren.
 
 Ein Snapshot wird über den Plus-Button in der Snapshot-Komponente oder die
 Menüleiste (``Project'' $\rightarrow$ ``Save Snapshot'') erstellt und mit einem
-eindeutigen Namen versehen. Die Werte, die zum Zeitpunkt des Schanppschusses in
+eindeutigen Namen versehen. Die Werte, die zum Zeitpunkt des Schnappschusses in
 den Registern und im Speicher geschrieben stehen, werden dadurch im Snapshot
 gespeichert. Anschließend können die Register- und Speicherinhalte nach Belieben
 verändert werden, egal ob durch Drücken des Reset-Buttons, manuelles Ändern der
@@ -123,18 +123,18 @@ wurde, kann nicht in einem Projekt mit RISC-V 64Bit Version geladen werden.
 \label{sec:Editor}
 
 Im Editor wird der Assemblercode verfasst, der vom Simulator assembliert und
-ausgeführt werden kann. Durch Syntax Highlighting werden bestimmte
+ausgeführt werden kann. Durch Syntax-Highlighting werden bestimmte
 Code-Fragmente, wie Kommentare, Instruktionen, Register oder Immediate-Werte,
 farblich gekennzeichnet.
 
-Während des Schreibs erscheint unterhalb der aktuellen Zeile, in der sich der
+Während des Schreibens erscheint unterhalb der aktuellen Zeile, in der sich der
 Cursor befindet, ein Fragezeichenfeld, über das bei Bedarf die
 Befehlsdokumentation der gegebenenfalls unvollständigen Assemblerinstruktion
 angezeigt werden kann.
 
 Makrodefinition werden wie alle anderen Instruktionen an jedwede Stelle ins
 Code-Dokument geschrieben und können anschließend beliebig oft aufgerufen
-werden. Jeder Makroaufruf kann außerdem über einen dreiecksförmigen Button in
+werden. Jeder Makroaufruf kann außerdem über einen dreieckigen Button in
 der Editor-Seitenleiste aufgeklappt werden, wodurch die Makroerweiterung
 unterhalb des eigentlichen Makroaufrufs eingeblendet wird. Makroparameter werden
 dabei durch die konkreten Argumente des Aufrufs ersetzt. Durch das Anzeigen der
@@ -182,7 +182,7 @@ gescrollt.
 
 \subsubsection{Hilfetextkomponente}
 \label{help-component}
-\todo[inline]{Was wird angezeigt, zu welchem Befehl (Zeile!), wann (nach dem Parsen)}
+%\todo[inline]{Was wird angezeigt, zu welchem Befehl (Zeile!), wann (nach dem Parsen)}
 
 Die Hilfetextkomponente zeigt die Befehlsdokumentation des Befehls der aktuellen
 Zeile an und ergänzt damit das Hilfefenster, da bei Bedarf direkt im Editor
@@ -203,9 +203,9 @@ Der erste Modus (erster Button von links in Abbildung \ref{Toolbar}) führt das
 ganze Programm komplett ab der hervorgehobenen Zeile aus.
 
 Möchte man die Ausführung dabei beenden, beispielsweise wegen einer
-Endlosschleife, so klickt man auf den Stopp-Button (vierter Button von links)
+Endlosschleife, so klickt man auf den Stopp-Button (vierter Button von links).
 
-Darüberhinaus gibt es die Möglichkeit nur die aktuelle Zeile auszuführen, also
+Darüber hinaus gibt es die Möglichkeit nur die aktuelle Zeile auszuführen, also
 Schritt für Schritt (zweiter Button von links). Hierbei werden die geänderten
 Werte in den Registern hervorgehoben, was in anderen Modi nicht der Fall ist.
 
@@ -216,7 +216,7 @@ klickt. Durch erneutes Klicken auf den Breakpoint wird dieser wieder entfernt.
 
 \todo[inline]{Ggf. Bild von Breakpoint}
 
-Drückt man nach beendeter oder untebrochener Ausführung auf den Reset-Button (erster
+Drückt man nach beendeter oder unterbrochener Ausführung auf den Reset-Button (erster
 Button von rechts), so wird der Zeiger für die zunächst auszuführende Zeile wieder
 an den Anfang des Programms gesetzt und die Register- und Speicherinhalte zurückgesetzt.
 
@@ -232,7 +232,7 @@ Assemblercode referenziert werden kann, sowie dem zugehörigem Registerinhalt.
 Der Registerinhalt kann je nach Art des Registers unterschiedlich formatiert
 werden. Allzweckregistern stehen die Formate \textit{Binär},
 \textit{Hexadezimal}, \textit{Dezimal (vorzeichenbehaftet)} und \textit{Dezimal
-(nicht vorzeichenbehfatet)} zur Verfügung. Ein-Bit Flag-Register können außerdem
+(nicht vorzeichenbehaftet)} zur Verfügung. Ein-Bit Flag-Register können außerdem
 als Checkbox angezeigt werden. Das aktuelle Format des Registers wird rechts vom
 Registertextfeld über den Formatindikator angezeigt (\textit{S}: signed decimal,
 \textit{U}: unsigned decimal, \textit{H}: hexadecimal, \textit{B}: binary,
@@ -285,9 +285,9 @@ Um den Inhalt des Speichers auf einen Blick erfassen zu können, stehen
 verschieden Einstellungen in der Kopfzeile zur Verfügung:\\ In der ersten Spalte
 stehen immer die Adressen der Speicherzellen. Bei großen Datenmengen ist es
 manchmal wünschenswert mehr als nur 1 Byte pro Zeile angezeigt zu bekommen.
-Deshalb kann im Menu oberhalb dieser Spalte die angezeigte Größe der
+Deshalb kann im Menü oberhalb dieser Spalte die angezeigte Größe der
 Speicherzellen eingestellt werden. Standardmäßig stehen hier $8\, Bit$, $16\,
-Bit$, $32\, Bit$ und $64\, Bit$ zur Auswahl. Dabei wird aber die die
+Bit$, $32\, Bit$ und $64\, Bit$ zur Auswahl. Dabei wird aber die
 architekturbedingte Größe der Speicherzellen nicht beeinflusst; es werden
 stattdessen mehrere Speicherzellen pro Zeile dargestellt. Deshalb ändert sich
 die angezeigte Adressierung entsprechend.\\ Des Weiteren stehen mehrere
@@ -309,7 +309,7 @@ Außerdem können die Inhalte der Speicherzellen nebeneinander gleichzeitig in
 verschiedenen Formaten repräsentiert werden. Dazu einfach auf das ``\texttt{+}''
 in der rechten oberen Ecke klicken. Daraufhin erscheint eine neue Spalte im
 Speicher, bei der auch wieder das Format ausgewählt werden kann. Um eine Spalte
-wieder zu entfernen, muss im Kontextmenu im Spaltenheader der Eintrag
+wieder zu entfernen, muss im Kontextmenü im Spaltenheader der Eintrag
 ``\texttt{remove...}'' ausgewählt werden.
 
 \begin{warningblock}
@@ -320,7 +320,7 @@ auch die Eingabe zu großer Zahlen. Die Ersetzung erfolgt sofort.
 
 
 \subsection{Interaktion mit laufenden Programmen}
-\todo[inline]{Hier sollte (für alle Komponenten ja gleich) die Einstellungsmöglichkeiten (Zahnrad-knopf) und welches Symbol welche Komponente bedeutet}
+%\todo[inline]{Hier sollte (für alle Komponenten ja gleich) die Einstellungsmöglichkeiten (Zahnrad-knopf) und welches Symbol welche Komponente bedeutet}
 
 Der Simulator unterstützt eine Reihe von Ein- und Ausgabekomponenten, die im
 Folgenden erläutert werden. Eine Eingabekomponente nimmt dabei Eingaben des
@@ -357,7 +357,7 @@ Eingaben konstant, das heißt ein neues Tastensignal überschreibt die alte
 Kodierung im Speicher. Erneutes Klicken auf das Rechteck beendet die Eingabe.
 
 Eine Tastenkodierung ist 4 Byte lang. Eine Übersicht über die unterstützten
-Tasten und die zughörige Kodierung, die in den Speicher geschrieben wird, bietet
+Tasten und die zugehörige Kodierung, die in den Speicher geschrieben wird, bietet
 Tabelle \ref{tab:keys}.
 
 \begin{figure}
@@ -387,7 +387,7 @@ Tastatureingabe geschrieben wird.
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=0.2\textwidth]{Images/Joystick}
-	\caption{Eingabe mit Pfeiltasten}
+	\caption{Eingabe über Tastatur}
 	\label{Joystick}
 \end{figure}
 
@@ -395,9 +395,9 @@ Tastatureingabe geschrieben wird.
 \subsubsection{Eingabe -- Mausklick}
 %\todo[inline]{welche werte werden geschrieben, Reihenfolge?}
 Die Mausklick-Eingabekomponente liest Mausklicks des Benutzers über einen
-Klick-Bereich ein und schreibt die x- und y-Koodinate des Klicks relativ zum
+Klick-Bereich ein und schreibt die x- und y-Koordinate des Klicks relativ zum
 Klick-Bereich in den Speicher. Der Klick-Bereich deckt ein Koordinatensystem von
-$0$ bis $255$ in beiden Dimensionen ab, unabhängig von der abosluten Größe des
+$0$ bis $255$ in beiden Dimensionen ab, unabhängig von der absoluten Größe des
 Bereichs. Der Koordinatenursprung liegt in der linken oberen Ecke des
 Klick-Bereichs. Die Koordinate eines Klicks ergibt sich relativ zur Länge des
 Rechtecks in der jeweiligen Dimension. Ist das Rechteck 100 Pixel breit und wird
@@ -420,7 +420,7 @@ y-Koordinate steht.
 
 Die Lichtbandanzeige dient hauptsächlich zur Anzeige verschiedener Arten von
 Fortschrittsbalken. Sie besteht aus mehreren einzelnen Leuchtkomponenten, der
-Anzahl im Einstellungsmenu der Anzeige definiert werden kann. Jede
+Anzahl im Einstellungsmenü der Anzeige definiert werden kann. Jede
 Leuchtkomponente kann durch ein Bit im Speicher an der richtigen Adresse
 angesteuert werden. Eine \texttt{1} bedeutet dabei, dass das Segment leuchtet;
 also farbig dargestellt wird. Bei einer \texttt{0} wird die Fläche in Grau
@@ -523,21 +523,21 @@ zum ersten Null-Byte im Speicher steht. Falls der Nutzer etwas eingibt und
 Return drückt, wird der eingegebene Text im Speicher an den vorhandenen Text
 angehängt. Alle Änderungen im relevanten Speicherbereich werden auf den
 vorhanden Text der Konsole angewandt. Im Pipe-Mode der Konsole wird neuer Text
-immer an die gleiche Speicheraddresse geschrieben, jedoch in der Konsolenansicht
+immer an die gleiche Speicheradresse geschrieben, jedoch in der Konsolenansicht
 an den alten Text angehängt. Dabei wird der komplette vorherige Text der
 Konsole, der im Speicher war, aus diesem gelöscht. Es wird immer dann neuer Text
 in die Konsole geladen, wenn ein simulierter Interrupt ausgelöst wurde: Dies ist
-der Fall, wenn an einer festgelegten Addresse das niedrigste Bit auf 1 gesetzt
+der Fall, wenn an einer festgelegten Adresse das niedrigste Bit auf 1 gesetzt
 wurde. Die Konsole lädt dann den neuen Text und setzt dieses Bit wieder auf 0.
 In diesem Modus kann der Text der Konsole nur gelöscht werden, indem über das
 per Rechtsklick verfügbare Kontextmenü \texttt{Clear} aufgerufen wird. Über
 dieses Kontextmenü kann auch der Modus der Konsole gewechselt werden. In den
-Einstellungen der Konsole sind zusätzlich noch die Startaddresse des
-Speicherbereichs der Konsole sowie die Addresse des simulierten Interrupts
+Einstellungen der Konsole sind zusätzlich noch die Startadresse des
+Speicherbereichs der Konsole sowie die Adresse des simulierten Interrupts
 einstellbar.
 \begin{warningblock}
 Bei einem Clear Aufruf über das Kontextmenü wird auch der Speicherbereich
 zurückgesetzt, in dem Text der Konsole steht.
 \end{warningblock}
 
-\subsection{Sonstige Features}
+%\subsection{Sonstige Features}
