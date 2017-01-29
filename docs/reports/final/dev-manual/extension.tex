@@ -564,7 +564,7 @@ Module beachtet werden, siehe \autoref{gui-kommunikation}.
 Sollen neue Themes hinzugefügt werden, kann man dafür einfach das zum Auslieferungszeitpunkt
 bereits bestehende Theme abändern. Dazu kopiert man zuerst den Ordner \texttt{default.theme}
 einmal zusätzlich in den Ordner \texttt{.erasim/themes} im Home-Verzeichnis. Wir haben uns entschieden, zur Erstellung von Themes SASS-Dateien zu verwenden. In diesen Dateien ändert man dann
-alles, was anders aussehen soll. Dies ist recht intuitiv. Auch der Name des Ordners sollte angepasst werden, wichtig ist, dass\texttt{.theme} am Ende stahen bleibt, also zum Beispiel \texttt{my\_theme.theme}. Im Anschluss muss die Datei in eine JSON-Datei umgewandelt werden, damit der Simulator sie verwenden kann. Hierfür gibt es ein Python-Skript im Ordner \texttt{era-gp-sim/scripts}.
+alles, was anders aussehen soll. Dies ist recht intuitiv. Auch der Name des Ordners sollte angepasst werden, wichtig ist, dass\texttt{.theme} am Ende stehen bleibt, also zum Beispiel \texttt{my\_theme.theme}. Im Anschluss muss die Datei in eine JSON-Datei umgewandelt werden, damit der Simulator sie verwenden kann. Hierfür gibt es ein Python-Skript im Ordner \texttt{era-gp-sim/scripts}.
 Man führt also im Ordner \texttt{era-gp-sim} folgenden Befehl aus:
 \begin{lstlisting}
 python3 scripts/theme2json.py ~/.erasim/themes/my_theme.theme/theme.sass
