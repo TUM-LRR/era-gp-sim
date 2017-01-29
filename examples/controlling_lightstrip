@@ -1,0 +1,52 @@
+ 
+.section data
+.resb 4 							; keyboard input at address 0x00
+.resb 1 							; lightstrip output at address 0x04
+.equ min, 1 				; right border
+.equ max, 128 			; left border
+.equ in_left, 18 			; definition for input type 'left'
+.equ in_right, 20		; definition for input type 'right'
+.equ input_adr, 4
+
+
+
+.section text
+; initialize registers
+addi x11, x0, 1 				; register for controlling the lightstrip
+addi x2, x0, min                    
+addi x3, x0, max                    
+addi x5, x0, in_left                
+addi x6, x0, in_right            
+addi x10, x0, 0       		; reset register for comparing
+
+; infinite loop for detecting input
+loop:
+; move x11 to ligthstrip address in memory
+sb x11, x0, input_adr
+; get input of keyboard into register x10
+lb x10, x0, 0
+; reset input
+sb x0, x0, 0 
+
+; check if user pressed 'left' -> if not, skip
+bne x5, x10, 4 
+  jal left
+; check if user pressed 'right' -> if not, skip
+bne x6, x10, 4 
+  jal right
+; if no correct input was given jump back to loop
+jal loop 
+
+; move light one step right
+right:
+slli x11, x11, 1
+bgeu x3, x11, 4 ;skip the next statement if everything is fine
+  addi x11, x0, min ; when ligth moves behind border, set it to the other end
+jal loop
+
+; move light one step left
+left:
+srli x11, x11, 1
+bgeu x11, x2, 4 ;skip the next statement if everything is fine
+  addi x11, x0, max ; when ligth moves behind border, set it to the other end
+jal loop
