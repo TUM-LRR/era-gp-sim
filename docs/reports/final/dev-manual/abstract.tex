@@ -261,3 +261,27 @@ Die Tests können auch lokal ausgeführt werden. Dazu wechselt man mit \texttt{c
 Verzeichnis und nutzt das von CMake mitgelieferte Programm \texttt{ctest} um die Tests zu starten.
 Um die Testgeschwindigkeit zu erhöhen empfiehlt es sich, mit der \texttt{-j} Option die Anzahl
 der Jobs zu erhöhen.
+
+\subsection{Projektstruktur}
+
+In diesem Kapitel wird die Funktion jedes Ordners beschrieben.
+
+\begin{itemize}
+	\item \textbf{\texttt{docs/}} enthält die Dokumentation von \erasim, also
+	die Berichte und die Konfiguration von Doxygen.
+	\item \textbf{\texttt{examples/}} enthält Beispielprogramme für RISC-V.
+	\item \textbf{\texttt{include/}} enthält alle C++ Header Dateien, gruppiert
+	nach ihrem Modul. Wir haben uns um die strikte Trennung zwischen Header- und
+	Source Dateien bemüht.
+	\item \textbf{\texttt{isa/}} enthält die Architekturdefinitionen in YAML und
+	JSON Konfigurationsdateien.
+	\item \textbf{\texttt{scripts/}} enthält für die Entwicklung nützliche
+	Skripte, um z.B. neue Klassen zu erstellen (inklusive Header- und
+	Source Datei).
+	\item \textbf{\texttt{source/}} enthält C++ Source Dateien, ebenfalls
+	gruppiert nach ihren Modulen. Auch hier sei auf die strikte Trennung
+	zwischen Header- und Source Dateien verwiesen.
+	\item \textbf{\texttt{tests/}} enthält die Unit Tests jeder Module.
+	\item \textbf{\texttt{third-party/}} enthält genutzte Bibliotheken. Konkret
+	wird Google Tests dadurch eingebunden und ein JSON Parser bereitgestellt.
+\end{itemize}
