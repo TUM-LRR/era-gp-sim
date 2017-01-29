@@ -1,8 +1,7 @@
 \subsection{Architektur}
 
 \todo[inline]{
-	* Architecture Description Language \\
-	* Teilung common/riscv \\
+	* Architecture Description Language
 }
 
 Die Architektur (kurz: \textit{Arch}) kümmert sich um die Ausführung der
@@ -11,11 +10,12 @@ Architektur-unabhängigen Simulator zu entwickeln. So stellt sie Klassen zur
 Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt
 werden kann. Eine Architektur wird in \texttt{YAML} Konfigurationsdateien
 beschrieben, und anschließend in das Programm geladen. \\
-Da wir uns gegen die Ausführung von Maschinencode entschieden haben, bietet
-die Architektur eine abstraktere Darstellung von Assembler Programmen in Form
-eines Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
-Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
-Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
+Da wir uns gegen das Disassemblieren von Maschinencode zur Ausführung eines
+Programms entschieden haben, bietet die Architektur eine abstraktere Darstellung
+von Assembler Programmen in Form eines Syntax Baums. Des Weiteren ist die
+Architektur für die Validierung einer Instruktion zuständig, und stellt bei
+Fehlern entsprechende Nachrichten zur Verfügung, die dem Nutzer helfen sollen,
+das Problem zu beheben.
 
 Eine Übersicht über die Schnittstellen des Architekturmoduls bietet
 \autoref{fig:arch-overview} (Die verwendeten Klassennahmen stimmen nicht mit denen
@@ -345,8 +345,8 @@ Oberklasse \texttt{riscv::AbstractIntegerInstructionNode}, die all jene
 Instruktionen abdeckt. In dieser Oberklasse wird die Validierung der
 Instruktionen vollständig behandelt und der Aufruf von \texttt{getValue()} so
 weit abstrahiert, dass die konkreten Anwendung der Operation effektiv in einen
-einzeiligen Lamda Ausdruck reduziert werden kann. Diese findet sich in der Datei
-\texttt{integer-instructions.hpp}.
+einzeiligen Lamda Ausdruck reduziert werden kann. Die Implementierung befindet
+sich in der Datei \texttt{integer-instructions.hpp}.
 
 Ein weiteres Konzept der RISC-V Instruktionen basiert auf der Unterstützung
 unterschiedlicher Wortgrößen. Derzeit bietet RISC-V ausgiebige Unterstützung für
