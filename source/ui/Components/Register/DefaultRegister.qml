@@ -28,6 +28,7 @@ TextField {
   property bool singleStep: false
   property bool isHighlighted: false
 
+  font.family: Theme.register.content.fontFamily
   font.pixelSize: Theme.register.content.fontSize
   horizontalAlignment: TextInput.AlignRight
   text: getRegisterContent()

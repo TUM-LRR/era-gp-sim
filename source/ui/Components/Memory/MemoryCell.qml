@@ -45,6 +45,7 @@ Item {
       id: cell
       horizontalAlignment: Qt.AlignHCenter
       anchors.fill: parent
+      font.family: Theme.memory.cell.fontFamily
 
       enabled: (styleData.row % numberOfBytes) === 0
       visible: enabled

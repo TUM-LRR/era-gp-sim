@@ -122,6 +122,10 @@ ScrollView {
           //tabChangesFocus: false //not working, qtbug, workaround is below
           textFormat: TextEdit.PlainText
           wrapMode: TextEdit.NoWrap
+
+          font.family: Theme.editor.fontFamily
+          font.pixelSize: Theme.editor.fontSize
+
           Component.onCompleted: {
             cursorScroll(textArea.cursorRectangle);
 

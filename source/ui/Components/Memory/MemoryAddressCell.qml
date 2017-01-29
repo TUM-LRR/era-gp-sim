@@ -30,6 +30,7 @@ Component {
     Label {
       anchors.centerIn: parent
       color: Theme.memory.address.color
+      font.family: Theme.memory.address.fontFamily
       font.pixelSize: Theme.memory.address.fontSize
       horizontalAlignment: Text.AlignHCenter
       text: styleData.value

@@ -123,6 +123,11 @@
         <file>InnerSplitviewsEditor.qml</file>
         <file>Js/TextUtility.js</file>
         <file>Js/ThemeUtility.js</file>
+        <file>Fonts/FontLoaderComponent.qml</file>
+        <file>Fonts/Hack-Regular.ttf</file>
+        <file>Fonts/Hack-Bold.ttf</file>
+        <file>Fonts/Hack-Italic.ttf</file>
+        <file>Fonts/Hack-BoldItalic.ttf</file>
         <file>main.qml</file>
         <file>Splitview.qml</file>
         <file>SplitviewItem.qml</file>
