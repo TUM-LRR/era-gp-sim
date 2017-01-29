@@ -111,7 +111,7 @@ void Options::handleErrors(const pixelDisplayErrorFunction &errFun) {
   std::stringstream stream{};
   for (size_t i = 0; i < maxError; ++i) {
     if (errorVector[i]) {
-      resolved &= errorVector[i];
+      resolved &= !errorVector[i];
       errorVector[i] = false;
       stream << "PixelDisplayError " << i << " occured:" << errorMessages[i]
              << "\n";
