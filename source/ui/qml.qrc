@@ -45,30 +45,30 @@
         <file>Components/Toolbar/Icons/Clear.svg</file>
         <file>Components/Toolbar/Icons/Parse.svg</file>
         <file>Components/Toolbar/Icons/RunToBreakpoint.svg</file>
-        <file>Components/Output/Output.qml</file>
-        <file>Components/Output/ColorChooser.qml</file>
-        <file>Components/Output/SevenSegment/SevenSegment.qml</file>
-        <file>Components/Output/SevenSegment/SevenSegmentEdge.qml</file>
-        <file>Components/Output/SevenSegment/SevenSegmentDigit.qml</file>
-        <file>Components/Output/SevenSegment/SevenSegmentSettingsWindow.qml</file>
-        <file>Components/Output/Lightstrip/LightStrip.qml</file>
-        <file>Components/Output/Lightstrip/LightstripSettingsWindow.qml</file>
-        <file>Components/Output/Console/Console.qml</file>
-        <file>Components/Output/Console/ConsoleComponent.qml</file>
-        <file>Components/Output/Console/ContextMenu.qml</file>
-        <file>Components/Output/Console/ConsoleSettingsWindow.qml</file>
-        <file>Components/Output/Buttons/Lightstrip Icon Selected.png</file>
-        <file>Components/Output/Buttons/Lightstrip Icon Selected@2x.png</file>
-        <file>Components/Output/Buttons/Lightstrip Icon.png</file>
-        <file>Components/Output/Buttons/Lightstrip Icon@2x.png</file>
-        <file>Components/Output/Buttons/Text Console Icon Selected.png</file>
-        <file>Components/Output/Buttons/Text Console Icon Selected@2x.png</file>
-        <file>Components/Output/Buttons/Text Console Icon.png</file>
-        <file>Components/Output/Buttons/Text Console Icon@2x.png</file>
-        <file>Components/Output/Buttons/Sevensegment Icon Selected.png</file>
-        <file>Components/Output/Buttons/Sevensegment Icon Selected@2x.png</file>
-        <file>Components/Output/Buttons/Sevensegment Icon.png</file>
-        <file>Components/Output/Buttons/Sevensegment Icon@2x.png</file>
+        <file>Components/InputOutput/InputOutput.qml</file>
+        <file>Components/InputOutput/ColorChooser.qml</file>
+        <file>Components/InputOutput/SevenSegment/SevenSegment.qml</file>
+        <file>Components/InputOutput/SevenSegment/SevenSegmentEdge.qml</file>
+        <file>Components/InputOutput/SevenSegment/SevenSegmentDigit.qml</file>
+        <file>Components/InputOutput/SevenSegment/SevenSegmentSettingsWindow.qml</file>
+        <file>Components/InputOutput/Lightstrip/LightStrip.qml</file>
+        <file>Components/InputOutput/Lightstrip/LightstripSettingsWindow.qml</file>
+        <file>Components/InputOutput/Console/Console.qml</file>
+        <file>Components/InputOutput/Console/ConsoleComponent.qml</file>
+        <file>Components/InputOutput/Console/ContextMenu.qml</file>
+        <file>Components/InputOutput/Console/ConsoleSettingsWindow.qml</file>
+        <file>Components/InputOutput/Buttons/Lightstrip Icon Selected.png</file>
+        <file>Components/InputOutput/Buttons/Lightstrip Icon Selected@2x.png</file>
+        <file>Components/InputOutput/Buttons/Lightstrip Icon.png</file>
+        <file>Components/InputOutput/Buttons/Lightstrip Icon@2x.png</file>
+        <file>Components/InputOutput/Buttons/Text Console Icon Selected.png</file>
+        <file>Components/InputOutput/Buttons/Text Console Icon Selected@2x.png</file>
+        <file>Components/InputOutput/Buttons/Text Console Icon.png</file>
+        <file>Components/InputOutput/Buttons/Text Console Icon@2x.png</file>
+        <file>Components/InputOutput/Buttons/Sevensegment Icon Selected.png</file>
+        <file>Components/InputOutput/Buttons/Sevensegment Icon Selected@2x.png</file>
+        <file>Components/InputOutput/Buttons/Sevensegment Icon.png</file>
+        <file>Components/InputOutput/Buttons/Sevensegment Icon@2x.png</file>
         <file>Components/Register/RegisterComponent.qml</file>
         <file>Components/Register/RegisterLabel.qml</file>
         <file>Components/Register/Register.qml</file>
@@ -84,20 +84,19 @@
         <file>Components/ProjectCreation/Sections/ProjectArchitectureVersion.qml</file>
         <file>Components/ProjectCreation/Sections/ProjectCreationButton.qml</file>
         <file>Components/ProjectCreation/Sections/ProjectMemorySize.qml</file>
-        <file>Components/Input/InputKeys/KeyInput.qml</file>
-        <file>Components/Input/InputMouse/ClickInput.qml</file>
-        <file>Components/Input/Input.qml</file>
-        <file>Components/Input/InputKeys/KeyInputSettings.qml</file>
-        <file>Components/Input/InputMouse/ClickInputSettings.qml</file>
+        <file>Components/InputOutput/InputKeys/KeyInput.qml</file>
+        <file>Components/InputOutput/InputMouse/ClickInput.qml</file>
+        <file>Components/InputOutput/InputKeys/KeyInputSettings.qml</file>
+        <file>Components/InputOutput/InputMouse/ClickInputSettings.qml</file>
         <file>Components/help/HelpWindow.qml</file>
-        <file>Components/Input/Buttons/Key Input Icon Selected.png</file>
-        <file>Components/Input/Buttons/Key Input Icon Selected@2x.png</file>
-        <file>Components/Input/Buttons/Key Input Icon.png</file>
-        <file>Components/Input/Buttons/Key Input Icon@2x.png</file>
-        <file>Components/Input/Buttons/Mouse Input Icon Selected.png</file>
-        <file>Components/Input/Buttons/Mouse Input Icon Selected@2x.png</file>
-        <file>Components/Input/Buttons/Mouse Input Icon.png</file>
-        <file>Components/Input/Buttons/Mouse Input Icon@2x.png</file>
+        <file>Components/InputOutput/Buttons/Key Input Icon Selected.png</file>
+        <file>Components/InputOutput/Buttons/Key Input Icon Selected@2x.png</file>
+        <file>Components/InputOutput/Buttons/Key Input Icon.png</file>
+        <file>Components/InputOutput/Buttons/Key Input Icon@2x.png</file>
+        <file>Components/InputOutput/Buttons/Mouse Input Icon Selected.png</file>
+        <file>Components/InputOutput/Buttons/Mouse Input Icon Selected@2x.png</file>
+        <file>Components/InputOutput/Buttons/Mouse Input Icon.png</file>
+        <file>Components/InputOutput/Buttons/Mouse Input Icon@2x.png</file>
         <file>Components/Settings/AskAboutUnsavedChangesDialog.qml</file>
         <file>Components/Settings/CheckboxSetting.qml</file>
         <file>Components/Settings/default-settings.json</file>
