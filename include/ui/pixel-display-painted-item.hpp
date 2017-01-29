@@ -61,7 +61,15 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
   Q_PROPERTY(size_t freeBits READ getFreeBits WRITE setFreeBits)
 
  signals:
-  void pixelDisplayError(const QString &errMsg) const;
+  /**
+   * Signals that an error occured in the pixel display.
+   * \param errorMessage The error message.
+   */
+  void pixelDisplayError(const QString &errorMessage) const;
+
+  /**
+   * Signals that all errors were resolved.
+   */
   void pixelDisplayErrorResolved() const;
 
  public:

@@ -18,6 +18,15 @@ Item {
         outputComponentPointer : outputComponent
     }
 
+    PixelDisplayError {
+      anchors.margins: 10
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+
+      width: 40
+      height: 40
+    }
+
     // Connect the output item to signals that the model might send.
     Connections {
         target: outputComponent
