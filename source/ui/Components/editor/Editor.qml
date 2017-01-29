@@ -38,7 +38,7 @@ kind of line numbers are called "display line numbers".
 The Parser module and Core module however do not know about that kind of line numbering.
 They use the normal line numbering that assign a sequential line number even to macro
 blank lines. These kind of line numbers are called "raw line numbers".
-QML interface components index their line numbers starting from 0.
+Moreover, some line numbering begins with 0 instead of 1.
 
 The following naming conventions are (mostly) used in this file:
 - Display Line Numbers: Values from 1 to m with macro blank lines factored out (e.g. blank
@@ -47,6 +47,7 @@ to be display or raw is usually type display (i.e. display is default).
 - Raw Line Numbers: Values from 1 to n with macro blank lines treated as normal lines
 (therefore n >= m).
 - Line Indexes: Values from 0 to k. Used by QML components and often used for positioning.
+Also values delivered by core use this format (e.g. a macro's startLine).
 
 The functions `convertRawLineNumberToDisplayLineNumber` and
 `convertDisplayLineNumberToRawLineNumber` can be used to translate between both types of line
