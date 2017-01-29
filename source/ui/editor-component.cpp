@@ -119,9 +119,9 @@ void EditorComponent::setMacroList(
     macroInformationMap["code"] =
         QString::fromStdString(macroInformation.macroCode());
     macroInformationMap["startLine"] =
-        QVariant::fromValue(macroInformation.position().startLine() - 1);
+        QVariant::fromValue(macroInformation.position().startLine());
     macroInformationMap["endLine"] =
-        QVariant::fromValue(macroInformation.position().endLine() - 1);
+        QVariant::fromValue(macroInformation.position().endLine());
     int lineCount =
         static_cast<int>(std::count(macroInformation.macroCode().begin(),
                                     macroInformation.macroCode().end(),

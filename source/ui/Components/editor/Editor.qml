@@ -24,6 +24,34 @@ import Theme 1.0
 import "../Common"
 import "../../Js/TextUtility.js" as TextUtility
 
+// Notes on line numbering: The editor displays macro expansions inline which
+// means that code below a macroBar expansion that was expanded (i.e. is
+// visible) has to be offset in order to accomodate the macro expansion's code.
+// To do this, blank lines are inserted. These blank lines however are not
+// considered actual lines for the user. So as far as line numbering is
+// concerened, these blank lines have the same line number as the line above
+// them. These kind of line numbers are called "display line numbers". The
+// Parser module and Core module however do not know about that kind of line
+// numbering. They use the normal line numbering that assign a sequential line
+// number even to macro blank lines. These kind of line numbers are called "raw
+// line numbers". QML interface components index their line numbers starting
+// from 0 which are called "line indexes".
+//
+// The following naming conventions are (mostly) used in this file:
+// - Display Line Numbers: Values from 1 to m with macro
+// blank lines factored out
+// (e.g. blank lines have same line number as line above). A variable refering
+// to lines not specified to be display or raw is usually type display (i.e.
+// display is default).
+// - Raw Line Numbers: Values from 1 to n with macro blank
+// lines treated as normal lines (therefore n >= m).
+// - Line Indexes: Values from 0 to k. Used by QML components and often used for
+// positioning.
+//
+// The functions `convertRawLineNumberToDisplayLineNumber` and
+// `convertDisplayLineNumberToRawLineNumber` can be used to translate between
+// both types of line numbers.
+
 ScrollView {
   id: scrollView
   verticalScrollBarPolicy: Qt.ScrollBarAsNeeded

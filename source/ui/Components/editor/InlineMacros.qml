@@ -90,7 +90,7 @@ Item {
         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
             var macro = macros[macroIndex];
             // Find the line for the macro expansion.
-            var linePosition = TextUtility.getPositionOfOccurence(textRegion.text, "\n", Number(macro["startLine"])+1);
+            var linePosition = TextUtility.getPositionOfOccurence(textRegion.text, "\n", Number(macro["startLine"]));
             // Create display objects (i.e. sub-editor and triangle)
             var macroDisplayObject = {};
             // Add sub-editor to display object
@@ -256,10 +256,10 @@ Item {
         // to a blank line.
         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
             var clearedLineNumber = lineNumber-blankLineCount;
-            if (clearedLineNumber > Number(macros[macroIndex]["startLine"])) {
+            if (clearedLineNumber >= Number(macros[macroIndex]["startLine"])) {
                 if (macros[macroIndex]["collapsed"] === false) {
                     // Given lineNumber lies within an macro expansion's blank lines.
-                    if (clearedLineNumber <= Number(macros[macroIndex]["startLine"])+Number(macros[macroIndex]["lineCount"])) {
+                    if (clearedLineNumber < Number(macros[macroIndex]["startLine"])+Number(macros[macroIndex]["lineCount"])) {
                         return true;
                     }
                     // Save number of blank lines to filter them out when reading macro-startLine information.
@@ -280,16 +280,14 @@ Item {
       // Iterate over all macros and note down every macro blank line.
       for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
         var macro = macros[macroIndex];
-        // Note: startLine starts counting at 0.
         var macroRawLineNumber = Number(macro["startLine"])+blankLineCount;
         // Check if the given line number lies below a macro expansion.
-        if (macro["collapsed"] === false && rawLineNumber > (macroRawLineNumber+1)) {
+        if (macro["collapsed"] === false && rawLineNumber > macroRawLineNumber) {
           blankLineCount += Number(macro["lineCount"]);
           // If the given line number lies within a macro expansion, return position
           // of macro expansion.
-          if (rawLineNumber <= (macroRawLineNumber+1+Number(macro["lineCount"]))) {
-            // Note: startLine starts counting at 0.
-            return Number(macro["startLine"])+1;
+          if (rawLineNumber <= (macroRawLineNumber+Number(macro["lineCount"]))) {
+            return Number(macro["startLine"]);
           }
         }
       }
@@ -301,7 +299,7 @@ Item {
         var rawLineNumber = displayLineNumber;
         for (var macroIndex = 0; macroIndex < macros.length; ++macroIndex) {
             var macro = macros[macroIndex];
-            if (Number(macro["startLine"]) < displayLineNumber && macro["collapsed"] === false) {
+            if (Number(macro["startLine"]) <= displayLineNumber && macro["collapsed"] === false) {
                 rawLineNumber += Number(macro["lineCount"]);
             }
         }
@@ -317,7 +315,7 @@ Item {
         for (var i = 0; i < macroIndex; ++i) {
             insertedNewLines += (!macros[i]["collapsed"]) ? Number(macros[i]["lineCount"]) : 0;
         }
-        return TextUtility.getPositionOfOccurence(textRegion.text, "\n", Number(macro["startLine"])+insertedNewLines+1);
+        return TextUtility.getPositionOfOccurence(textRegion.text, "\n", Number(macro["startLine"])+insertedNewLines);
     }
 
 
