@@ -26,6 +26,8 @@ Item {
 
       width: Theme.pixelDisplay.error.width
       height: Theme.pixelDisplay.error.height
+      maxTooltipWidth: parent.width/2
+      maxTooltipHeight: parent.width/2
     }
 
     // Connect the output item to signals that the model might send.
