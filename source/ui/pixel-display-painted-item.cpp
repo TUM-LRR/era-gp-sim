@@ -32,10 +32,8 @@ PixelDisplayPaintedItem::PixelDisplayPaintedItem(QQuickItem *parent)
 , _pixelDisplayErrorFunction{
       [this](bool resolved, const std::string &errMsg) -> void {
         if (resolved) {
-          std::cout << "resolved" <<std::endl;
           emit pixelDisplayErrorResolved();
         } else {
-          std::cout << "occured" <<std::endl;
           emit pixelDisplayError(QString::fromStdString(errMsg));
         }
       }} {
@@ -56,7 +54,6 @@ void PixelDisplayPaintedItem::memoryChanged(std::size_t address,
         (*_outputComponentPointer)->getMemoryAccess().getMemorySize().get();
   }
   _options.updateMemory(_outputComponentPointer, _image, address, amount);
-  std::cout << "memory changed" << std::endl;
   doUpdate();
 }
 
@@ -257,7 +254,6 @@ OutputComponent *PixelDisplayPaintedItem::getOutputComponent() {
 }
 
 void PixelDisplayPaintedItem::doUpdate() {
-  std::cout << "do update" << std::endl;
   _options.handleErrors(_pixelDisplayErrorFunction);
   update();
 }
