@@ -416,6 +416,104 @@ Für RISC-V haben wir im riscv-namespace eine NodeFactoryCollection mit den
 RISC-V Implementierungen der benötigten Fabriken definiert (siehe
 \texttt{arch/riscv/factory-types.hpp}).
 
+\subsection{Implementierung des Parser-Teils}
+
+\subsubsection{Implementierung eines neuen Parsers}
+
+Grundsätzlich sind zum Bereitstellen eines neuen Parsers nur zwei Schritte
+nötig: Das Implementieren einer neuen Parser-Klasse, die von der Oberklasse
+\texttt{Parser} erbt, und das Eintragen dieser Klasse in die
+\texttt{Parser\-Factory}, genauer gesagt in die Variable
+\texttt{ParserFactory::\allowbreak{}mapping} in
+\texttt{source/\allowbreak{}parser/\allowbreak{}factory/\allowbreak{}parser-factory.cpp}.
+
+Um sich bei der Entwicklung eines neuen Parsers Zeit zu sparen, empfehlen wir
+auf die bereits existierenden Klassen des Independent-Submoduls zurückzugreifen
+bzw. diese gegebenenfalls zu erweitern. Entscheidet man sich für dieses
+Vorgehen, muss die neue Klasse folgendes Bereitstellen:
+
+\begin{itemize}
+\item Einen \texttt{Memory\-Allocator}, der die verfügbaren
+Speichersektionen definiert.
+
+Das folgende Beispiel definiert eine \texttt{data}-Sektion gefolgt von einer
+\texttt{text}-Sektion. Beide Sektionen sind mit 4 Bytes im Speicher ausgerichtet,
+die möglichen Daten in diesen Sektionen sind unausgerichtet.
+
+\begin{lstlisting}{style=c++}
+MemoryAllocator allocator({MemorySectionDefinition("data", 4u, 1),
+                              MemorySectionDefinition("text", 4u, 1)});
+\end{lstlisting}
+
+\item Ein Funktionsobjekt vom Typ
+\texttt{Syntax\-Tree\-Generator::\allowbreak{}Argument\-Node\-Generator}, das
+Argumente in Textform zu Syntaxknoten der Architektur umwandelt. Hier muss
+entschieden werden, ob ein Argument zum Beispiel zu einem Register-Knoten oder
+einem Immediate-Knoten werden soll.
+
+Im folgenden ein vereinfachtes Beispiel, bei dem alle Argumente nur
+Registernamen sind:
+
+\begin{lstlisting}{style=c++}
+const SyntaxTreeGenerator::ArgumentNodeGenerator
+    MeinParser::argumentGeneratorFunction = [](
+        const PositionedString& operandPositional,
+        const SymbolReplacer& replacer,
+        const NodeFactoryCollection& nodeFactories,
+        CompileErrorList& errors) -> std::shared_ptr<AbstractSyntaxTreeNode> {
+  // Der replacer dient dem Ersetzen von Marken und Konstanten
+  PositionedString operandReplaced =
+      replacer.replace(operandPositional, errors);
+  const auto& operand = operandReplaced.string();
+  return nodeFactories.createRegisterNode(operand);
+};
+\end{lstlisting}
+
+\item Objekte vom Type \texttt{Architecture} und
+\texttt{Node\-Factory\-Collection}. Das Architekturobjekt sollte meistens beim
+Initialisieren des Parsers übergeben worden sein, in dem Fall kann mithilfe der
+Funtkion \texttt{Node\-Factory\-Collection\-Maker::\allowbreak{}Create\-For} das
+entsprechende andere Objekt erstellt werden.
+
+\item Eine Funktion, die ein Programm in die Intermediate-Darstellung einliest.
+
+\end{itemize}
+
+Ist all dies gegeben, kann die notwendige Funktion \texttt{parse} einfach
+implementiert werden:
+
+\begin{lstlisting}{style=c++}
+FinalRepresentation MeinParser::parse(const std::string& text) {
+  IntermediateRepresentator intermediate;
+  CompileErrorList errors;
+  MemoryAllocator allocator({MemorySectionDefinition("data", 4u, 1),
+                             MemorySectionDefinition("text", 4u, 1)});
+  TransformationParameters parameters(
+      _architecture,
+      allocator,
+      SyntaxTreeGenerator(_factoryCollection, argumentGeneratorFunction));
+
+  readText(text, errors, intermediate);
+  return intermediate.transform(parameters, errors, _memoryAccess);
+}
+\end{lstlisting}
+
+Für ein detaillierteres Beispiel, das auch die Verwendung des Compilers für
+arithmetische Ausdrücke umfasst, siehe die \texttt{RiscvParser}-Klasse.
+
+\subsubsection{Implementierung einer neuen Direktive}
+
+Um eine neue Parser-Direktive zu implementieren, muss eine neue Klasse erstellt
+werden, die von \texttt{Intermediate\-Directive} erbt. Um der Direktive eine
+Funktion zu geben, müssen nun die benötigten Funktionen, die beim Assemblieren
+verwendet werden (siehe \autoref{sec:dev_parser_assem_inter}), überschrieben
+werden.
+
+Damit eine Direktive verwendet wird, muss diese aber auch vom Parser unterstützt
+und initialisiert werden. Der RISCV-Parser benutzt dazu eine Factory
+(\texttt{RiscV\-Directive\-Factory}). Diese Vorgehensweise empfehlen wir auch
+für neue Parser, aber natürlich kann man dies auch anders implementieren.
+
 \subsection{Erweiterung der GUI}
 Soll eine neue Komponente zur GUI hinzugefügt werden, gibt es mehrere
 Entscheidungen zu treffen. Die Komponente kann etwas Bestehendes, wie die

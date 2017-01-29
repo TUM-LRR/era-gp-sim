@@ -170,6 +170,7 @@ dieser Operationen und stellt eine Methode bereit, um diese Operationen in eine
 \texttt{FinalRepresentation} umzuwandeln.
 
 \subparagraph{Assemblierung der Intermediate-Darstellung}
+\label{sec:dev_parser_assem_inter}
 Um die Operationen aus der Intermediate-Darstellung in ein Objekt der Klasse
 \texttt{FinalRepresentation} umzuwandeln, kann die Funktion
 \texttt{IntermediateRepresentator::\allowbreak{}transform} aufgerufen werden.
@@ -183,8 +184,9 @@ Diese Methode führt nacheinander folgende Schritte aus:
 	\texttt{allocateMemory} Funktion.
 	\item Einlesen aller Labels/Konstanten und deren Werte mit der
 	\texttt{enhanceSymbolTable} Funktion.
-	\item "`Ausführen"' aller Operationen, d.h. meistens Erzeugen eines
-	Syntaxknotens und Einfügen dieses Knotens in die \texttt{FinalRepresentation}
+	\item "`Ausführen"' aller Operationen mit der \texttt{execute}-Funktion,
+	d.h. meistens Erzeugen eines Syntaxknotens und Einfügen dieses Knotens in
+	die \texttt{FinalRepresentation}.
 \end{enumerate}
 
 \subparagraph{Makros}
