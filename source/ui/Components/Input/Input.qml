@@ -43,7 +43,7 @@ Rectangle {
 
     Tab {
       title: "Buttons/Key Input Icon"
-      KeyInput{
+      KeyInput {
         id: keyI
         anchors.fill: parent
       }
@@ -52,7 +52,7 @@ Rectangle {
 
     Tab {
       title: "Buttons/Mouse Input Icon"
-      ClickInput{
+      ClickInput {
         id: clickI
         anchors.fill: parent
       }

@@ -1,4 +1,5 @@
-/* C++ Assembler Interpreter
+/*
+*C++ Assembler Interpreter
 * Copyright (C) 2016 Chair of Computer Architecture
 * at Technical University of Munich
 *
@@ -13,7 +14,8 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see http://www.gnu.org/licenses/.*/
+* along with this program. If not, see http://www.gnu.org/licenses/.
+*/
 
 import QtQuick 2.6
 import QtQuick.Controls 1.4

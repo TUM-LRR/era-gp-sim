@@ -25,7 +25,7 @@ import "Components/editor"
 
 
 /*Rows*/
-SplitView{
+SplitView {
         property var usual2
 
         /*heigth of the first component*/
@@ -43,14 +43,14 @@ SplitView{
         }
 
         orientation: Qt.Vertical
-        Editor{
+        Editor {
             id: item1
             Layout.minimumHeight: 25
             height: parent.height/2
 
         }
 
-        SplitviewItem{
+        SplitviewItem {
             id: item2
             height: parent.height/2
             Layout.minimumHeight: 10

@@ -14,7 +14,7 @@
 * GNU General Public License for more details.
 *
 * You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with this program. If not, see <http:// www.gnu.org/licenses/>.
 */
 
 import QtQuick 2.6
@@ -22,24 +22,17 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 
 import Theme 1.0
-import ".."
 
-ProjectCreationSection {
-  anchors.topMargin: Theme.createProject.marginTop
-  signal change();
+Rectangle {
+  border.width: Theme.editor.lineHighlight.border.width
+  border.color: Theme.editor.lineHighlight.border.color
 
-  property alias text: projectNameField.text
+  color: Theme.editor.lineHighlight.background
 
-  TextField {
-    id: projectNameField
-    focus: true
-    anchors.fill: parent
-    width: Theme.createProject.width
-    validator: RegExpValidator { regExp: /^\w[\w ]*$/ }
-    placeholderText: "Give your project a name"
-    style: TextFieldStyle {
-      font.pixelSize: Theme.createProject.section.projectName.fontSize
-    }
-    onTextChanged: change()
-  }
+  y: textRegion.cursorRectangle.y + textRegion.topPadding
+
+  height: textRegion.cursorRectangle.height
+  width: Math.max(scrollView.width, textRegion.contentWidth)
+
+  visible: textRegion.activeFocus
 }

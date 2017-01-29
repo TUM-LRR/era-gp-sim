@@ -37,11 +37,11 @@ const std::string Memory::_dataMapStringIdentifier = "memory_map";
 Memory::Memory() : Memory(64, 8) {
 }
 
-Memory::Memory(std::size_t byteCount, std::size_t byteSize)
+Memory::Memory(size_t byteCount, size_t byteSize)
 : _byteCount{byteCount}
 , _byteSize{byteSize}
 , _data{byteCount * byteSize}
-, _callback{[](const std::size_t, const std::size_t) {}} {
+, _callback{[](size_t, size_t) {}} {
   assert::that(byteCount > 0);
   assert::that(byteSize > 0);
 }
@@ -52,30 +52,34 @@ Memory::Memory(const Json& json)
   deserializeJSON(json);
 }
 
-std::size_t Memory::getByteSize() const {
+Memory::size_t Memory::getByteSize() const {
   return _byteSize;
 }
 
-std::size_t Memory::getByteCount() const {
+Memory::size_t Memory::getByteCount() const {
   return _byteCount;
 }
 
-void Memory::setCallback(const CallbackFunction& callback) {
+void Memory::setCallback(const UpdateCallback& callback) {
   _callback = callback;
 }
 
-MemoryValue Memory::_get(std::size_t address, std::size_t amount) const {
+void Memory::setSizeCallback(const SizeCallback& callback) {
+  _sizeCallback = callback;
+}
+
+MemoryValue Memory::_get(size_t address, size_t amount) const {
   return _data.subSet(address * _byteSize, (address + amount) * _byteSize);
 }
 
-MemoryValue Memory::get(std::size_t address, std::size_t amount) const {
+MemoryValue Memory::get(size_t address, size_t amount) const {
   assert::that(address >= 0);
   assert::that(amount >= 0);
   assert::that(address + amount <= _byteCount);
   return _get(address, amount);
 }
 
-MemoryValue Memory::tryGet(std::size_t address, std::size_t amount) const {
+MemoryValue Memory::tryGet(size_t address, size_t amount) const {
   MemoryValue result{amount * _byteSize};
   amount = std::min(_byteCount - address, amount);
   if (amount > 0) {
@@ -85,9 +89,9 @@ MemoryValue Memory::tryGet(std::size_t address, std::size_t amount) const {
   return result;
 }
 
-void Memory::_put(std::size_t address,
+void Memory::_put(size_t address,
                   const MemoryValue& value,
-                  std::size_t amount,
+                  size_t amount,
                   bool ignoreProtection) {
   if (!ignoreProtection && isProtected(address, amount)) {
     // do not write anything
@@ -97,21 +101,21 @@ void Memory::_put(std::size_t address,
   _wasUpdated(address, amount);
 }
 
-void Memory::put(std::size_t address,
+void Memory::put(size_t address,
                  const MemoryValue& value,
                  bool ignoreProtection) {
   assert::that(address >= 0);
   assert::that(value.getSize() % _byteSize == 0);
-  const std::size_t amount{value.getSize() / _byteSize};
+  const size_t amount{value.getSize() / _byteSize};
   assert::that(amount >= 0);
   assert::that(address + amount <= _byteCount);
   _put(address, value, amount, ignoreProtection);
 }
 
-void Memory::tryPut(std::size_t address,
+void Memory::tryPut(size_t address,
                     const MemoryValue& value,
                     bool ignoreProtection) {
-  std::size_t amount{value.getSize() / _byteSize};
+  size_t amount{value.getSize() / _byteSize};
   if (!ignoreProtection && isProtected(address, amount)) {
     // do not write anything
     return;
@@ -122,28 +126,26 @@ void Memory::tryPut(std::size_t address,
   _wasUpdated(address, amount);
 }
 
-MemoryValue Memory::_set(std::size_t address,
-                         const MemoryValue& value,
-                         bool ignoreProtection) {
-  std::size_t amount{value.getSize() / _byteSize};
+MemoryValue
+Memory::_set(size_t address, const MemoryValue& value, bool ignoreProtection) {
+  size_t amount{value.getSize() / _byteSize};
   MemoryValue prev{_get(address, amount)};
   _put(address, value, amount, ignoreProtection);
   return prev;
 }
 
-MemoryValue Memory::set(std::size_t address,
-                        const MemoryValue& value,
-                        bool ignoreProtection) {
-  std::size_t amount{value.getSize() / _byteSize};
+MemoryValue
+Memory::set(size_t address, const MemoryValue& value, bool ignoreProtection) {
+  size_t amount{value.getSize() / _byteSize};
   MemoryValue prev{get(address, amount)};
   put(address, value, ignoreProtection);
   return prev;
 }
 
-MemoryValue Memory::trySet(std::size_t address,
+MemoryValue Memory::trySet(size_t address,
                            const MemoryValue& value,
                            bool ignoreProtection) {
-  std::size_t amount{value.getSize() / _byteSize};
+  size_t amount{value.getSize() / _byteSize};
   MemoryValue prev{tryGet(address, amount)};
   tryPut(address, value, ignoreProtection);
   return prev;
@@ -156,21 +158,20 @@ void Memory::_appendMemoryValue(std::stringstream& strm,
 }
 
 Memory::RawMapPair
-Memory::_serializeRaw(char separator, std::size_t lineLength) const {
+Memory::_serializeRaw(char separator, size_t lineLength) const {
   if (lineLength > _byteCount) {
     lineLength = _byteCount;
   }
   std::map<std::string, std::string> data{};
   // fill map with info about the memory
-  std::map<std::string, std::size_t> meta{
-      {_byteCountStringIdentifier, _byteCount},
-      {_byteSizeStringIdentifier, _byteSize},
-      {_lineLengthStringIdentifier, lineLength}};
-  const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
+  std::map<std::string, size_t> meta{{_byteCountStringIdentifier, _byteCount},
+                                     {_byteSizeStringIdentifier, _byteSize},
+                                     {_lineLengthStringIdentifier, lineLength}};
+  const size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   // empty MemoryValue to compare others to
   const MemoryValue empty{_byteSize * lineLength};
   // iterate over all lines in memory
-  for (std::size_t i = 0; i < lineCount; ++i) {
+  for (size_t i = 0; i < lineCount; ++i) {
     // if this line == 0x00 do not do anything at all
     if (tryGet(i * lineLength, lineLength) != empty) {
       // the key is _lineStringIdentifier and the cell address
@@ -179,7 +180,7 @@ Memory::_serializeRaw(char separator, std::size_t lineLength) const {
       name << (i * lineLength);
       // iterate over all the cells in a line to get the value
       std::stringstream value{};
-      for (std::size_t j = 0; j < lineLength; ++j) {
+      for (size_t j = 0; j < lineLength; ++j) {
         MemoryValue v{tryGet(i * lineLength + j)};
         _appendMemoryValue(value, v);
         value.put(separator);
@@ -192,7 +193,7 @@ Memory::_serializeRaw(char separator, std::size_t lineLength) const {
 
 Json& Memory::serializeJSON(Json& json,
                             char separator,
-                            std::size_t lineLength) const {
+                            size_t lineLength) const {
   auto data = _serializeRaw(separator, lineLength);
   json[_dataMapStringIdentifier] = data.second;
   for (auto i : data.first) {
@@ -204,13 +205,13 @@ Json& Memory::serializeJSON(Json& json,
 
 Json Memory::serializeJSON(Json&& json,
                            char separator,
-                           std::size_t lineLength) const {
+                           size_t lineLength) const {
   return serializeJSON(json, separator, lineLength);
 }
 
 MemoryValue Memory::_deserializeLine(const std::string& line,
-                                     std::size_t byteSize,
-                                     std::size_t lineLength,
+                                     size_t byteSize,
+                                     size_t lineLength,
                                      char separator) {
   static const std::unordered_map<char, std::uint8_t> reverseHexMap{
       {'0', 0},  {'1', 1},  {'2', 2},  {'3', 3},  {'4', 4},  {'5', 5},
@@ -219,8 +220,8 @@ MemoryValue Memory::_deserializeLine(const std::string& line,
       {'C', 12}, {'D', 13}, {'E', 14}, {'F', 15},
   };
   MemoryValue ret{byteSize * lineLength};
-  std::size_t byte = lineLength;
-  std::size_t bit = 0;
+  size_t byte = lineLength;
+  size_t bit = 0;
   // iterate reversely over line
   for (auto i = line.crbegin(); i < line.crend(); ++i) {
     if (*i == separator) {
@@ -244,7 +245,7 @@ MemoryValue Memory::_deserializeLine(const std::string& line,
       }
       std::uint8_t hex = h->second;
       // write all 4 bit of number into memoryvalue
-      for (std::size_t j = 0; j < 4; ++j) {
+      for (size_t j = 0; j < 4; ++j) {
         if (hex % 2 == 1) {
           if (bit >= byteSize) {
             throw DeserializationError(
@@ -252,8 +253,8 @@ MemoryValue Memory::_deserializeLine(const std::string& line,
           }
           ret.put(byte * byteSize + bit);
         }
-        ++bit;    // increment bit counter
-        hex >>= 1;// could make this faster using long switch case
+        ++bit;      // increment bit counter
+        hex >>= 1;  // could make this faster using long switch case
       }
     }
     // TODO::make actual useful assert
@@ -290,17 +291,23 @@ void Memory::deserializeJSON(const Json& json) {
                                _dataMapStringIdentifier);
   }
   // TODO::check types!
-  // check that sizes match
-  std::size_t byteCount = *byteCountIt;
-  if (_byteCount != byteCount) {
-    std::string expected = std::to_string(_byteCount);
-    std::size_t byteCount = *byteCountIt;
-    std::string recieved = std::to_string(byteCount);
-    throw DeserializationError(
-        "Could not deserialize Memory: ByteCount did not match: expected \"" +
-        expected + "\" to be equal to \"" + recieved + "\"");
+  // check whether the sizes match
+  size_t byteCount = *byteCountIt;
+  if (_byteCount < byteCount) {
+    // resize the memory if the snapshot is bigger.
+    // Memory size is not reduced for smaller snapshots, as ui components would
+    // have to adapt to a smaller size before the size is actually reduced.
+    // Otherwise there is a high chance of invalid calls to the memory.
+    _byteCount = byteCount;
+    _data = MemoryValue(byteCount * _byteSize);
+    _sizeCallback(_byteCount);
+  } else {
+    // If the snapshot has the same size or is smaller, clear the current memory
+    // to write the zeros in the serialized data.
+    clear();
   }
-  std::size_t byteSize = *byteSizeIt;
+
+  size_t byteSize = *byteSizeIt;
   if (_byteSize != byteSize) {
     std::string expected = std::to_string(_byteSize);
     std::string recieved = std::to_string(byteSize);
@@ -308,19 +315,16 @@ void Memory::deserializeJSON(const Json& json) {
         "Could not deserialize Memory: ByteSize did not match: expected \"" +
         expected + "\" to be equal to \"" + recieved + "\"");
   }
-  std::size_t lineLength = json[_lineLengthStringIdentifier].get<std::size_t>();
+  size_t lineLength = json[_lineLengthStringIdentifier].get<size_t>();
   if (lineLength <= 0) {
     throw DeserializationError("Could not deserialize Memory: lineLength == 0");
   }
 
-  // clear the current memory to write the zeros in the serialized data
-  clear();
-
-  const std::size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
+  const size_t lineCount = (_byteCount + lineLength - 1) / lineLength;
   const char separator = json[_separatorStringIdentifier].get<char>();
   auto data = *dataMapIt;
   // iterate over all lines
-  for (std::size_t i = 0; i < lineCount; ++i) {
+  for (size_t i = 0; i < lineCount; ++i) {
     // the key is _lineStringIdentifier and the cell address
     std::stringstream name{};
     name << _lineStringIdentifier;
@@ -359,11 +363,11 @@ void Memory::_wasUpdated() const {
   _wasUpdated(0, _byteCount);
 }
 
-void Memory::_wasUpdated(std::size_t address, std::size_t amount) const {
+void Memory::_wasUpdated(size_t address, size_t amount) const {
   _callback(address, amount);
 }
 
-bool Memory::isProtected(std::size_t address, std::size_t amount) const {
+bool Memory::isProtected(size_t address, size_t amount) const {
   // search for any pair overlapping with the area
   auto it = _protection.lower_bound(address);
   if (it != _protection.begin()) --it;
@@ -375,30 +379,30 @@ bool Memory::isProtected(std::size_t address, std::size_t amount) const {
   return false;
 }
 
-bool Memory::_overlaps(std::size_t protectionBegin,
-                       std::size_t protectionEnd,
-                       std::size_t address,
-                       std::size_t amount,
+bool Memory::_overlaps(size_t protectionBegin,
+                       size_t protectionEnd,
+                       size_t address,
+                       size_t amount,
                        bool equal) const {
   return protectionBegin < address + amount &&
          (equal ? (protectionEnd >= address) : (protectionEnd > address));
 }
 
-void Memory::makeProtected(std::size_t address, std::size_t amount) {
+void Memory::makeProtected(size_t address, size_t amount) {
   if (!isProtected(std::min(address - 1, address), amount + 1)) {
     // naively insert into map
     _protection.insert(std::make_pair(address, address + amount));
   } else {
     // find all conflicting pairs
-    std::vector<std::pair<std::size_t, std::size_t>> conflictList{};
+    std::vector<std::pair<size_t, size_t>> conflictList{};
     for (const auto& pair : _protection) {
       if (_overlaps(pair.first, pair.second, address, amount, true)) {
         conflictList.push_back(pair);
       }
     }
     // delete all others and gather extremes
-    std::size_t min = address;
-    std::size_t max = address + amount;
+    size_t min = address;
+    size_t max = address + amount;
     for (const auto& pair : conflictList) {
       min = (pair.first < min) ? pair.first : min;
       max = (pair.second > max) ? pair.second : max;
@@ -408,20 +412,20 @@ void Memory::makeProtected(std::size_t address, std::size_t amount) {
   }
 }
 
-void Memory::removeProtection(std::size_t address, std::size_t amount) {
+void Memory::removeProtection(size_t address, size_t amount) {
   // maybe I should use a Linked List instead
   if (!isProtected(std::min(address - 1, address), amount + 1)) {
   } else {
     // find all conflicting pairs
-    std::vector<std::pair<std::size_t, std::size_t>> conflictList{};
+    std::vector<std::pair<size_t, size_t>> conflictList{};
     for (const auto& pair : _protection) {
       if (_overlaps(pair.first, pair.second, address, amount, true)) {
         conflictList.push_back(pair);
       }
     }
     // delete all others and gather extremes
-    std::size_t min = address;
-    std::size_t max = address + amount;
+    size_t min = address;
+    size_t max = address + amount;
     for (const auto& pair : conflictList) {
       min = (pair.first < min) ? pair.first : min;
       max = (pair.second > max) ? pair.second : max;

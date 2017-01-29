@@ -31,6 +31,7 @@ import "Components/ProjectCreation"
 import "Components/Settings"
 import "Components/tabview"
 import "Components/Snapshots"
+
 import Theme 1.0
 
 ApplicationWindow {
@@ -96,17 +97,19 @@ ApplicationWindow {
     var currentProjectId = tabView.currentProjectId();
     var isReady = tabView.currentProjectIsReady();
 
-    tabView.removeTab(currentTabIndex);
+    if(tabView.count === 1 && !isReady) {
+      window.close();
+    } else {
+      tabView.removeTab(currentTabIndex);
+      ui.removeProject(currentProjectId);
 
-    if(!isReady) window.close();
+      updateMenuState();
 
-    ui.removeProject(currentProjectId);
-    updateMenuState();
-
-    // Create a new tab if there is no tab
-    // anymore, to prevent a blank screen.
-    if(tabView.count === 0) {
-      createProject();
+      // Create a new tab if there is no tab
+      // anymore, to prevent a blank screen.
+      if(tabView.count === 0) {
+        createProject();
+      }
     }
   }
 
@@ -177,7 +180,7 @@ ApplicationWindow {
           }
           onExecutionStopped: {
             editor.parse();
-            placeholderItem.isRunning = false;
+            placeholderItem.running = false;
           }
         }
       }
@@ -211,8 +214,6 @@ ApplicationWindow {
     selectExisting: false
     selectFolder: false
     selectMultiple: false
-    onAccepted: {
-      ui.saveTextAs(tabView.currentProjectId(), fileDialog.fileUrl);
-    }
+    onAccepted: onAcceptedFunction(fileDialog.fileUrl);
   }
 }

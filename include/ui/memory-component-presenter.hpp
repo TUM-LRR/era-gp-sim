@@ -221,7 +221,13 @@ class MemoryComponentPresenter : public QAbstractListModel {
    * \param length the number of cells that were changed
    *
    */
-  void onMemoryChanged(const size_t address, const size_t length);
+  void onMemoryChanged(size_t address, size_t length);
+
+  /**
+   * Should be called when the size of the memory changed.
+   * \param newSize The new size of the memory.
+   */
+  void onMemorySizeChanged(size_t newSize);
 };
 
 #endif /* ERAGPSIM_UI_MEMORY_COMPONENT_PRESENTER_HPP */

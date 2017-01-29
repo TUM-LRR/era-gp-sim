@@ -21,6 +21,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtGraphicalEffects 1.0
+
 import Theme 1.0
 import "Sections"
 
@@ -82,7 +83,7 @@ Rectangle {
 
     Keys.onPressed: {
       // == on purpose (to coerce types)
-      if (event.key == Qt.Key_Return || event.key == Qt.Key_Enter) {
+      if (event.key == Qt.Key_Return) {
         if (button.enabled) button.clicked();
       }
     }

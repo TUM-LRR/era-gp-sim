@@ -200,7 +200,7 @@ Rectangle {
           acceptedButtons: Qt.LeftButton | Qt.RightButton
           onClicked: {
             // Show change-color-dialog on right-click.
-            if(mouse.button === Qt.RightButton){
+            if (mouse.button === Qt.RightButton){
               var newObject = colorChooserComponent.createObject(light);
             } else {
               // Set light active on left-click.

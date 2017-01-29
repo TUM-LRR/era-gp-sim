@@ -53,12 +53,12 @@ int Ui::runUi() {
   return _qmlApplication.exec();
 }
 
-id_t Ui::addProject(QQuickItem* tabItem,
-                    QQmlComponent* projectComponent,
-                    const QVariant& memorySizeQVariant,
-                    const QString& architecture,
-                    const QString& optionName,
-                    const QString& parser) {
+Ui::id_t Ui::addProject(QQuickItem* tabItem,
+                        QQmlComponent* projectComponent,
+                        const QVariant& memorySizeQVariant,
+                        const QString& architecture,
+                        const QString& optionName,
+                        const QString& parser) {
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
   // Add all extensions which are defined for this option
