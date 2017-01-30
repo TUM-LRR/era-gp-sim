@@ -30,13 +30,26 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{tikz}
+\usepackage{tikz-qtree}
 \usetikzlibrary{3d}
 \usetikzlibrary{shapes}
 \usetikzlibrary{shadings}
 \usetikzlibrary{shadows}
 \usetikzlibrary{positioning}
-\usetikzlibrary{arrows}
+\usetikzlibrary{arrows, arrows.meta}
+\usetikzlibrary{trees}
 \usetikzlibrary{calc}
+
+% GRAPH STUFF
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow]
+\tikzstyle{inheritance-arrow} = [->, thick,>=open triangle 90,every node/.style={font=\sffamily\small}]
+\tikzstyle{composition-arrow} = [{Diamond}-,every node/.style={font=\sffamily\small}]
+\tikzstyle{dashed-arrow} = [->, dashed]
+\tikzstyle{empty} = [draw=none,fill=none]
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 	OTHER

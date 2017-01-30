@@ -2,3 +2,210 @@
 % GUI
 
 \textframe{\texttt{.gui}}
+
+
+\tikzset{hide on/.code={\only<#1>{\color{white}}}}
+\tikzset{font=\tiny,
+  edge from parent fork down,
+  level distance=1.3cm,
+  every node/.style=
+    {rectangle,rounded corners,
+    minimum height=7mm,
+    fill=white,
+    draw=black!50,
+    align=center,
+    text depth = 0pt
+    },
+  edge from parent/.style=
+    {,
+    draw=black!50,
+    thick
+    }}
+
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \Tree [.\node[color=white,draw=white]{ApplicationWindow\\(main.qml)};
+            \edge[draw=white];[.\node[color=white,draw=white]{Menubar}; ]
+            \edge[draw=white];[.\node[color=white,draw=white]{Toolbar}; ]
+            \edge[draw=white];[.\node[color=white,draw=white]{ProjectTabView};
+                \edge[draw=white];[.\node[color=white,draw=white]{Splitview};
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
+                             \edge[draw=white];[.Snapshots ]
+                             \edge[draw=white];[.Help ]
+                             \edge[draw=white];[.Registers ]
+                             \edge[draw=white];[.Memory ]
+                             \edge[draw=white];[.Input/Output ] ] ]
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews-\\Editor};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem}; ]
+                         \edge[draw=white];[.\node[color=white,draw=white]{Editor}; ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
+
+% Mit ApplicationWindow
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \Tree [.\node{ApplicationWindow\\(main.qml)};
+            \edge[draw=white];[.\node[color=white,draw=white]{Menubar}; ]
+            \edge[draw=white];[.\node[color=white,draw=white]{Toolbar}; ]
+            \edge[draw=white];[.\node[color=white,draw=white]{ProjectTabView};
+                \edge[draw=white];[.\node[color=white,draw=white]{Splitview};
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
+                             \edge[draw=white];[.Snapshots ]
+                             \edge[draw=white];[.Help ]
+                             \edge[draw=white];[.Registers ]
+                             \edge[draw=white];[.Memory ]
+                             \edge[draw=white];[.Input/Output ] ] ]
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews-\\Editor};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem}; ]
+                         \edge[draw=white];[.\node[color=white,draw=white]{Editor}; ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
+
+% Mit MenuBar, Toolbar, ProjectTabView
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \Tree [.\node{ApplicationWindow\\(main.qml)};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                \edge[draw=white];[.\node[color=white,draw=white]{Splitview};
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
+                             \edge[draw=white];[.Snapshots ]
+                             \edge[draw=white];[.Help ]
+                             \edge[draw=white];[.Registers ]
+                             \edge[draw=white];[.Memory ]
+                             \edge[draw=white];[.Input/Output ] ] ]
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews-\\Editor};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem}; ]
+                         \edge[draw=white];[.\node[color=white,draw=white]{Editor}; ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
+
+% Mit SplitView
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \Tree [.\node{ApplicationWindow\\(main.qml)};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
+                             \edge[draw=white];[.Snapshots ]
+                             \edge[draw=white];[.Help ]
+                             \edge[draw=white];[.Registers ]
+                             \edge[draw=white];[.Memory ]
+                             \edge[draw=white];[.Input/Output ] ] ]
+                     \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews-\\Editor};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem}; ]
+                         \edge[draw=white];[.\node[color=white,draw=white]{Editor}; ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
+
+% Mit SplitViewItems
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \Tree [.\node{ApplicationWindow\\(main.qml)};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
+                     [.\node{InnerSplitviews};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
+                             \edge[draw=white];[.Snapshots ]
+                             \edge[draw=white];[.Help ]
+                             \edge[draw=white];[.Registers ]
+                             \edge[draw=white];[.Memory ]
+                             \edge[draw=white];[.Input/Output ] ] ]
+                     [.\node{InnerSplitviews-\\Editor};
+                         \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem}; ]
+                         \edge[draw=white];[.\node[color=white,draw=white]{Editor}; ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
+
+% Mit SplitViewItems, Editor
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \Tree [.\node{ApplicationWindow\\(main.qml)};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
+                     [.\node{InnerSplitviews};
+                         [.\node{SplitViewItem};
+                             \edge[draw=white];[.Snapshots ]
+                             \edge[draw=white];[.Help ]
+                             \edge[draw=white];[.Registers ]
+                             \edge[draw=white];[.Memory ]
+                             \edge[draw=white];[.Input/Output ] ] ]
+                     [.\node{InnerSplitviews-\\Editor};
+                         [.\node{SplitViewItem}; ]
+                         [.\node{Editor}; ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
+
+% Mit SplitViewItems, Editor
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \Tree [.\node{ApplicationWindow\\(main.qml)};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
+                     [.\node{InnerSplitviews};
+                         [.\node{SplitViewItem};
+                             [.Snapshots ]
+                             [.Help ]
+                             [.Registers ]
+                             [.Memory ]
+                             [.Input/Output ] ] ]
+                     [.\node{InnerSplitviews-\\Editor};
+                         [.\node{SplitViewItem}; ]
+                         [.\node{Editor}; ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
+
+\begin{slide}{MVP}
+
+\begin{tikzpicture}[node distance=2.0cm and 2.5cm]
+
+\node (view)  
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm] 
+	{VIEW};
+	\node (qml) [draw = white, node distance=0cm, above = of view] 
+		{\textbf{qml + JavaScript}};
+
+\node (presenter)  
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, below = of view] 
+	{PRESENTER};
+	\node (qobject) [draw = white, node distance=0cm, below = of presenter] 
+		{\textbf{QObject}\\ \textbf{(QAbstractItemModel)}};
+
+\node (model)  
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, right = of presenter] 
+	{MODEL};
+	\node (core) [draw = white, node distance=0cm, below = of model] 
+		{\textbf{Core} \\ \textbf{(Memory, Architecture, ...)}};
+
+\draw[->, thick] (model.170) -- (presenter.10) 
+	node [midway, above=1pt, fill=white, draw=white] 
+	{\textit{update callback}};
+	
+\draw[<-, thick] (model.190) -- (presenter.350)
+	node [midway, below=1pt, fill=white, draw=white] 
+	{\textit{set data}};
+	
+\draw[->, thick] (presenter.80) -- (view.280)
+	node [midway, right=1pt, fill=white, draw=white] 
+	{\textit{Qt signal: dataChanged() }};
+	
+\draw[<-, thick] (presenter.100) -- (view.260)
+	node [midway, left=1pt, fill=white, draw=white] 
+	{\textit{new data by user}};
+
+\end{tikzpicture}
+
+\end{slide}
