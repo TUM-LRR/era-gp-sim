@@ -1,5 +1,3 @@
-
-
 \begin{slide}{Kommunikation mit dem Core}
 
   \begin{tikzpicture}[auto, node distance=0.75cm]
@@ -59,20 +57,20 @@
 \node (view)
 	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm]
 	{VIEW};
-	\node (qml) [draw = white, node distance=0cm, above = of view]
+	\node (qml) [draw = white, node distance=0cm, above = of view, above=1pt]
 		{\textbf{qml + JavaScript}};
 
 \node (presenter)
 	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, below = of view]
 	{PRESENTER};
-	\node (qobject) [draw = white, node distance=0cm, below = of presenter]
-		{\textbf{QObject}\\ \textbf{(QAbstractItemModel)}};
+	\node (qobject) [draw = white, node distance=0cm, below = of presenter, below=1pt]
+		{\textbf{QObject (QAbstractItemModel)}};
 
 \node (model)
 	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, right = of presenter]
 	{MODEL};
-	\node (core) [draw = white, node distance=0cm, below = of model]
-		{\textbf{Core} \\ \textbf{(Memory, Architecture, ...)}};
+	\node (core) [draw = white, node distance=0cm, below = of model, below=1pt]
+		{\textbf{Core (Memory, Architecture, ...)}};
 
 \draw[->, thick] (model.170) -- (presenter.10)
 	node [midway, above=1pt, fill=white, draw=white]
