@@ -119,7 +119,7 @@ bool InstructionInformation::isValid() const noexcept {
   return true;
 }
 
-InstructionInformation& InstructionInformation::operandLengths(const OperandLengthList &operandLengths) {
+InstructionInformation& InstructionInformation::operandLengths(const OperandLengthContainer &operandLengths) {
     assert::that(operandLengths.size() > 0);
     _operandLengths = operandLengths;
     return *this;
@@ -128,7 +128,7 @@ InstructionInformation& InstructionInformation::operandLengths(const OperandLeng
 bool InstructionInformation::hasOperandLengths() const {
     return static_cast<bool>(_operandLengths);
 }
-const InstructionInformation::OperandLengthList & InstructionInformation::getOperandLengths() const {
+const InstructionInformation::OperandLengthContainer & InstructionInformation::getOperandLengths() const {
     assert::that(hasOperandLengths());
     return *_operandLengths;
 }

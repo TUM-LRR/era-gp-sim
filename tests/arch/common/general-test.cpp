@@ -229,7 +229,7 @@ TEST(ArchCommonTest, TestArchitectureFormula) {
 TEST(ArchCommonTest, TestInstructionInformation) {
   auto instruction = InstructionInformation("add").format("R").length(69);
 
-  InstructionInformation::OperandLengthList operands = {32, 32, 12};
+  InstructionInformation::OperandLengthContainer operands = {32, 32, 12};
   InstructionKey key(InstructionKey({{"opcode", 6}, {"function", 9}}));
 
   EXPECT_FALSE(instruction.isValid());

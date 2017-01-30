@@ -19,7 +19,7 @@
 	{
 		\textbf{Programmcode}
 	};}
-	\node (parser) [rectangle, draw = black, minimum height = 5cm, right = of invis1]
+	\node (parser) [rounded corners=1pt, rectangle, draw = black, minimum height = 5cm, right = of invis1]
 	{
 		\textbf{Parser}
 	};
@@ -51,7 +51,7 @@ Verschiedene Parser ermöglicht durch Factory-Pattern:
 	{
 		\texttt{"name"}
 	};
-	\node (factory) [rectangle, draw = black, right = of name]
+	\node (factory) [rounded corners=1pt, rectangle, draw = black, right = of name]
 	{
 		\textbf{Factory}
 	};
@@ -81,7 +81,7 @@ addi x1, x0, magic + 2
 	};
 	\node (help) [below = of code] {};
 	\uncover<2->{
-		\node (inter1) [rectangle split, rectangle split parts = 2, draw = black, left = of help]
+		\node (inter1) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, left = of help]
 		{
 			\textbf{Konstante}
 			\nodepart{second}
@@ -91,7 +91,7 @@ addi x1, x0, magic + 2
 			value: & \texttt{"3 * 7"}
 			\end{tabular}}
 		};
-		\node (inter2) [rectangle split, rectangle split parts = 2, draw = black, right = of help]
+		\node (inter2) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of help]
 		{
 			\textbf{Instruktion}
 			\nodepart{second}
@@ -220,7 +220,7 @@ Syntaxbaum generieren.
 	\tikzstyle{follows} = [->, thick, double]
 	\tikzstyle{treearr} = [->]
 
-	\node (inter1) [rectangle split, rectangle split parts = 4, draw = black]
+	\node (inter1) [rounded corners=1pt, rectangle split, rectangle split parts = 4, draw = black]
 	{
 		\textbf{Makro}
 		\nodepart{second}
@@ -241,7 +241,7 @@ Syntaxbaum generieren.
 	};
 
 	\uncover<2->{
-	\node (inter4) [rectangle split, rectangle split parts = 2, draw = black, right = of inter1]
+	\node (inter4) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of inter1]
 	{
 		\textbf{Makro-Instr.}
 		\nodepart{second}
@@ -252,7 +252,7 @@ Syntaxbaum generieren.
 		sources: & \texttt{["x1", "x1"]}
 		\end{tabular}}
 	};
-	\node (inter5) [rectangle split, rectangle split parts = 2, draw = black, right = of inter4]
+	\node (inter5) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of inter4]
 	{
 		\textbf{Makro-Instr.}
 		\nodepart{second}
@@ -266,7 +266,7 @@ Syntaxbaum generieren.
 	\draw [dashed] (inter1) -- (inter4) -- (inter5);}
 
 	\uncover<1>{
-	\node (inter2) [rectangle split, rectangle split parts = 2, draw = black, at = (inter4)]
+	\node (inter2) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, at = (inter4)]
 	{
 		\textbf{Instruktion}
 		\nodepart{second}
@@ -276,7 +276,7 @@ Syntaxbaum generieren.
 		targets: & \texttt{["x1"]}
 		\end{tabular}}
 	};
-	\node (inter3) [rectangle split, rectangle split parts = 2, draw = black, at = (inter5)]
+	\node (inter3) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, at = (inter5)]
 	{
 		\textbf{Instruktion}
 		\nodepart{second}
