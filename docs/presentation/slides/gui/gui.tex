@@ -176,19 +176,19 @@
 	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm] 
 	{VIEW};
 	\node (qml) [draw = white, node distance=0cm, above = of view] 
-		{qml + JavaScript};
+		{\textbf{qml + JavaScript}};
 
 \node (presenter)  
 	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, below = of view] 
 	{PRESENTER};
 	\node (qobject) [draw = white, node distance=0cm, below = of presenter] 
-		{QObject\\ (QAbstractItemModel)};
+		{\textbf{QObject}\\ \textbf{(QAbstractItemModel)}};
 
 \node (model)  
 	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, right = of presenter] 
 	{MODEL};
 	\node (core) [draw = white, node distance=0cm, below = of model] 
-		{Core \\(Memory, Architecture, ...)};
+		{\textbf{Core} \\ \textbf{(Memory, Architecture, ...)}};
 
 \draw[->, thick] (model.170) -- (presenter.10) 
 	node [midway, above=1pt, fill=white, draw=white] 
