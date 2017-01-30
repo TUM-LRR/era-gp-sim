@@ -71,7 +71,7 @@ MenuBar {
       id: saveFileAsOption
       text: "Save File As"
       shortcut: "Alt+Shift+S"
-      onTriggered: actionSaveAs
+      onTriggered: actionSaveAs();
     }
   }
 
@@ -88,7 +88,7 @@ MenuBar {
     MenuItem {
       text: "Close Project"
       shortcut: "Ctrl+W"
-      onTriggered: main.closeProject()
+      onTriggered: main.closeCurrentProject()
     }
 
     MenuItem {

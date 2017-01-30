@@ -54,6 +54,7 @@ Item {
     property alias toolTipText: _toolTipText
 
     property bool moveTooltipWithMouse: false;
+    property bool permanentOnClick: true;
 
     // Functions
     function showToolTip() {
@@ -66,7 +67,7 @@ Item {
     }
 
     // MouseArea for showing the tooltip, includes the area of the parent object/specified height and length of the tooltip trigger and the tooltip itself
-    MouseArea{
+    MouseArea {
         id: _toolTipHitArea
         anchors.fill: parent
         hoverEnabled: true
@@ -89,7 +90,7 @@ Item {
         }
 
         function triggerShow() {
-            if(!_toolTipRect.visible) {
+            if (!_toolTipRect.visible) {
                 _toolTipRect.show();
                 if (relativeX == undefined) {
                     _toolTipRect.x = mouseX + 10;
@@ -97,19 +98,19 @@ Item {
                     _toolTipRect.x = relativeX;
                 }
             }
-            else if(_toolTipRect.visible && (hideAnimation.running || hideWithoutPause.running)){
+            else if (_toolTipRect.visible && (hideAnimation.running || hideWithoutPause.running)){
                 _toolTipRect.show();
             }
         }
 
         onExited: {
-            if(!_scrollView.focus){
+            if (!_scrollView.focus){
                 _toolTipRect.hide();
             }
         }
 
         onPositionChanged: {
-            if(moveTooltipWithMouse){
+            if (moveTooltipWithMouse){
                 _toolTipRect.x = mouseX + 10
                 _toolTipRect.y = mouseY - 10
             }
@@ -161,16 +162,17 @@ Item {
                     transientScrollBars: true
                 }
 
+                onActiveFocusChanged: focus = (activeFocus && permanentOnClick);
 
                 onFocusChanged: {
-                    if(focus) {
+                    if(focus && permanentOnClick) {
                         _toolTipRect.color = backgroundColorOnFocus;
                         _toolTipRect.border.color = borderColorOnFocus;
                     }
-                    if(!focus) {
+                    if(!focus && permanentOnClick) {
                         _toolTipRect.color = backgroundColor;
                         _toolTipRect.border.color = borderColor;
-                        if(!_toolTipHitArea.containsMouse) {
+                        if (!_toolTipHitArea.containsMouse) {
                             _toolTipRect.hide();
                         }
                     }
@@ -194,11 +196,14 @@ Item {
                         topPadding: toolTipItem.topPadding
                         bottomPadding: toolTipItem.bottomPadding
                         onContentWidthChanged: {
-                            if(contentWidth > 0 && wrapMode === TextEdit.NoWrap) {
+                            if (contentWidth > 0 && wrapMode === TextEdit.NoWrap) {
                                 var maxTextWidth = contentWidth;
                                 _toolTipRect._textMaxWidth = maxTextWidth;
                                 wrapMode = TextEdit.WordWrap;
                             }
+                        }
+                        onTextChanged: {
+                          wrapMode = TextEdit.NoWrap;
                         }
                     }
                 }
@@ -208,20 +213,20 @@ Item {
                 // Makes sure the property which is about to be animated is set to
                 // a proper initial value, if it's not currently in the process of
                 // showing an animation.
-                if(!hideAnimation.running && !hideWithoutPause.running) {
+                if (!hideAnimation.running && !hideWithoutPause.running) {
                     _toolTipRect.opacity = 0.0;
                 }
 
                 // If the tooltip is in the process of hiding and is hovered again, it's
                 // supposed to show instantly.
-                if(hideAnimation.running || hideWithoutPause.running) {
+                if (hideAnimation.running || hideWithoutPause.running) {
                     hideAnimation.stop();
                     hideWithoutPause.stop();
                     _toolTipRect.visible = true;
                     showWithoutPause.start();
                 }
                 // Otherwise, animate.
-                else{
+                else {
                     _toolTipRect.visible = true;
                     showAnimation.start();
                 }
@@ -256,7 +261,7 @@ Item {
 
             // Hiding the tooltip
             function hide() {
-                if(showAnimation.running || showWithoutPause.running){
+                if (showAnimation.running || showWithoutPause.running){
                     showAnimation.stop();
                     showWithoutPause.stop();
                     hideWithoutPause.start();

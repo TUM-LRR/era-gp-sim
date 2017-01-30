@@ -70,7 +70,7 @@ Item {
       propagateComposedEvents: true
 
       onHoveredChanged: {
-        if(containsMouse) {
+        if (containsMouse) {
           isExpanded=true
         } else {
           isExpanded=false
@@ -83,7 +83,7 @@ Item {
         visible: false
 
         // Choose
-        ComboBox{
+        ComboBox {
           id: componentSelector
 
           enabled: true
@@ -93,17 +93,17 @@ Item {
           anchors.leftMargin: 4
           anchors.right: (settingsButton.visible === true) ? settingsButton.left : parent.right
           anchors.rightMargin: 4
-          model: ["Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input", "Help" ]
+          model: ["Snapshots", "InputOutput", "Register", "Memory", "Help" ]
 
           onPressedChanged: {
             if (pressed) {
               isExpanded=true
-            } else if(!hovered) {
+            } else if (!hovered) {
               isExpanded=false
             }
           }
 
-          property var usualList: ["snapshots", "output", "register", "memory", "input", "help"]
+          property var usualList: ["snapshots", "inputoutput", "register", "memory", "help"]
           onModelChanged: {
             var usualIndex = usualList.indexOf(usual);
             if (usualIndex !== -1) {
@@ -161,10 +161,9 @@ Item {
 
     property var sourceComponents: [
       "Snapshots/SnapshotList.qml",
-      "Output/Output.qml",
+      "InputOutput/InputOutput.qml",
       "Register/RegisterComponent.qml",
       "Memory/MemoryComponent.qml",
-      "Input/Input.qml",
       "help/HelpWindow.qml"
     ]
 

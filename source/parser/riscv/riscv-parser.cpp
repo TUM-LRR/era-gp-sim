@@ -207,37 +207,29 @@ FinalRepresentation RiscvParser::parse(const std::string& text) {
 const SyntaxInformation RiscvParser::getSyntaxInformation() {
   SyntaxInformation info;
 
-  // Add instruction regexes
-  for (auto instruction : _architecture.getInstructions()) {
-    // Matches all instruction mnemonics which don't end with a ':'
-    info.addSyntaxRegex("\\b" + instruction.first + "\\b(?!:)",
-                        SyntaxInformation::Token::Instruction);
-  }
-
-  // Add directive regexes
-  for (auto directive : RiscVDirectiveFactory::mapping) {
-    // Matches all directive mnemonics starting with a '.' which don't end with
-    // a ':'
-    info.addSyntaxRegex("\\." + directive.first + "\\b(?!:)",
-                        SyntaxInformation::Token::Instruction);
-  }
+  // Matches single words after a ':'' or line-start that does not end with ':'
+  info.addSyntaxRegex(R"((?<=^|:) *[a-zA-Z.]+\b(?!:))",
+                      SyntaxInformation::Token::Instruction);
 
   // Add comment regex
   // Matches everything after a ';'
   info.addSyntaxRegex(";.*", SyntaxInformation::Token::Comment);
 
   // Add label regex
-  // Matches words at the beginning of a line (ignoring whitespaces) which end
-  // with a ':'
-  info.addSyntaxRegex("^\\s*\\w+:", SyntaxInformation::Token::Label);
+  // Matches words starting with a letter or '_'
+  info.addSyntaxRegex("\\b[a-zA-Z_]\\w*", SyntaxInformation::Token::Label);
 
   // Add immediate regex
-  // Matches arithmetic expressions containing digits, operators, brackets and
-  // spaces. Expressions need to start with a digit, an open bracket or an unary
-  // operator.
+  // Matches expressions operators and brackets
   info.addSyntaxRegex(
-      R"(\b[\+\-0-9\(!~][0-9a-fA-Fx\+\-%\*\/\(\)\|\^&=!<>~\t ]*)",
-      SyntaxInformation::Token::Immediate);
+      R"([\+\-%\*\/\(\)\|\^&=!<>~_]+)", SyntaxInformation::Token::Immediate);
+  // Matches Numbers
+  info.addSyntaxRegex(
+      R"(\b[0-9]+\b)", SyntaxInformation::Token::Immediate);
+  info.addSyntaxRegex(
+      R"(\b0b[01]+\b)", SyntaxInformation::Token::Immediate);
+  info.addSyntaxRegex(
+      R"(\b0x[0-9a-fA-F]+\b)", SyntaxInformation::Token::Immediate);
 
   // Matches string literals
   info.addSyntaxRegex(R"(".*")", SyntaxInformation::Token::Immediate);

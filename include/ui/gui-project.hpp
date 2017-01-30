@@ -37,10 +37,10 @@
 #include "core/project-module.hpp"
 #include "parser/common/final-representation.hpp"
 #include "third-party/json/json.hpp"
+#include "ui/console-component.hpp"
 #include "ui/editor-component.hpp"
-#include "ui/input-button-model.hpp"
+#include "ui/input-key-model.hpp"
 #include "ui/input-click-model.hpp"
-#include "ui/input-text-model.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
 #include "ui/register-model.hpp"
@@ -324,9 +324,10 @@ class GuiProject : QObject {
   /**
     *The input-models
     */
-  InputButtonModel _inputBM;
-  InputTextModel _inputTM;
-  InputClickModel _inputCM;
+  InputKeyModel _inputKeys;
+  InputClickModel _inputMouse;
+
+  ConsoleComponent _consoleComponent;
 
   /*
    * The C++ component for the memory.
@@ -336,7 +337,7 @@ class GuiProject : QObject {
   /**
    * The default path to save the text of this project to.
    */
-  QString _defaultTextFileSavePath;
+  QUrl _defaultTextFileSavePath;
 
   /**
    * A shared pointer to the snapshot component.

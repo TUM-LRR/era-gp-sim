@@ -35,7 +35,7 @@ Button {
     style: ButtonStyle {
         label: Text {
             text: control.text
-            font.pointSize: textArea.font.pointSize-2
+            font.pointSize: textRegion.font.pointSize-2
             color: "gray"
         }
         background: Rectangle {

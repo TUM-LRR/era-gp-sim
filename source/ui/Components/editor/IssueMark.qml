@@ -36,7 +36,7 @@ Item {
     property var lineNumber: 0
 
     // Issue line highlight should span whole editor width and the line the issue belongs to.
-    height: textArea.cursorRectangle.height
+    height: textRegion.cursorRectangle.height
     width: scrollView.width
 
     // If the issue mark is expanded, it shows the issue icon inside the errorBar as well
@@ -165,9 +165,9 @@ Item {
                     anchors.rightMargin: _textMargin
                     anchors.verticalCenter: parent.verticalCenter
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    width: Math.max(scrollView.width, textArea.contentWidth) - sidebar.width - issueItemIcon.width - 3*_textMargin
+                    width: Math.max(scrollView.width, textRegion.contentWidth) - sidebar.width - issueItemIcon.width - 3*_textMargin
 
-                    font.pixelSize: Math.floor(0.85*textArea.font.pixelSize)
+                    font.pixelSize: Math.floor(0.85*textRegion.font.pixelSize)
                     text: issueMessage
                     horizontalAlignment: Text.AlignRight
 
@@ -216,8 +216,8 @@ Item {
         function _offsetFirstIssueItemIfNecessary() {
             if (issueMark.issueItems.length == 0 ) return;
             // Check if the first issueText would overlap the line text.
-            var lineEndX = textArea.positionToRectangle(TextUtility.getLineEndForLine(textArea.text, lineNumber)).x;
-            var errorLeftX = textArea.width - issueMark.issueItems[0].width;
+            var lineEndX = textRegion.positionToRectangle(TextUtility.getLineEndForLine(textRegion.text, lineNumber)).x;
+            var errorLeftX = textRegion.width - issueMark.issueItems[0].width;
             var textToErrorDistance = errorLeftX - lineEndX;
             // If it would overlap, offset it by one line.
             if (textToErrorDistance < 10) {

@@ -61,9 +61,9 @@ GuiProject::GuiProject(
 , _outputComponent(_projectModule.getMemoryManager(),
                    _projectModule.getMemoryAccess(),
                    context)
-, _inputBM(context, _projectModule.getMemoryAccess())
-, _inputTM(context, _projectModule.getMemoryAccess())
-, _inputCM(context, _projectModule.getMemoryAccess())
+, _inputKeys(context, _projectModule.getMemoryAccess())
+, _inputMouse(context, _projectModule.getMemoryAccess())
+, _consoleComponent(context, _projectModule.getMemoryAccess())
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
@@ -197,8 +197,8 @@ void GuiProject::saveText() {
 }
 
 void GuiProject::saveTextAs(const QUrl& path) {
-  auto qName = path.path();
-  _defaultTextFileSavePath = qName;
+  auto qName = path.toLocalFile();
+  _defaultTextFileSavePath = path;
   auto name = qName.toStdString();
   auto text = _editorComponent.getText().toStdString();
   try {
@@ -211,7 +211,7 @@ void GuiProject::saveTextAs(const QUrl& path) {
 }
 
 void GuiProject::loadText(const QUrl& path) {
-  auto qName = path.path();
+  auto qName = path.toLocalFile();
   auto filePath = qName.toStdString();
   std::string text;
   try {

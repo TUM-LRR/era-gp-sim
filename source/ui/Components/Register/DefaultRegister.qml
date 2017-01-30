@@ -44,7 +44,7 @@ TextField {
       // Check if the current item's index is affected by the data change.
       if (topLeft <= styleData.index && styleData.index <= bottomRight) {
         text = Qt.binding(getRegisterContent);
-        if(singleStep) isHighlighted = true;
+        if (singleStep) isHighlighted = true;
       }
     }
   }

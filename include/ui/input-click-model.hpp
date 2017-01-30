@@ -35,7 +35,7 @@ class InputClickModel : QObject {
    * \param x x coordinate
    * \param y y coordinate
    */
-  Q_INVOKABLE void newClick(int x, int y);
+  Q_INVOKABLE void newClick(unsigned int x, unsigned int y);
 
   /**
    * \brief returns value of start

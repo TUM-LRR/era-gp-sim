@@ -1,6 +1,40 @@
 input
-  tab-bar
+  keyInput
     background: white
-    border
-      color: $divider-color
-      width: 1px
+    inactive
+      margins: 40
+      color: "black"
+      background: $divider-color
+      animation
+        marginAnimation
+          duration: 300
+        colorAnimation
+          duration: 600
+    active
+      margins: 20
+      color: "black"
+      background: $primary-color
+      animation
+        marginAnimation
+          duration: 300
+        colorAnimation
+          duration: 600
+    settings
+      width: 350
+      height: 120
+      margin: 15
+      doneButton
+        bottomMargin: 5
+  clickInput
+    background: white
+    clickArea
+      background: $primary-color
+      margin: 40
+      annotation
+        color: "black"
+    settings
+      width: 350
+      height: 120
+      margin: 15
+      doneButton
+        bottomMargin: 5

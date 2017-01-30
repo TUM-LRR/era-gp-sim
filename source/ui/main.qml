@@ -93,17 +93,18 @@ ApplicationWindow {
     tabView.currentIndex = tabView.count - 1;
   }
 
-  function closeProject() {
-    var currentTabIndex = tabView.currentIndex;
-    var currentProjectId = tabView.currentProjectId();
-    var isReady = tabView.currentProjectIsReady();
+  function closeCurrentProject() {
+    closeProject(tabView.currentIndex);
+  }
 
-    if(tabView.count === 1 && !isReady) {
+  function closeProject(projectIndex) {
+    var projectId = tabView.projectId(projectIndex);
+    var isReady = tabView.projectIsReady(projectIndex);
+    if (tabView.count === 1 && !isReady) {
       window.close();
     } else {
-      tabView.removeTab(currentTabIndex);
-      ui.removeProject(currentProjectId);
-
+      tabView.removeTab(projectIndex);
+      ui.removeProject(projectId);
       updateMenuState();
 
       // Create a new tab if there is no tab
@@ -181,7 +182,7 @@ ApplicationWindow {
           }
           onExecutionStopped: {
             editor.parse();
-            placeholderItem.isRunning = false;
+            placeholderItem.running = false;
           }
         }
       }

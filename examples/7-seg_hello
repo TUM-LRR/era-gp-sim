@@ -1,0 +1,27 @@
+; printing HELLO with the 7-Segment display
+; Settings:     7-Segment with 5 digits, input address at 0x00
+
+
+.section data
+.resb 5 ; 7-segment output at address 0 and length 5
+
+data: .byte 118,121,56,56,63
+.equ from, 0x5
+.equ length, 5
+
+.section text
+addi x2,x0,length
+addi x3,x0,0 ; current position
+addi x2,x0,from
+loop:
+beq x2, x0, end
+lb x10,x3,from
+addi x11, x2, -1 
+addi x2,x2,-1
+sb x10,x11,0
+addi x3,x3,1
+simusleep 500
+jal x0, loop
+
+end:
+addi x1,x0,0 
