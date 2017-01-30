@@ -198,12 +198,27 @@ addi x1, x0, magic + 2
 		\uncover<1->{\node (graphtxt) [left = of s_2] {Symbolgraph};}
 		\uncover<6->{\node (tabletxt) [below = of graphtxt] {Symbolersetzer};}
 	\end{tikzpicture}
+	\uncover<6->{
+		\begin{tabular}{l|l}
+			Symbol & Ersetzung \\
+			\hline
+			$S_0$ & $bcac$ \\
+			$S_1$ & $bc$ \\
+			$S_2$ & $b$ \\
+			$S_3$ & $c$ \\
+		\end{tabular}
+	}
 \end{center}
 \end{frame}
 
 
 \begin{frame}{.parser}{Arithmetische Ausdrücke}
-TODO: Shunting yard Algorithmus
+$$1+2\cdot 3$$
+\begin{center}
+	\begin{tikzpicture}
+		
+	\end{tikzpicture}
+\end{center}
 \end{frame}
 
 
