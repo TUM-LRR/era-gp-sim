@@ -1,6 +1,6 @@
 \begin{slide}{Kommunikation mit dem Core}
 
-  \begin{tikzpicture}[auto, node distance=0.75cm]
+  \begin{tikzpicture}[auto, node distance=0.75cm and 1.5cm]
   % NODE DEFINITIONS
   \tikzstyle{module} = [draw, rectangle,
   text width=4cm]
@@ -10,15 +10,15 @@
 
   \node (guiproject) [class] {GUIProject};
 
-  \node (callbackarrow) [draw=black, single arrow,minimum height=1.0cm, minimum width=0.4cm, single arrow, shape border rotate=180] at (3.15,0) {};
+  \node (callbackarrow) [draw=black, single arrow,minimum height=1.2cm, minimum width=0.4cm, single arrow, shape border rotate=180] at (1.8,0) {};
   \node[above = 0.2cm of callbackarrow, xshift=-0.1cm] {Callback};
 
-  \node (signalarrow) [draw=black, single arrow,minimum height=1.0cm, minimum width=1.4cm, single arrow, shape border rotate=180] at (-2.85,0) {};
+  \node (signalarrow) [draw=black, single arrow,minimum height=1.2cm, minimum width=0.4cm, single arrow, shape border rotate=180] at (-1.68,0) {};
   \node[above = 0.2cm of signalarrow, xshift=0.1cm] {Signal};
 
-  \node (interfacearrow1) [draw=black, single arrow,minimum height=1.0cm, minimum width=1.4cm, single arrow] at (2.85,-2.67) {};
+  \node (interfacearrow1) [draw=black, single arrow,minimum height=1.2cm, minimum width=0.4cm, single arrow] at (1.68,-1.22) {};
 
-  \node (interfacearrow2) [draw=black, single arrow,minimum height=1.0cm, minimum width=1.4cm, single arrow] at (-3.15,-2.67) {};
+  \node (interfacearrow2) [draw=black, single arrow,minimum height=1.2cm, minimum width=0.4cm, single arrow] at (-1.8,-1.22) {};
 
   \node (registermodel) [class, left = of guiproject] {RegisterModel};
   \node (memorycomponentpresenter) [class, above = of registermodel] {MemoryComponent-\\Presenter};
