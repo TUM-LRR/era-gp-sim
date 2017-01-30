@@ -93,7 +93,7 @@ Item {
           anchors.leftMargin: 4
           anchors.right: (settingsButton.visible === true) ? settingsButton.left : parent.right
           anchors.rightMargin: 4
-          model: ["Snapshots", "Output", /*"Editor",*/ "Register", "Memory", "Input", "Help" ]
+          model: ["Snapshots", "InputOutput", "Register", "Memory", "Help" ]
 
           onPressedChanged: {
             if (pressed) {
@@ -103,7 +103,7 @@ Item {
             }
           }
 
-          property var usualList: ["snapshots", "output", "register", "memory", "input", "help"]
+          property var usualList: ["snapshots", "inputoutput", "register", "memory", "help"]
           onModelChanged: {
             var usualIndex = usualList.indexOf(usual);
             if (usualIndex !== -1) {
@@ -161,10 +161,9 @@ Item {
 
     property var sourceComponents: [
       "Snapshots/SnapshotList.qml",
-      "Output/Output.qml",
+      "InputOutput/InputOutput.qml",
       "Register/RegisterComponent.qml",
       "Memory/MemoryComponent.qml",
-      "Input/Input.qml",
       "help/HelpWindow.qml"
     ]
 

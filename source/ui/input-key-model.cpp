@@ -17,26 +17,31 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
+#include <QKeySequence>
+#include "ui/input-key-model.hpp"
 #include "core/conversions.hpp"
-#include "ui/input-button-model.hpp"
 
-InputButtonModel::InputButtonModel(QQmlContext* context,
+InputKeyModel::InputKeyModel(QQmlContext* context,
                                    MemoryAccess memoryAccess)
 : QObject(), _context(context), _start(0), _memoryAccess(memoryAccess) {
-  _context->setContextProperty("inputButtonMod", this);
+  _context->setContextProperty("inputKeyMod", this);
 }
 
-void InputButtonModel::buttonClicked(unsigned int id) {
+void InputKeyModel::keyPressed(unsigned int id) {
   // save id at start in Memory
   auto memoryValue = conversions::convert(id, 32);
   _memoryAccess.putMemoryValueAt(_start, memoryValue);
 }
 
-QString InputButtonModel::getStart() {
+QString InputKeyModel::getKeyDescription(Qt::Key key) const {
+    return QKeySequence(key).toString();
+}
+
+QString InputKeyModel::getStart() {
   return QString::fromStdString(std::to_string(_start));
 }
 
-void InputButtonModel::setStart(unsigned int start) {
+void InputKeyModel::setStart(unsigned int start) {
   if (_memoryAccess.getMemorySize().get() > start + 2) {
     _start = start;
   }

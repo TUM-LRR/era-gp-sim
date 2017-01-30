@@ -17,35 +17,41 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-#ifndef INPUTBUTTONMODEL_H
-#define INPUTBUTTONMODEL_H
+#ifndef INPUTKEYMODEL_H
+#define INPUTKEYMODEL_H
 
 #include <QObject>
 #include <QQmlContext>
 
 #include "core/memory-access.hpp"
 
-class InputButtonModel : public QObject {
+class InputKeyModel : public QObject {
   Q_OBJECT
  public:
-  InputButtonModel(QQmlContext* context, MemoryAccess memoryAccess);
+  InputKeyModel(QQmlContext* context, MemoryAccess memoryAccess);
 
   /**
-   * \brief wrotes clicked Button in memory
-   * \param id  Id of clicked Button
+   * Write pressed key to memory
+   * \param id  Id of pressed key
    */
-  Q_INVOKABLE void buttonClicked(unsigned int id);
+  Q_INVOKABLE void keyPressed(unsigned int id);
 
   /**
-   * \brief Returns value of start
+   * Returns value of start
    */
   Q_INVOKABLE QString getStart();
 
   /**
-   * \brief sets start
+   * Sets start
    * \param start new value
    */
   Q_INVOKABLE void setStart(unsigned int start);
+
+  /**
+    Returns a human-readble description of the given key.
+    \param key Key requested to describe.
+   */
+  Q_INVOKABLE QString getKeyDescription(Qt::Key key) const;
 
  private:
   QQmlContext* _context;
@@ -56,4 +62,4 @@ class InputButtonModel : public QObject {
   MemoryAccess _memoryAccess;
 };
 
-#endif// INPUTBUTTONMODEL_H
+#endif// INPUTKEYMODEL_H

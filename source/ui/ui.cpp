@@ -27,7 +27,7 @@
 #include "common/translateable.hpp"
 #include "common/utility.hpp"
 #include "parser/common/final-representation.hpp"
-#include "ui/input-text-model.hpp"
+#include "ui/console-component.hpp"
 #include "ui/output-component.hpp"
 #include "ui/pixel-display-painted-item.hpp"
 #include "ui/settings.hpp"

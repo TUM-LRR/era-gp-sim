@@ -20,7 +20,7 @@ import QtQuick 2.6
 import QtGraphicalEffects 1.0
 
 import Theme 1.0
-import "../Common/"
+import "../../Common/"
 
 Rectangle {
   id: pixelDisplayError
@@ -36,7 +36,7 @@ Rectangle {
     id: errorIcon
     anchors.fill: parent
 
-    source: "../../Icons/error.svg"
+    source: "../../../Icons/error.svg"
   }
 
   ColorOverlay {

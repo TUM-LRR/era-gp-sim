@@ -450,11 +450,59 @@
         }
     },
     "input": {
-        "tabBar": {
+        "keyInput": {
             "background": "white",
-            "border": {
-                "color": "#BDBDBD",
-                "width": 1
+            "inactive": {
+                "margins": 40,
+                "color": "black",
+                "background": "#BDBDBD",
+                "animation": {
+                    "marginAnimation": {
+                        "duration": 300
+                    },
+                    "colorAnimation": {
+                        "duration": 600
+                    }
+                }
+            },
+            "active": {
+                "margins": 20,
+                "color": "black",
+                "background": "#2196F3",
+                "animation": {
+                    "marginAnimation": {
+                        "duration": 300
+                    },
+                    "colorAnimation": {
+                        "duration": 600
+                    }
+                }
+            },
+            "settings": {
+                "width": 350,
+                "height": 120,
+                "margin": 15,
+                "doneButton": {
+                    "bottomMargin": 5
+                }
+            }
+        },
+        "clickInput": {
+            "background": "white",
+            "clickArea": {
+                "background": "#2196F3",
+                "margin": 40,
+                "annotation": {
+                    "color": "black"
+                }
+            },
+            "settings": {
+                "width": 350,
+                "height": 120,
+                "margin": 15,
+                "doneButton": {
+                    "bottomMargin": 5
+                }
             }
         }
     },
@@ -462,6 +510,8 @@
         "background": "transparent",
         "tabBar": {
             "background": "white",
+            "iconMargin": 20,
+            "iconHeight": 26,
             "border": {
                 "color": "#BDBDBD",
                 "width": 1
@@ -527,6 +577,20 @@
         "handleWidth": 2,
         "handleHeight": 2,
         "handleColor": "#BDBDBD"
+    },
+    "console": {
+        "background": "#000000",
+        "textColor": "#FFFFFF",
+        "margin": 3,
+        "promptColor": "#FF4081",
+        "prompt": "$",
+        "promptMargin": 5,
+        "fontSize": 12,
+        "settings": {
+            "width": 400,
+            "height": 200,
+            "margin": 15
+        }
     },
     "pixelDisplay": {
         "error": {
