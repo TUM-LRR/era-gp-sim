@@ -6,7 +6,10 @@
         <file>Components/editor/Editor.qml</file>
         <file>Components/editor/InlineMacros.qml</file>
         <file>Components/editor/IssueMark.qml</file>
-        <file>Components/editor/MacroSubeditor.qml</file>
+    	  <file>Components/editor/MacroSubeditor.qml</file>
+        <file>Components/Menubar/Menubar.qml</file>
+        <file>Components/InputOutput/PixelDisplay/PixelDisplay.qml</file>
+        <file>Components/InputOutput/PixelDisplay/PixelDisplayError.qml</file>
         <file>Components/editor/MacroTriangleButton.qml</file>
         <file>Components/editor/TextRegion.qml</file>
         <file>Components/editor/CursorLineHighlighting.qml</file>
@@ -38,7 +41,6 @@
         <file>Components/Memory/ContextMenu.qml</file>
         <file>Components/Toolbar/ToolbarComponent.qml</file>
         <file>Components/Toolbar/ToolbarButton.qml</file>
-        <file>Components/Menubar/Menubar.qml</file>
         <file>Components/Toolbar/Icons/Run.svg</file>
         <file>Components/Toolbar/Icons/Step.svg</file>
         <file>Components/Toolbar/Icons/Stop.svg</file>
@@ -69,6 +71,10 @@
         <file>Components/InputOutput/Buttons/Sevensegment Icon Selected@2x.png</file>
         <file>Components/InputOutput/Buttons/Sevensegment Icon.png</file>
         <file>Components/InputOutput/Buttons/Sevensegment Icon@2x.png</file>
+        <file>Components/InputOutput/Buttons/Pixel Display Icon Selected.png</file>
+        <file>Components/InputOutput/Buttons/Pixel Display Icon Selected@2x.png</file>
+        <file>Components/InputOutput/Buttons/Pixel Display Icon.png</file>
+        <file>Components/InputOutput/Buttons/Pixel Display Icon@2x.png</file>
         <file>Components/Register/RegisterComponent.qml</file>
         <file>Components/Register/RegisterLabel.qml</file>
         <file>Components/Register/Register.qml</file>
@@ -122,6 +128,7 @@
         <file>Icons/Settings Icon Pressed@2x.png</file>
         <file>Icons/Settings Icon.png</file>
         <file>Icons/Settings Icon@2x.png</file>
+        <file>Icons/error.svg</file>
         <file>InnerSplitviews.qml</file>
         <file>InnerSplitviewsEditor.qml</file>
         <file>Js/TextUtility.js</file>

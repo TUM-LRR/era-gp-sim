@@ -31,6 +31,7 @@ import "./Lightstrip/"
 import "./Console/"
 import "InputKeys/"
 import "InputMouse/"
+import "PixelDisplay/"
 
 /*
 Container for output items (e.g. lightstrip, seven-segment, text console).
@@ -81,6 +82,14 @@ Item {
       title: "Buttons/Text Console Icon"
       ConsoleComponent {
         outputItemIndex: 2
+        anchors.fill: parent
+      }
+    }
+
+    Tab {
+      title: "Buttons/Pixel Display Icon"
+      PixelDisplay {
+        outputItemIndex: 3
         anchors.fill: parent
       }
     }

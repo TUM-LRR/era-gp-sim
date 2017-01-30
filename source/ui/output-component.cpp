@@ -43,6 +43,8 @@ OutputComponent::OutputComponent(MemoryManager &memoryManager,
       QVariant(QMap<QString, QVariant>{{"type", "TextConsole"},
                                        {"baseAddress", QVariant(0)},
                                        {"textMode", QVariant(0)}}));
+  _outputItemsInformation.push_back(
+      QVariant(QMap<QString, QVariant>{{"type", "PixelDisplay"}}));
 }
 
 
@@ -98,4 +100,8 @@ QList<bool> OutputComponent::getMemoryContent(int address, int length) const {
 
 int OutputComponent::getMemorySize() {
   return _memoryAccess.getMemorySize().get();
+}
+
+MemoryAccess &OutputComponent::getMemoryAccess() {
+  return _memoryAccess;
 }
