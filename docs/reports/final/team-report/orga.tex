@@ -120,10 +120,10 @@ Spezifikation des Projekts gefunden werden. Eine komprimierte Version lautet:
 
 \begin{itemize}
   \bolditem{Juni}: Definition und Realisierung des Architekturinterfaces, parsen einfacher Befehle und Dummy Versionen von Speichermodell sowie GUI.
-  \bolditem{Juli}: Implementierung und Parsen sämtlicher arithmetischer Befehle, Fertigstellung des Speichermodells und Herstellung von Verbindungswegen zwischen sämtlichen Modulen.
+  \bolditem{Juli}: Implementierung und Parsen sämtlicher \emph{arithmetischer} Befehle, Fertigstellung des Speichermodells und Herstellung von ersten Verbindungswegen zwischen sämtlichen Modulen.
   \bolditem{August \& September}: Assemblierung von Befehlen zur Darstellung im Speicher, Parsen von Direktiven, Marken und Konstanten sowie vollständige Verbindung zwischen GUI und Core.
   \bolditem{Oktober}: Entwicklung von Pseudoinstruktionen, Direktiven, Makros und Serialisierungslogik.
-  \bolditem{November}: Fertigstellung der visuellen I/O Module und projektweite Fehlerbehebung.
+  \bolditem{November}: Fertigstellung der I/O Module der GUI und projektweite Fehlerbehebung.
   \bolditem{Dezember \& Januar} Dokumentation und Bericht.
 \end{itemize}
 
@@ -200,9 +200,10 @@ Wir behaupten, dass sich unsere Verplanung bei manchen der Meilensteinen auf dre
 
 \end{enumerate}
 
-\begin{figure}[h!]
+\begin{figure}
   \centering
   \begin{tikzpicture}[thick]
+    \tikzset{dot/.style={fill, circle, inner sep=1.2pt}};
     \draw [|->] (0, 0) -- ++(16, 0);
 
     \newcount\x\relax
@@ -218,11 +219,11 @@ Wir behaupten, dass sich unsere Verplanung bei manchen der Meilensteinen auf dre
       Assemblierung/5/13/2.4,%
       RISC-V Instruktionen/6/3/3,%
       Direktiven und Makros/5/9/0.8,%
-      Ausgabeanzeigen/11/15/3,%
+      {I/O Module}/11/15/3,%
       Verbindung aller Module/3/9/4%
     } {
-      \path (\planned, \y) coordinate [fill, circle, inner sep=1.2pt] (p\name);
-      \path (\actual, \y) coordinate [fill, circle, inner sep=1.2pt] (a\name);
+      \path (\planned, \y) coordinate [dot] (p\name);
+      \path (\actual, \y)  coordinate [dot] (a\name);
       \ifnum\actual<\planned
         \newcommand{\arrowcolor}{NavyBlue}
       \else
