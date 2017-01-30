@@ -4,7 +4,7 @@
 \textframe{\texttt{.parser}}
 
 
-\begin{frame}{.parser}{Aufgabe}
+\begin{frame}{Aufgabe des Parsers}
 \begin{center}
 	\begin{tikzpicture}[node distance=1.0cm and 2.5cm]
 	\tikzstyle{myarrow} = [->, thick]
@@ -19,7 +19,7 @@
 	{
 		\textbf{Programmcode}
 	};}
-	\node (parser) [rectangle, draw = black, minimum height = 5cm, right = of invis1]
+	\node (parser) [rounded corners=1pt, rectangle, draw = black, minimum height = 5cm, right = of invis1]
 	{
 		\textbf{Parser}
 	};
@@ -41,7 +41,7 @@
 \end{frame}
 
 
-\begin{frame}{.parser}{Factory}
+\begin{frame}{Parser-Factory}
 Verschiedene Parser ermöglicht durch Factory-Pattern:
 \uncover<2->{\begin{center}
 	\begin{tikzpicture}[node distance=1.0cm and 2.0cm]
@@ -51,7 +51,7 @@ Verschiedene Parser ermöglicht durch Factory-Pattern:
 	{
 		\texttt{"name"}
 	};
-	\node (factory) [rectangle, draw = black, right = of name]
+	\node (factory) [rounded corners=1pt, rectangle, draw = black, right = of name]
 	{
 		\textbf{Factory}
 	};
@@ -66,7 +66,7 @@ Verschiedene Parser ermöglicht durch Factory-Pattern:
 \end{frame}
 
 
-\begin{frame}[fragile]{.parser}{Prinzip}
+\begin{frame}[fragile]{Prinzip}
 \begin{center}
 	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
 	\tikzstyle{follows} = [->, thick, double]
@@ -81,7 +81,7 @@ addi x1, x0, magic + 2
 	};
 	\node (help) [below = of code] {};
 	\uncover<2->{
-		\node (inter1) [rectangle split, rectangle split parts = 2, draw = black, left = of help]
+		\node (inter1) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, left = of help]
 		{
 			\textbf{Konstante}
 			\nodepart{second}
@@ -91,7 +91,7 @@ addi x1, x0, magic + 2
 			value: & \texttt{"3 * 7"}
 			\end{tabular}}
 		};
-		\node (inter2) [rectangle split, rectangle split parts = 2, draw = black, right = of help]
+		\node (inter2) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of help]
 		{
 			\textbf{Instruktion}
 			\nodepart{second}
@@ -142,17 +142,150 @@ addi x1, x0, magic + 2
 \end{frame}
 
 
-\begin{frame}{.parser}{Symboltabelle}
-TODO (Symbolgraphen?)
+\begin{frame}{Symboltabelle}
+\begin{center}
+	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
+	\tikzstyle{follows} = [->, thick, double]
+	\tikzstyle{treearr} = [->]
+		\uncover<1-4>{
+			\node (s_0) [ellipse, draw = black]
+			{
+				$S_0\rightarrow S_1aS_3$
+			};
+		}
+		\uncover<1-3>{
+			\node (s_1) [ellipse, draw = black, below = of s_0]
+			{
+				$S_1\rightarrow S_2S_3$
+			};
+		}
+		\uncover<5->{
+			\node (s_0_) [ellipse, draw = black]
+			{
+				$S_0\rightarrow bcac$
+			};
+		}
+		\uncover<4->{
+			\node (s_1_) [ellipse, draw = black, below = of s_0]
+			{
+				$S_1\rightarrow bc$
+			};
+		}
+		\uncover<1->{
+			\node (s_2) [ellipse, draw = black, left = of s_1]
+			{
+				$S_2\rightarrow b$
+			};
+		}
+		\uncover<1->{			
+			\node (s_3) [ellipse, draw = black, right = of s_1]
+			{
+				$S_3\rightarrow c$
+			};
+		}
+		\uncover<2-4>{
+			\draw [treearr] (s_0) -- (s_3);
+		}
+		\uncover<2-4>{
+			\draw [treearr] (s_0) -- (s_1);
+		}
+		\uncover<3-3>{
+			\draw [treearr] (s_1) -- (s_2);
+		}
+		\uncover<3-3>{
+			\draw [treearr] (s_1) -- (s_3);
+		}
+		\uncover<1->{\node (graphtxt) [left = of s_2] {Symbolgraph};}
+		\uncover<6->{\node (tabletxt) [below = of graphtxt] {Symbolersetzer};}
+	\end{tikzpicture}
+	\uncover<6->{
+		\begin{tabular}{l|l}
+			Symbol & Ersetzung \\
+			\hline
+			$S_0$ & $bcac$ \\
+			$S_1$ & $bc$ \\
+			$S_2$ & $b$ \\
+			$S_3$ & $c$ \\
+		\end{tabular}
+	}
+\end{center}
 \end{frame}
 
 
-\begin{frame}{.parser}{Arithmetische Ausdrücke}
-TODO: Shunting yard Algorithmus
+\begin{frame}{Arithmetische Ausdrücke}
+\begin{center}
+	\begin{tikzpicture}
+		\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
+		\node (outstacktxt)  {Ausgabe-Stack};
+		\node (opstacktxt) [above = of outstacktxt] {Operator-Stack};
+			\node (expr) [above = of opstacktxt] {				
+				$
+					{\color<1-2>[rgb]{1,0,0}{\color<3->[rgb]{0.5,0.5,0.5}1}}
+					{\color<3-4>[rgb]{1,0,0}{\color<5->[rgb]{0.5,0.5,0.5}+}}
+					{\color<5-6>[rgb]{1,0,0}{\color<7->[rgb]{0.5,0.5,0.5}2}}
+					{\color<7-8>[rgb]{1,0,0}{\color<9->[rgb]{0.5,0.5,0.5}*}}
+					{\color<9-10>[rgb]{1,0,0}{\color<11->[rgb]{0.5,0.5,0.5}3}}
+					{\color<11-16>[rgb]{1,0,0}{\color<17->[rgb]{0.5,0.5,0.5}+}}
+					{\color<17-18>[rgb]{1,0,0}{\color<19->[rgb]{0.5,0.5,0.5}4}}
+				$
+			};
+			\uncover<4-14> {
+				\node (op_add)[rectangle, draw = black, right = of opstacktxt] {
+					\color<14>[rgb]{1,0,0}$+$
+				};
+			}
+			\uncover<8-12> {
+				\node (op_mul)[rectangle, right = of op_add, draw = black] {
+					\color<12>[rgb]{1,0,0}$*$
+				};
+			}
+			\uncover<16-20> {
+				\node (op_add2)[rectangle, draw = black, right = of opstacktxt] {
+					\color<20>[rgb]{1,0,0}$+$
+				};
+			}
+			\uncover<2-14> {
+				\node (num1)[rectangle, draw = black, right = of outstacktxt] {
+					\color<14>[rgb]{1,0,0}$1$
+				};
+			}
+			\uncover<6-12> {
+				\node (num2)[rectangle, draw = black, right = of num1] {
+					\color<12>[rgb]{1,0,0}$2$
+				};
+			}
+			\uncover<10-12> {
+				\node (num3)[rectangle, draw = black, right = of num2] {
+					\color<12>[rgb]{1,0,0}$3$
+				};
+			}
+			\uncover<15-20> {
+				\node (num6)[rectangle, draw = black, right = of outstacktxt] {
+					\color<20>[rgb]{1,0,0}$7$
+				};
+			}
+			\uncover<18-20> {
+				\node (num4)[rectangle, draw = black, right = of num6] {
+					\color<20>[rgb]{1,0,0}$4$
+				};
+			}
+			\uncover<13-14> {
+				\node (num5)[rectangle, draw = black, right = of num1] {
+					\color<14>[rgb]{1,0,0}$6$
+				};
+			}
+			\uncover<21-> {
+				\node (num10)[rectangle, draw = black, right = of outstacktxt] {
+					$11$
+				};
+			}
+		\end{tikzpicture}
+	\end{tikzpicture}
+\end{center}
 \end{frame}
 
 
-\begin{frame}{.parser}{Makros}
+\begin{frame}{Makros}
 \begin{overprint}
 \onslide<1>
 Makroaufrufe suchen und ersetzen.
@@ -165,7 +298,7 @@ Syntaxbaum generieren.
 	\tikzstyle{follows} = [->, thick, double]
 	\tikzstyle{treearr} = [->]
 
-	\node (inter1) [rectangle split, rectangle split parts = 4, draw = black]
+	\node (inter1) [rounded corners=1pt, rectangle split, rectangle split parts = 4, draw = black]
 	{
 		\textbf{Makro}
 		\nodepart{second}
@@ -186,7 +319,7 @@ Syntaxbaum generieren.
 	};
 
 	\uncover<2->{
-	\node (inter4) [rectangle split, rectangle split parts = 2, draw = black, right = of inter1]
+	\node (inter4) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of inter1]
 	{
 		\textbf{Makro-Instr.}
 		\nodepart{second}
@@ -197,7 +330,7 @@ Syntaxbaum generieren.
 		sources: & \texttt{["x1", "x1"]}
 		\end{tabular}}
 	};
-	\node (inter5) [rectangle split, rectangle split parts = 2, draw = black, right = of inter4]
+	\node (inter5) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of inter4]
 	{
 		\textbf{Makro-Instr.}
 		\nodepart{second}
@@ -211,7 +344,7 @@ Syntaxbaum generieren.
 	\draw [dashed] (inter1) -- (inter4) -- (inter5);}
 
 	\uncover<1>{
-	\node (inter2) [rectangle split, rectangle split parts = 2, draw = black, at = (inter4)]
+	\node (inter2) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, at = (inter4)]
 	{
 		\textbf{Instruktion}
 		\nodepart{second}
@@ -221,7 +354,7 @@ Syntaxbaum generieren.
 		targets: & \texttt{["x1"]}
 		\end{tabular}}
 	};
-	\node (inter3) [rectangle split, rectangle split parts = 2, draw = black, at = (inter5)]
+	\node (inter3) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, at = (inter5)]
 	{
 		\textbf{Instruktion}
 		\nodepart{second}
