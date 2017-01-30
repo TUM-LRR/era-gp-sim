@@ -43,3 +43,25 @@
                          [.Editor ] ] ] ] ]
 \end{tikzpicture}
 \end{slide}
+
+\begin{slide}{MVP}
+
+\begin{tikzpicture}[node distance=1.0cm and 2.5cm, minimum height=1.5cm, minimum width=2.5cm]
+
+\node (view)  
+	[rectangle, draw = black] {VIEW};
+
+\node (presenter)  
+	[rectangle, draw = black, below = of view] {PRESENTER};
+
+\node (model)  
+	[rectangle, draw = black, right = of presenter] {MODEL};
+
+\draw[->, thick] (model.170) -- (presenter.10) node [midway, above=1pt, fill=white] {Update};
+\draw[<-, thick] (model.190) -- (presenter.350);
+\draw[->, thick] (presenter.80) -- (view.280);
+\draw[<-, thick] (presenter.100) -- (view.260);
+
+\end{tikzpicture}
+
+\end{slide}
