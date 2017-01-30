@@ -102,7 +102,7 @@
             }
 
             \begin{pgfonlayer}{background}
-                \only<4->{
+                \onslide<4->{
                 \path (servant.west |- servant.north)+(-0.5, 0.5) node (a1) {};
                 \path (scheduler.east |- scheduler.south)+(0.5, -2.5) node (a2) {};
                 \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
