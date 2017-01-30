@@ -20,100 +20,81 @@
     };
     \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
 
-    %%%%%%%%%%%%%
-    % Architektur
-    %%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%
+    % Architektur %
+    %%%%%%%%%%%%%%%
+    \pause
     \path (0, 0.2) coordinate [block] (arch) node {Architektur};
 
-    %%%%%%%%%%%%
-    % Extensions
-    %%%%%%%%%%%%
+    %%%%%%%%%%%%%%
+    % Extensions %
+    %%%%%%%%%%%%%%
+    \pause
     \path (0, -1.2) coordinate [block] (ext) node {Extension};
 
     % Edge
     \draw [->] (arch) -- (ext) node [midway, right] {\texttt{1..N}};
 
-    %%%%%%%%%%%%%%%%%%%%%%
-    % Units (e.g. CPU/FPU)
-    %%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%
+    % Units (e.g. CPU/FPU) %
+    %%%%%%%%%%%%%%%%%%%%%%%%
+    \pause
     \path (-2, -3) coordinate [block] (units) node {Unit};
+    \draw [->] (ext) -- (units) node [midway, above, left] {\texttt{1..N}};
 
     % Register
+    \pause
     \path (-2, -4.5) coordinate [block] (reg) node {Register};
+    \draw [->] (units) -- (reg) node [midway, left] {\texttt{1..N}};
 
+
+    \pause
     \node (rname) at (-2.8, -5.5) {\tiny Name};
     \node (rtype) at (-2, -5.5) {\tiny Typ};
     \node (rwidth) at (-1.2, -5.5) {\tiny Breite};
 
-    % <name>, <breite>, [konstant]
-
-    % Edges
-    \draw [->] (ext) -- (units) node [midway, above, left] {\texttt{1..N}};
-    \draw [->] (units) -- (reg) node [midway, left] {\texttt{1..N}};
     \draw [->, semithick] (reg) -- (rname);
     \draw [->, semithick] (reg) -- (rtype);
     \draw [->, semithick] (reg) -- (rwidth);
 
-    %%%%%%%%%%%%%%%%%
-    % Instruction Set
-    %%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%
+    % Instruction Set %
+    %%%%%%%%%%%%%%%%%%%
+    \pause
     \path (2, -3) coordinate [block, text width=2.5cm]
           (is) node {Instruction Set};
 
-    % Instruktionen
-    \path (2, -4.5) coordinate [block] (inst) node {Instruktion};
+    \draw [->] (ext) -- (is) node [midway, right] {\texttt{1}};
 
-    % <name>, <key>, <format>, [length]
+    % Instruktionen
+    \pause
+    \path (2, -4.5) coordinate [block] (inst) node {Instruktion};
+    \draw [->] (is) -- (inst) node [midway, right] {\texttt{1..N}};
+
+    \pause
     \node (iname) at (1.2, -5.5) {\tiny Name};
     \node (ikey) at (2, -5.5) {\tiny Key};
     \node (iformat) at (2.8, -5.5) {\tiny Format};
 
-    % Edges
-    \draw [->] (ext) -- (is) node [midway, right] {\texttt{1..N}};
-    \draw [->] (is) -- (inst) node [midway, right] {\texttt{1..N}};
     \draw [->, semithick] (inst) -- (iname);
     \draw [->, semithick] (inst) -- (ikey);
     \draw [->, semithick] (inst) -- (iformat);
 
-    %%%%%%%%%%%%
-    % Attributes
-    %%%%%%%%%%%%
-
-    % \node (endian)   at ;
-    % \node (dtypes)   at ;
-    % \node (signed)   at (-3.5, -1.4) {\footnotesize Vorzeichenrep.};
-    %
-    \draw [->, semithick] (ext) -- (2, -0.7)
+    %%%%%%%%%%%%%%
+    % Attributes %
+    %%%%%%%%%%%%%%
+    \pause
+    \draw [->, semithick] (ext) -- (2, -0.8)
           node [right] {\scriptsize Wortgröße};
 
-    \draw [->, semithick] (ext) -- (2, -1.4)
+    \draw [->, semithick] (ext) -- (2, -1.6)
           node [right]{\scriptsize Endianness};
 
-    \draw [->, semithick] (ext) -- (-2, -0.7)
+    \draw [->, semithick] (ext) -- (-2, -0.8)
           node [left] {\scriptsize Datentypen};
 
-    \draw [->, semithick] (ext) -- (-2, -1.4)
-          node [left] {\scriptsize Signed Rep.};
-
-    % \path (3.5, -3) coordinate [block] (attr) node {Attribut};
-    %
-    % % Word size
-    % \path (2.1, -6) coordinate [smallblock]
-    %       (word) node {\footnotesize Wortgröße};
-    %
-    % % Endianness
-    % \path (4.1, -6) coordinate [smallblock]
-    %       (endian) node {\footnotesize Endianness};
-    %
-    % % Data Types
-    % \path (6.1, -6) coordinate [smallblock]
-    %       (datatypes) node {\footnotesize Datentypen};
-    %
-    % % Edges
-    % \draw [->] (ext) -- (attr) node [midway, above, sloped] {\texttt{1..N}};
-    % \draw [->] (attr) -- (word) node [midway, above, left] {\texttt{1}};
-    % \draw [->] (attr) -- (endian) node [midway, above, left] {\texttt{1}};;
-    % \draw [->] (attr) -- (datatypes) node [midway, above, right] {\texttt{1}};;
+    \draw [->, semithick] (ext) -- (-2, -1.6)
+          node [left] {\scriptsize Signed Rep.}; {\texttt{1}};;
   \end{tikzpicture}
 \end{slide}
 

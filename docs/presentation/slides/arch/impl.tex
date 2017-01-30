@@ -1,180 +1,133 @@
 % !TEX root = ../../presentation.tex
-% Architektur: Abstrakter Syntaxbaum
+% Architektur: Implementierung
 
-% Wie ueblich stellen wir Assemblercode zum Parsen, zur Exekution und zur
-% Validierung durch einen Abstrakten Syntaxbaum dar.
+\begin{frame}[fragile]{Implementierung einer Instruktion}
+  \pause
+  \begin{lstlisting}[style=C++]
+    class AbstractSyntaxTreeNode {
+     public:
+      using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
 
+      virtual MemoryValue
+      getValue(MemoryAccess& memoryAccess) const = 0;
 
-\begin{slide}{Darstellung von Assemblercode}
-  \begin{tikzpicture}[thick]
-    \tikzset{node/.style={draw, circle, inner sep=6pt}};
+      virtual ValidationResult
+      validate(MemoryAccess& memoryAccess) const = 0;
 
-    % Root
-    \path (0, 0) coordinate [node] (r);
+      virtual MemoryValue assemble() const = 0;
 
-    % Level 1
-    \path (-1, -1.5) coordinate [node] (l1a);
-    \path (+1, -1.5) coordinate [node] (l1b);
+      virtual const std::string& getIdentifier() const = 0;
 
-    % Level 2
-    \path (-1.8, -3) coordinate [node] (l2a);
-    \path (-1, -3) coordinate [node] (l2b);
-    \path (-0.2, -3) coordinate [node] (l2c);
+     protected:
+      std::vector<Node> _children;
+    };
+  \end{lstlisting}
+\end{frame}
 
-    \path (+1, -3) coordinate [node] (l2d);
+% Anmerkung: in RISC-V ist der AST nie tiefer als 2 Knoten
 
-    % Level 3
-    \path (-1.8, -4.5) coordinate [node] (l3a);
-
-    \path (+0.2, -4.5) coordinate [node] (l3b);
-    \path (+1.8, -4.5) coordinate [node] (l3c);
-
-    % Edges
-    \foreach \i in {a, b} { \draw (r) -- (l1\i); }
-    \foreach \i/\j in {a/a, a/b, a/c, b/d} { \draw (l1\i) -- (l2\j); };
-    \foreach \i/\j in {a/a, d/b, d/c} { \draw (l2\i) -- (l3\j); };
-  \end{tikzpicture}
-
-  \vspace{0.6cm}
-  {\Large \textbf{AST}}
-\end{slide}
-
-% 1) Was ist ein AST actually?
-% Ein AST heisst *abstrakt*, weil ein Knoten ueber ein abstraktes Interface
-% dargestellt wird, zur Laufzeit aber Element aus einer Familie von konkreten
-% Knotentypen ist. Selbes gilt fuer die Kinder des Knoten.
-% Bei uns sind die moeglichen konkreten Typen:
-
-\begin{slide}{Abstrake Knoten}
-  \begin{tikzpicture}[thick]
-    \draw (0, 0) circle [radius=1cm] node [align=center]
-          {\footnotesize Instruction\\ \scriptsize \texttt{addi}};
-
-    \pause
-    \draw (-3, 0) circle [radius=1cm] node [align=center]
-          {\footnotesize Immediate\\ \scriptsize \texttt{0x42}};
-
-    \pause
-    \draw (+3, 0) circle [radius=1cm] node [align=center]
-          {\footnotesize Register\\ \scriptsize \texttt{x1}};
-
-    \pause
-    \draw (-3, -3) circle [radius=1cm] node [align=center]
-          {\footnotesize Arithmetic \\ \scriptsize \texttt{+}};
-
-    \pause
-    \draw (0, -3) circle [radius=1cm] node [align=center]
-          {\footnotesize Memory \\ \scriptsize \texttt{[69]}};
-
-    \pause
-    \draw (+3, -3) circle [radius=1cm] node [align=center]
-          {\footnotesize Data\\ \scriptsize \texttt{"Meow"}};
-  \end{tikzpicture}
-
-\end{slide}
-
-\begin{slide}{Beispiel}
-  \LARGE\texttt{add eax, [6*ebx+ecx+9]}
-\end{slide}
-
-\begin{slide}{Beispiel}
-  \scalebox{0.7}{
+\begin{slide}{\texttt{getValue()}}
   \begin{tikzpicture}[thick]
     \tikzset{node/.style={draw, circle, inner sep=0.35cm}};
 
-    %%%%%%%%
-    % Code %
-    %%%%%%%%
-    \onslide<1>{
-      \node (code) at (8, -4.5) {\LARGE\texttt{add eax, [6*ebx+ecx+9]}};
+    % Nodes
+    \path (0, 0) coordinate [Purple, node] (mov) node {\texttt{mov}};
+    \path (-1, -1.5) coordinate [Green, node] (eax) node {\texttt{eax}};
+    \path (+1, -1.5) coordinate [ProcessBlue, node] (mem) node {\texttt{[]}};
+    \path (+1, -3.2) coordinate [Red, node] (42) node {\texttt{42}};
+
+    % Edges
+    \draw (mov) -- (eax);
+    \draw (mov) -- (mem);
+    \draw (mem) -- (42);
+
+    % Code
+    \draw (0, -4.5) node {\large\texttt{%
+      \textcolor{Purple}{mov} \textcolor{Green}{eax},%
+      \textcolor{ProcessBlue}{[}\textcolor{Red}{42}\textcolor{ProcessBlue}{]}}%
+    };
+
+    % getValue() calls
+    \onslide<2-6>{
+      \node (getValue) at (0, 1.2) {\footnotesize\texttt{getValue()}};
+      \draw [->, shorten <= -3pt] (getValue) -- (mov);
     }
-    \onslide<2>{
-      \node (code) at (8, -4.5) {%
-        \LARGE\texttt{\textcolor{Purple}{add} eax, [6*ebx+ecx+9]}
-      };
+
+    \onslide<3-5>{
+      \draw [->] (mov) -- (eax)
+            node [pos=0.4, left] {\scriptsize\texttt{getValue()}};
+      \draw [->] (mov) -- (mem)
+            node [pos=0.4, right] {\scriptsize\texttt{getValue()}};
     }
-    \onslide<3>{
-      \node (code) at (8, -4.5) {%
-        \LARGE\texttt{add \textcolor{Green}{eax}, %
-        \textcolor{ProcessBlue}{[}6*ebx+ecx+9\textcolor{ProcessBlue}{]}}
-      };
-    }
+
     \onslide<4>{
-      \node (code) at (8, -4.5) {%
-        \LARGE\texttt{add eax, [6*ebx+ecx\textcolor{orange}{+}9]}
-      };
-    }
-    \onslide<5>{
-      \node (code) at (8, -4.5) {%
-        \LARGE\texttt{add eax,%
-        [6*ebx\textcolor{orange}{+}ecx+\textcolor{Red}{9}]}
-      };
-    }
-    \onslide<6>{
-      \node (code) at (8, -4.5) {%
-        \LARGE\texttt{add eax,%
-        [6\textcolor{orange}{*}ebx+\textcolor{Green}{ecx}+9]}
-      };
-    }
-    \onslide<7>{
-      \node (code) at (8, -4.5) {%
-        \LARGE\texttt{add eax,%
-        [\textcolor{Red}{6}*\textcolor{Green}{ebx}+ecx+9]}};
+      \draw [->] (mem) -- (42)
+            node [pos=0.4, right] {\scriptsize\texttt{getValue()}};
     }
 
-    % Left Spacer
-    \draw (-3.5, 0);
-
-    %%%%%%%%
-    % Tree %
-    %%%%%%%%
-
-    % Root (instruction)
-    \onslide<2->{
-      \path (0, 0) coordinate [Purple, node] (add) node {\texttt{add}};
-    }
-
-    % Level 1 (eax, [])
-    \onslide<3->{
-      \path (-1, -1.5) coordinate [Green, node] (eax) node {\texttt{eax}};
-      \path (+1, -1.5) coordinate [ProcessBlue, node] (mem) node {\texttt{[]}};
-
-      \draw (add) -- (eax);
-      \draw (add) -- (mem);
-    }
-
-    % Level 2 (plus)
-    \onslide<4->{
-      \path (+1, -3) coordinate [orange, node] (+1) node {\texttt{+}};
-      \draw (mem) -- (+1);
-    }
-
-    % Level 3 (plus, 9)
+    % getValue() results
     \onslide<5->{
-      \path ( 0, -4.5) coordinate [orange, node] (+2) node {\texttt{+}};
-      \path (+2, -4.5) coordinate [Red, node] (9) node {\texttt{9}};
-
-      \draw (+1) -- (+2);
-      \draw (+1) -- (9);
+    \draw [->] (42) -- (mem)
+          node [pos=0.4, right] {\scriptsize\texttt{42}};
     }
 
-    % Level 4 (*, ecx)
     \onslide<6->{
-      \path (-1, -6) coordinate [orange, node] (*) node {\texttt{*}};
-      \path (+1, -6) coordinate [Green, node] (ecx) node {\texttt{ecx}};
-
-      \draw (+2) -- (*);
-      \draw (+2) -- (ecx);
+      \draw [->] (eax) -- (mov)
+            node [pos=0.6, left]
+            {\tiny\texttt{getRegisterValue(eax)}};
+      \draw [->] (mem) -- (mov)
+            node [pos=0.6, right]
+            {\tiny\texttt{getMemoryValueAt(42, 4)}};
     }
 
-    % Level 5 (6, ebx)
     \onslide<7->{
-      \path (-2, -7.5) coordinate [Red, node] (6) node {\texttt{6}};
-      \path ( 0, -7.5) coordinate [Green, node] (ebx) node {\texttt{ebx}};
-
-      \draw (*) -- (6);
-      \draw (*) -- (ebx);
+      \draw [->] (mov) -- (getValue);
+      \node (getValue) at (-1.9, 1.2) {%
+        \footnotesize\texttt{%
+        \onslide<8>{setRegisterValue(eip, }eip + 4\onslide<8>{)}}
+      };
     }
   \end{tikzpicture}
-  }
 \end{slide}
+
+\begin{frame}[fragile]{Beispiel}
+\begin{lstlisting}[style=C++]
+template<typename UnsignedWord, typename SignedWord>
+class LoadInstructionNode {
+ public:
+  // ...
+  MemoryValue getValue(MemoryAccess& memoryAccess) const {
+    const auto& destination = _children[0]->getIdentifier();
+
+    UnsignedWord base = _children[1]->getValue(memoryAccess);
+    SignedWord offset = _children[2]->getValue(memoryAccess);
+    auto address = base + offset;
+
+    // byteAmount in {1, 2, 4, 8}
+    auto result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    memoryAccess.putRegisterValue(destination, result);
+
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
+  }
+  // ...
+};
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Beispiel}
+\begin{lstlisting}[style=C++]
+template <typename UnsignedWord, typename SignedWord>
+struct BranchEqualInstructionNode
+    : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
+  using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
+
+  explicit
+  BranchEqualInstructionNode(const InstructionInformation& information)
+  : super(information, [](const auto& first, const auto& second) {
+    return first == second;
+  }) {
+  }
+};
+\end{lstlisting}
+\end{frame}
