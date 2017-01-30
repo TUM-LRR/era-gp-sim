@@ -83,25 +83,39 @@
       text width=2cm,%
       text height=0.45cm}%
     };
+    \tikzset{reck/.style={%
+      draw,%
+      rectangle,%
+      text width=2.36cm,%
+      text height=0.9cm}%
+    };
 
     \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
 
     %%%%%%%%%%%%%%%
     % conversions %
     %%%%%%%%%%%%%%%
-    \path (-9, -1.8) coordinate [block] (mvae) node {Mv, ae, as};
+    \path (-9, 2) coordinate [block] (mvae) node {MemoryValue};
 
-    \path (-9, 0.2) coordinate [block] (perm) node {Permtation};
+    \path[draw=red] (-9, 0) coordinate [reck] (perm) node {
+      \begin{tabular}{c}
+        permutation \\ function
+      \end{tabular}
+    };
 
-    \path (-6, 0.2) coordinate [block] (mvle) node {Mv, le, as};
+    \path (-6, 0) coordinate [block] (mvle) node {little endian};
 
-    \path (-3, -1.8) coordinate [block] (sf) node {sign function};
+    \path[draw=red] (-3, -2) coordinate [reck] (sf) node {sign function};
 
-    \path (-3, 0.2) coordinate [block] (ti) node {toIntegral};
+    \path[draw=red] (-3, 0) coordinate [reck] (ti) node {
+    \begin{tabular}{c}
+      toIntegral \\ function
+    \end{tabular}
+    };
 
-    \path[draw=white] (-3, 2.2) coordinate [block] (tmv) node {};
+    \path[draw=white] (-3, 2) coordinate [reck] (tmv) node {};
 
-    \path (0, 0.2) coordinate [block] (inte) node {integral};
+    \path (0, 0) coordinate [block] (inte) node {integral};
 
     \draw [->] (mvae) -- (perm);
     \draw [->] (perm) -- (mvle);
