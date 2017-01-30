@@ -1,0 +1,94 @@
+
+
+\begin{slide}{Kommunikation mit dem Core}
+
+  \begin{tikzpicture}[auto, node distance=2cm]
+  % NODE DEFINITIONS
+  \tikzstyle{module} = [draw, rectangle,
+  text width=4cm]
+  \tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, text width=4cm, align=center]
+  \tikzstyle{modulearrow} = [->, thick]
+  \tikzstyle{extension} = [dashed]
+
+  \node (guiproject) [class] {GUIProject};
+
+  \node (callbackarrow) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow, shape border rotate=180] at (3.15,0) {};
+  \node[above = 0.2cm of callbackarrow, xshift=-0.1cm] {Callback};
+
+  \node (signalarrow) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow, shape border rotate=180] at (-2.85,0) {};
+  \node[above = 0.2cm of signalarrow, xshift=0.1cm] {Signal};
+
+  \node (interfacearrow1) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow] at (2.85,-2.67) {};
+
+  \node (interfacearrow2) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow] at (-3.15,-2.67) {};
+
+  \node (registermodel) [class, left = of guiproject] {RegisterModel};
+  \node (memorycomponentpresenter) [class, above = of registermodel] {MemoryComponent-\\Presenter};
+  \node (editorcomponent) [class, below = of registermodel] {EditorComponent};
+  \node (guiecetera) [below = of editorcomponent, text width=4cm, align=center] {...};
+  \node (guipackage) [above = 0.5cm of memorycomponentpresenter] {GUI};
+  \node (guiext1) [above left = 0.2cm of memorycomponentpresenter] {};
+  \node (guiext2) [above right = 0.2cm of memorycomponentpresenter] {};
+  \node (guiext3) [below right = 0.2cm of guiecetera] {};
+  \node (guiext4) [below left = 0.2cm of guiecetera] {};
+  \draw [extension] (guiext1) -- (guiext2) -- (guiext3) -- (guiext4) -- (guiext1);
+
+  \node (register) [class, right = of guiproject] {Register};
+  \node (memory) [class, above = of register] {Memory};
+  \node (parsingandexecutionunit) [class, below = of register] {ParsingAnd-\\ExecutionUnit};
+  \node (coreecetera) [below = of parsingandexecutionunit, text width=4cm, align=center] {...};
+  \node (corepackage) [above = 0.5cm of memory] {Core-Instanz};
+  \node (coreext1) [above left = 0.2cm of memory] {};
+  \node (coreext2) [above right = 0.2cm of memory] {};
+  \node (coreext3) [below right = 0.2cm of coreecetera] {};
+  \node (coreext4) [below left = 0.2cm of coreecetera] {};
+  \draw [extension] (coreext1) -- (coreext2) -- (coreext3) -- (coreext4) -- (coreext1);
+
+  \node (interfaces) [class, below = of guiproject] {Interfaces (Proxies)};
+
+  \end{tikzpicture}
+\end{slide}
+
+
+
+
+\begin{slide}{MVP}
+
+\begin{tikzpicture}[node distance=2.0cm and 2.5cm]
+
+\node (view)
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm]
+	{VIEW};
+	\node (qml) [draw = white, node distance=0cm, above = of view]
+		{\textbf{qml + JavaScript}};
+
+\node (presenter)
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, below = of view]
+	{PRESENTER};
+	\node (qobject) [draw = white, node distance=0cm, below = of presenter]
+		{\textbf{QObject}\\ \textbf{(QAbstractItemModel)}};
+
+\node (model)
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, right = of presenter]
+	{MODEL};
+	\node (core) [draw = white, node distance=0cm, below = of model]
+		{\textbf{Core} \\ \textbf{(Memory, Architecture, ...)}};
+
+\draw[->, thick] (model.170) -- (presenter.10)
+	node [midway, above=1pt, fill=white, draw=white]
+	{\textit{update callback}};
+
+\draw[<-, thick] (model.190) -- (presenter.350)
+	node [midway, below=1pt, fill=white, draw=white]
+	{\textit{set data}};
+
+\draw[->, thick] (presenter.80) -- (view.280)
+	node [midway, right=1pt, fill=white, draw=white]
+	{\textit{Qt signal: dataChanged() }};
+
+\draw[<-, thick] (presenter.100) -- (view.260)
+	node [midway, left=1pt, fill=white, draw=white]
+	{\textit{new data by user}};
+
+\end{tikzpicture}
+\end{slide}

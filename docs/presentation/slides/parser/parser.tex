@@ -143,7 +143,62 @@ addi x1, x0, magic + 2
 
 
 \begin{frame}{.parser}{Symboltabelle}
-TODO (Symbolgraphen?)
+\begin{center}
+	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
+	\tikzstyle{follows} = [->, thick, double]
+	\tikzstyle{treearr} = [->]
+		\uncover<1->{\node (graphtxt) {Symbolgraph};}
+		\uncover<6->{\node (graphtxt) [below = of graphtxt] {Symbolgraph};}
+		\uncover<1-4>{
+			\node (s_0) [ellipse, draw = black]
+			{
+				$S_0\rightarrow S_1aS_3$
+			};
+		}
+		\uncover<1-3>{
+			\node (s_1) [ellipse, draw = black, below = of s_0]
+			{
+				$S_1\rightarrow S_2S_3$
+			};
+		}
+		\uncover<5->{
+			\node (s_0_) [ellipse, draw = black]
+			{
+				$S_0\rightarrow bcac$
+			};
+		}
+		\uncover<4->{
+			\node (s_1_) [ellipse, draw = black, below = of s_0]
+			{
+				$S_1\rightarrow bc$
+			};
+		}
+		\uncover<1->{
+			\node (s_2) [ellipse, draw = black, left = of s_1]
+			{
+				$S_2\rightarrow b$
+			};
+		}
+		\uncover<1->{			
+			\node (s_3) [ellipse, draw = black, right = of s_1]
+			{
+				$S_3\rightarrow c$
+			};
+		}
+		\uncover<2-4>{
+			\draw [treearr] (s_0) -- (s_3);
+		}
+		\uncover<2-4>{
+			\draw [treearr] (s_0) -- (s_1);
+		}
+		\uncover<3-3>{
+			\draw [treearr] (s_1) -- (s_2);
+		}
+		\uncover<3-3>{
+			\draw [treearr] (s_1) -- (s_3);
+		}
+	\end{tikzpicture}
+\end{center}
 \end{frame}
 
 
