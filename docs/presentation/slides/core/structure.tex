@@ -17,25 +17,36 @@
             }
 
             \onslide<3->{
-            \node (architectureAccess) [class, right = of projectModule] {ArchitectureAccess};
-            \node (commandInterface) [class, below = of architectureAccess] {CommandInterface};
-            \node (parserInterface) [class, below = of commandInterface] {ParserInterface};
-            \node (memoryManager) [class, above = of architectureAccess] {MemoryManager};
-            \node (memoryAccess) [class, above = of memoryManager] {MemoryAccess};
-
+            \node (memoryAccess) [class, right = of projectModule, yshift = 2.6cm] {MemoryAccess};
             \draw[composition-arrow] (projectModule) -- (memoryAccess);
+            }
+
+            \onslide<4->{
+            \node (memoryManager) [class, below = of memoryAccess] {MemoryManager};
             \draw[composition-arrow] (projectModule) -- (memoryManager);
+            }
+
+            \onslide<5->{
+            \node (architectureAccess) [class, below = of memoryManager] {ArchitectureAccess};
             \draw[composition-arrow] (projectModule) -- (architectureAccess);
+            }
+
+            \onslide<6->{
+            \node (commandInterface) [class, below = of architectureAccess] {CommandInterface};
             \draw[composition-arrow] (projectModule) -- (commandInterface);
+            }
+
+            \onslide<7->{
+            \node (parserInterface) [class, below = of commandInterface] {ParserInterface};
             \draw[composition-arrow] (projectModule) -- (parserInterface);
             }
 
-            \onslide<4>{
+            \onslide<8>{
             \node (interface) [below =0.4cm of parserInterface] {\textbf{Synchronisiertes Interface}};
             }
 
             \begin{pgfonlayer}{background}
-                \onslide<4>{
+                \onslide<8>{
                 \path (memoryAccess.west |- memoryAccess.north)+(-1.3,0.5) node (a1) {};
                 \path (parserInterface.east |- parserInterface.south)+(1.3,-1.3) node (a2) {};
                 \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
@@ -55,36 +66,51 @@
 \begin{figure}
     \begin{center}
         \begin{tikzpicture}[node distance=2.0cm and 2.5cm]
-            \node (proxy) [class] {Proxy};
-            \node (servant) [class, right = of proxy] {Servant};
-            \node (scheduler) [class, right = of servant] {Scheduler};
-            \node (activeObject) [below = of {$(servant)!0.5!(scheduler)$}] {\textbf{Active Object Thread}};
 
-            \only<1>{
+
+            \node (servant) [class] {Servant};
+
+            \onslide<2->{
+            \node (proxy) [class, left = of servant] {Proxy};
+            }
+
+            \onslide<3->{
+            \node (scheduler) [class, right = of servant] {Scheduler};
+            }
+
+            \onslide<4->{
+            \node (activeObject) [below = of {$(servant)!0.5!(scheduler)$}] {\textbf{Active Object Thread}};
+            }
+
+            \only<2-4>{
             \draw[dashed-arrow] (proxy) -- (servant);
+            }
+
+            \only<3-4>{
             \draw[dashed-arrow] (servant) -- (scheduler);
             }
 
-            \only<2>{
+            \only<5>{
             \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (servant);
             \draw[dashed-arrow] (servant) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
             }
 
-            \only<3>{
+            \only<6>{
             \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (servant);
             \draw[dashed-arrow] (servant) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
             \draw[dashed-arrow] (scheduler) to[bend left] node [yshift=-0.4cm]{\small{executeTask()}} (servant);
             }
 
             \begin{pgfonlayer}{background}
+                \only<4->{
                 \path (servant.west |- servant.north)+(-0.5, 0.5) node (a1) {};
                 \path (scheduler.east |- scheduler.south)+(0.5, -2.5) node (a2) {};
                 \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+                }
             \end{pgfonlayer}{background}
         \end{tikzpicture}
 
     \end{center}
-    \caption{Aufbau eines Active Objects}
     \label{fig:active-object-structure}
 \end{figure}
 
