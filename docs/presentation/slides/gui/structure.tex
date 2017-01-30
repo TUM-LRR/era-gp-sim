@@ -17,7 +17,8 @@
     text depth = 0pt
     },
   edge from parent/.style=
-    {draw=black!50,
+    {,
+    draw=black!50,
     thick
     }}
 
@@ -66,9 +67,9 @@
 \begin{slide}{Aufbau der GUI}
 \begin{tikzpicture}
   \Tree [.\node{ApplicationWindow\\(main.qml)};
-            \edge[{Diamond}-];[.\node{Menubar}; ]
-            \edge[{Diamond}-];[.\node{Toolbar}; ]
-            \edge[{Diamond}-];[.\node{ProjectTabView};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
                 \edge[draw=white];[.\node[color=white,draw=white]{Splitview};
                      \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews};
                          \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
@@ -87,10 +88,10 @@
 \begin{slide}{Aufbau der GUI}
 \begin{tikzpicture}
   \Tree [.\node{ApplicationWindow\\(main.qml)};
-            \edge[{Diamond}-];[.\node{Menubar}; ]
-            \edge[{Diamond}-];[.\node{Toolbar}; ]
-            \edge[{Diamond}-];[.\node{ProjectTabView};
-                \edge[{Diamond}-];[.\node{Splitview};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
                      \edge[draw=white];[.\node[color=white,draw=white]{InnerSplitviews};
                          \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
                              \edge[draw=white];[.Snapshots ]
@@ -108,18 +109,18 @@
 \begin{slide}{Aufbau der GUI}
 \begin{tikzpicture}
   \Tree [.\node{ApplicationWindow\\(main.qml)};
-            \edge[{Diamond}-];[.\node{Menubar}; ]
-            \edge[{Diamond}-];[.\node{Toolbar}; ]
-            \edge[{Diamond}-];[.\node{ProjectTabView};
-                \edge[{Diamond}-];[.\node{Splitview};
-                     \edge[{Diamond}-];[.\node{InnerSplitviews};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
+                     [.\node{InnerSplitviews};
                          \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem};
                              \edge[draw=white];[.Snapshots ]
                              \edge[draw=white];[.Help ]
                              \edge[draw=white];[.Registers ]
                              \edge[draw=white];[.Memory ]
                              \edge[draw=white];[.Input/Output ] ] ]
-                     \edge[{Diamond}-];[.\node{InnerSplitviews-\\Editor};
+                     [.\node{InnerSplitviews-\\Editor};
                          \edge[draw=white];[.\node[color=white,draw=white]{SplitViewItem}; ]
                          \edge[draw=white];[.\node[color=white,draw=white]{Editor}; ] ] ] ] ]
 \end{tikzpicture}
@@ -129,20 +130,20 @@
 \begin{slide}{Aufbau der GUI}
 \begin{tikzpicture}
   \Tree [.\node{ApplicationWindow\\(main.qml)};
-            \edge[{Diamond}-];[.\node{Menubar}; ]
-            \edge[{Diamond}-];[.\node{Toolbar}; ]
-            \edge[{Diamond}-];[.\node{ProjectTabView};
-                \edge[{Diamond}-];[.\node{Splitview};
-                     \edge[{Diamond}-];[.\node{InnerSplitviews};
-                         \edge[{Diamond}-];[.\node{SplitViewItem};
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
+                     [.\node{InnerSplitviews};
+                         [.\node{SplitViewItem};
                              \edge[draw=white];[.Snapshots ]
                              \edge[draw=white];[.Help ]
                              \edge[draw=white];[.Registers ]
                              \edge[draw=white];[.Memory ]
                              \edge[draw=white];[.Input/Output ] ] ]
-                     \edge[{Diamond}-];[.\node{InnerSplitviews-\\Editor};
-                         \edge[{Diamond}-];[.\node{SplitViewItem}; ]
-                         \edge[{Diamond}-];[.\node{Editor}; ] ] ] ] ]
+                     [.\node{InnerSplitviews-\\Editor};
+                         [.\node{SplitViewItem}; ]
+                         [.\node{Editor}; ] ] ] ] ]
 \end{tikzpicture}
 \end{slide}
 
@@ -150,20 +151,20 @@
 \begin{slide}{Aufbau der GUI}
 \begin{tikzpicture}
   \Tree [.\node{ApplicationWindow\\(main.qml)};
-            \edge[{Diamond}-];[.\node{Menubar}; ]
-            \edge[{Diamond}-];[.\node{Toolbar}; ]
-            \edge[{Diamond}-];[.\node{ProjectTabView};
-                \edge[{Diamond}-];[.\node{Splitview};
-                     \edge[{Diamond}-];[.\node{InnerSplitviews};
-                         \edge[{Diamond}-];[.\node{SplitViewItem};
-                             \edge[{Diamond}-];[.Snapshots ]
-                             \edge[{Diamond}-];[.Help ]
-                             \edge[{Diamond}-];[.Registers ]
-                             \edge[{Diamond}-];[.Memory ]
-                             \edge[{Diamond}-];[.Input/Output ] ] ]
-                     \edge[{Diamond}-];[.\node{InnerSplitviews-\\Editor};
-                         \edge[{Diamond}-];[.\node{SplitViewItem}; ]
-                         \edge[{Diamond}-];[.\node{Editor}; ] ] ] ] ]
+            [.\node{Menubar}; ]
+            [.\node{Toolbar}; ]
+            [.\node{ProjectTabView};
+                [.\node{Splitview};
+                     [.\node{InnerSplitviews};
+                         [.\node{SplitViewItem};
+                             [.Snapshots ]
+                             [.Help ]
+                             [.Registers ]
+                             [.Memory ]
+                             [.Input/Output ] ] ]
+                     [.\node{InnerSplitviews-\\Editor};
+                         [.\node{SplitViewItem}; ]
+                         [.\node{Editor}; ] ] ] ] ]
 \end{tikzpicture}
 \end{slide}
 
@@ -171,13 +172,13 @@
 
 \begin{tikzpicture}[node distance=1.0cm and 2.5cm, minimum height=1.5cm, minimum width=2.5cm]
 
-\node (view)
+\node (view)  
 	[rectangle, draw = black] {VIEW};
 
-\node (presenter)
+\node (presenter)  
 	[rectangle, draw = black, below = of view] {PRESENTER};
 
-\node (model)
+\node (model)  
 	[rectangle, draw = black, right = of presenter] {MODEL};
 
 \draw[->, thick] (model.170) -- (presenter.10) node [midway, above=1pt, fill=white] {Update};
