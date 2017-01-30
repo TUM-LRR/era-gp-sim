@@ -170,21 +170,41 @@
 
 \begin{slide}{MVP}
 
-\begin{tikzpicture}[node distance=1.0cm and 2.5cm, minimum height=1.5cm, minimum width=2.5cm]
+\begin{tikzpicture}[node distance=2.0cm and 2.5cm]
 
 \node (view)  
-	[rectangle, draw = black] {VIEW};
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm] 
+	{VIEW};
+	\node (qml) [draw = white, node distance=0cm, above = of view] 
+		{\textbf{qml + JavaScript}};
 
 \node (presenter)  
-	[rectangle, draw = black, below = of view] {PRESENTER};
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, below = of view] 
+	{PRESENTER};
+	\node (qobject) [draw = white, node distance=0cm, below = of presenter] 
+		{\textbf{QObject}\\ \textbf{(QAbstractItemModel)}};
 
 \node (model)  
-	[rectangle, draw = black, right = of presenter] {MODEL};
+	[rectangle, draw = black, minimum height=1.5cm, minimum width=2.5cm, right = of presenter] 
+	{MODEL};
+	\node (core) [draw = white, node distance=0cm, below = of model] 
+		{\textbf{Core} \\ \textbf{(Memory, Architecture, ...)}};
 
-\draw[->, thick] (model.170) -- (presenter.10) node [midway, above=1pt, fill=white] {Update};
-\draw[<-, thick] (model.190) -- (presenter.350);
-\draw[->, thick] (presenter.80) -- (view.280);
-\draw[<-, thick] (presenter.100) -- (view.260);
+\draw[->, thick] (model.170) -- (presenter.10) 
+	node [midway, above=1pt, fill=white, draw=white] 
+	{\textit{update callback}};
+	
+\draw[<-, thick] (model.190) -- (presenter.350)
+	node [midway, below=1pt, fill=white, draw=white] 
+	{\textit{set data}};
+	
+\draw[->, thick] (presenter.80) -- (view.280)
+	node [midway, right=1pt, fill=white, draw=white] 
+	{\textit{Qt signal: dataChanged() }};
+	
+\draw[<-, thick] (presenter.100) -- (view.260)
+	node [midway, left=1pt, fill=white, draw=white] 
+	{\textit{new data by user}};
 
 \end{tikzpicture}
 
