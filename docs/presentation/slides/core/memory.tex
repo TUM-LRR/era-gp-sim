@@ -78,7 +78,18 @@
     \draw [->] (ups) -- (str);
     \draw [->] (rid) -- (pvc) node [midway, above] {\texttt{id}};
     \draw [->] (pvc) -- (pst);
-    \draw [->] (pst) -- (sig);
+    \draw [->] (ups) -- (sig);
 
   \end{tikzpicture}
+\end{slide}
+
+\begin{slide}{MemoryValue}
+  \begin{tabular}{l|cccc}
+    x & rw-single-bit & rw-single-byte & rw-subString & constructionTime-size \\
+    std::vector\textless bool\textgreater & v & x & v & v \\
+    boost::dynamic\_bitset & v & x & x & v \\
+    std::bitset & v & x & x & x \\
+    std::vector\textless std::uint8\_t\textgreater & x & v & v & v \\
+    magic & v & v & v & v \\
+  \end{tabular}
 \end{slide}
