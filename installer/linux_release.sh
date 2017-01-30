@@ -1,4 +1,4 @@
-#!bin/sh
+#!/bin/bash
 
 # This script performs all neccessary steps for a LINUX release
 
@@ -13,7 +13,7 @@ DATA_CONFIG=$ERA_SIM_ROOT/installer/packages/erasim.config/data/config.7z
 #Perform a clean build
 
 cd $ERA_SIM_ROOT
-mkdir build
+mkdir -p build
 cd build
 #make clean
 cmake .. -DCMAKE_PREFIX_PATH=$2
@@ -31,10 +31,11 @@ cp -a $ERA_SIM_ROOT/themes linux_release/.erasim/
 7z a $DATA_CONFIG $ERA_SIM_ROOT/build/linux_release/.erasim
 
 # Now we run the binarycreator utility
+mkdir -p $ERA_SIM_ROOT/releases
 $1 -c $ERA_SIM_ROOT/installer/config/config.xml -p $ERA_SIM_ROOT/installer/packages/ $ERA_SIM_ROOT/releases/$3
 
 # Cleanup
 rm $DATA_BASE
 rm $DATA_CONFIG
-rm $ERA_SIM_ROOT/build/linux_release/.erasim
+rm -r $ERA_SIM_ROOT/build/linux_release/.erasim
 
