@@ -113,14 +113,63 @@ die benötigten Instanzen der Interface-Klassen (\texttt{MemoryAccess} und
 
 Datenaustausch ausgehend vom Core hin zu den QML-Komponenten in der GUI hat
 nicht den Scheduler zwischengeschaltet, sondern verläuft über das
-\texttt{GUIProject} in zwei Schritten. Im ersten Schritt ruft der Core einen
+\texttt{GUIProject} in zwei Schritten (siehe auch Abbildung
+\ref{fig:dev-manual-gui-communication}). Im ersten Schritt ruft der Core einen
 Callback auf, der im \texttt{ProjectModule} gesetzt wird (näher Informationen im
-Abschnitt \ref{Dev-Kapitel: Core}). Das \texttt{GUIProject} leitet im zweiten Schritt den im
-\texttt{GUIProject} eingehenden Callback mit Hilfe des Qt-eigenen
+Abschnitt \ref{Dev-Kapitel: Core}). Das \texttt{GUIProject} leitet im zweiten
+Schritt den im \texttt{GUIProject} eingehenden Callback mit Hilfe des Qt-eigenen
 Signal-Slot-Mechanismus an die Instanzen der C++-Klassen der QML-Komponenten
 weiter. Diese Umleitung ist auch deshalb notwendig, um die eingehende Nachricht,
 die im Thread des Cores gesendet wird, in den Main-Thread zu übertragen, der von
 der GUI verwendet wird.
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[auto, node distance=2cm]
+	% NODE DEFINITIONS
+	\tikzstyle{module} = [draw, rectangle,
+	text width=4cm]
+	\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow, text width=4cm, align=center]
+	\tikzstyle{modulearrow} = [->, thick]
+	\tikzstyle{extension} = [dashed]
+
+
+	\node (guiproject) [class] {GUIProject};
+
+	\node (registermodel) [class, left = of guiproject] {RegisterModel};
+	\node (memorycomponentpresenter) [class, above = of registermodel] {MemoryComponent-\\Presenter};
+	\node (editorcomponent) [class, below = of registermodel] {EditorComponent};
+	\node (guiecetera) [below = of editorcomponent, text width=4cm, align=center] {...};
+	\node (guipackage) [above = 0.5cm of memorycomponentpresenter] {GUI};
+	\node (guiext1) [above left = 0.2cm of memorycomponentpresenter] {};
+	\node (guiext2) [above right = 0.2cm of memorycomponentpresenter] {};
+	\node (guiext3) [below right = 0.2cm of guiecetera] {};
+	\node (guiext4) [below left = 0.2cm of guiecetera] {};
+	\draw [extension] (guiext1) -- (guiext2) -- (guiext3) -- (guiext4) -- (guiext1);
+	\coordinate[right = 0.2cm of registermodel] (guiextension);
+
+	\node (projectmodule) [class, right = of guiproject] {ProjectModule};
+	\node (coreecetera) [below = of projectmodule, text width=4cm, align=center] {...};
+	\node (corepackage) [above = 0.5cm of projectmodule] {Core};
+	\node (coreext1) [above left = 0.2cm of projectmodule] {};
+	\node (coreext2) [above right = 0.2cm of projectmodule] {};
+	\node (coreext3) [below right = 0.2cm of coreecetera] {};
+	\node (coreext4) [below left = 0.2cm of coreecetera] {};
+	\draw [extension] (coreext1) -- (coreext2) -- (coreext3) -- (coreext4) -- (coreext1);
+	\coordinate[left = 0.2cm of projectmodule] (coreextension);
+
+	\node (scheduler) [class, below = of guiproject] {Scheduler};
+
+	\draw[modulearrow] (guiproject) to node [text width=2cm, xshift=0.5cm, yshift=0.8cm] {Signal} ($ (guiextension) + (0.1cm, 0cm) $);
+	\draw[modulearrow] ($ (coreextension) + (-0.1cm, 0cm) $) to node [text width=2cm, xshift=0.3cm, yshift=0.8cm] {Callback} (guiproject);
+
+	\draw[modulearrow] ($ (guiextension) + (0.1cm, 0cm) $) to[bend right] node [text width=4cm, yshift=-0.2cm] {Interfaces (Proxies)} (scheduler);
+	\draw[modulearrow] (scheduler) to[bend right] ($ (coreextension) + (-0.1cm, 0cm) $);
+	
+	\end{tikzpicture}
+	\caption{Kommunikation der GUI mit dem Core}
+	\label{fig:dev-manual-gui-communication}
+\end{figure}
 
 Nachrichten, die von einer der C++-Klassen der Komponenten an den Core gesendet
 werden sollen, können mit Hilfe der Interface-Klassen in den Scheduler eingefügt
@@ -130,7 +179,7 @@ Damit die QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen
 können, werden deren Instanzen im \texttt{GUIProject} zum projektspezifischen
 \texttt{QQMLContext} hinzugefügt, beispielsweise die Klasse
 \texttt{RegisterModel} als Context-Property \texttt{registerModel}. Auf die
-Properties dieses Kontexts kann über die zugehörige Bezeichnung (im vorigen Beispiel: 
+Properties dieses Kontexts kann über die zugehörige Bezeichnung (im vorigen Beispiel:
 \texttt{registerModel}) global in jeder QML-Datei zugegriffen werden. Die
 Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes
 \texttt{GUIProject} seinen eigenen Kontext erhält.
