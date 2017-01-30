@@ -1,0 +1,41 @@
+% !TEX root = ../../presentation.tex
+% Core: Ausführung
+
+\begin{frame}[fragile]{Ausführung}
+\begin{lstlisting}[style=C++]
+void execute() {
+  // ...
+  size_t nextNode = _findNextNode();
+  while (true) {
+    if (_stopCondition->getFlag()) break;
+    if (nextNode >= _finalRepresentation.commandList().size()) break;
+    if (!_executeNode(nextNode)) break;
+
+    nextNode = _updateLineNumber(nextNode);
+    _syncCallback();
+    _syncCondition->waitAndReset();
+  }
+  // ...
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Ausführung}
+\begin{lstlisting}[style=C++]
+bool _executeNode(size_t nodeIndex) {
+  // ...
+  auto &currentCommand = _finalRepresentation.commandList()[nodeIndex];
+  auto validationResult = currentCommand.node()->validateRuntime(_memoryAccess);
+  if (!validationResult.isSuccess()) {
+    _throwError(validationResult.getMessage());
+    return false;
+  }
+  // ...
+  MemoryValue programCounterValue =
+      currentCommand.node()->getValue(_memoryAccess);
+  _memoryAccess.putRegisterValue(_programCounter.getName(),
+                                 programCounterValue);
+  return true;
+}
+\end{lstlisting}
+\end{frame}
