@@ -2,3 +2,44 @@
 % GUI
 
 \textframe{\texttt{.gui}}
+
+
+\tikzset{hide on/.code={\only<#1>{\color{white}}}}
+
+\begin{slide}{Aufbau der GUI}
+\begin{tikzpicture}
+  \tikzset{font=\tiny,
+    edge from parent fork down,
+    level distance=1.3cm,
+    every node/.style=
+      {rectangle,rounded corners,
+      minimum height=7mm,
+      fill=white,
+      draw=black!50,
+      drop shadow,
+      align=center,
+      text depth = 0pt
+      },
+    edge from parent/.style=
+      {{Diamond}-,
+      draw=black!50,
+      thick
+      }}
+
+  \Tree [.{ApplicationWindow\\(main.qml)}
+            [.MenuBar ]
+            [.Toolbar ]
+            [.ProjectTabView
+                [.Splitview
+                     [.InnerSplitviews
+                         [.SplitViewItem
+                             [.Snapshots ]
+                             [.Help ]
+                             [.Registers ]
+                             [.Memory ]
+                             [.Input/Output ] ] ]
+                     [.{InnerSplitviews-\\Editor}
+                         [.SplitViewItem ]
+                         [.Editor ] ] ] ] ]
+\end{tikzpicture}
+\end{slide}
