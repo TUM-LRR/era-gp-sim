@@ -32,7 +32,7 @@ SplitView {
     quotient: 3
     usual1: "snapshots"
     usual2: "inputoutput"
-
+    defaultTabLower: 4
   }
 
   InnerSplitviewsEditor {
