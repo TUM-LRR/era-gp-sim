@@ -129,12 +129,21 @@ der GUI verwendet wird.
 	% NODE DEFINITIONS
 	\tikzstyle{module} = [draw, rectangle,
 	text width=4cm]
-	\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow, text width=4cm, align=center]
+	\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, text width=4cm, align=center]
 	\tikzstyle{modulearrow} = [->, thick]
 	\tikzstyle{extension} = [dashed]
 
-
 	\node (guiproject) [class] {GUIProject};
+
+	\node (callbackarrow) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow, shape border rotate=180] at (3.15,0) {};
+	\node[above = 0.2cm of callbackarrow, xshift=-0.1cm] {Callback};
+
+	\node (signalarrow) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow, shape border rotate=180] at (-2.85,0) {};
+	\node[above = 0.2cm of signalarrow, xshift=0.1cm] {Signal};
+
+	\node (interfacearrow1) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow] at (2.85,-2.67) {};
+
+	\node (interfacearrow2) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow] at (-3.15,-2.67) {};
 
 	\node (registermodel) [class, left = of guiproject] {RegisterModel};
 	\node (memorycomponentpresenter) [class, above = of registermodel] {MemoryComponent-\\Presenter};
@@ -146,26 +155,20 @@ der GUI verwendet wird.
 	\node (guiext3) [below right = 0.2cm of guiecetera] {};
 	\node (guiext4) [below left = 0.2cm of guiecetera] {};
 	\draw [extension] (guiext1) -- (guiext2) -- (guiext3) -- (guiext4) -- (guiext1);
-	\coordinate[right = 0.2cm of registermodel] (guiextension);
 
-	\node (projectmodule) [class, right = of guiproject] {ProjectModule};
-	\node (coreecetera) [below = of projectmodule, text width=4cm, align=center] {...};
-	\node (corepackage) [above = 0.5cm of projectmodule] {Core};
-	\node (coreext1) [above left = 0.2cm of projectmodule] {};
-	\node (coreext2) [above right = 0.2cm of projectmodule] {};
+	\node (register) [class, right = of guiproject] {Register};
+	\node (memory) [class, above = of register] {Memory};
+	\node (parsingandexecutionunit) [class, below = of register] {ParsingAnd-\\ExecutionUnit};
+	\node (coreecetera) [below = of parsingandexecutionunit, text width=4cm, align=center] {...};
+	\node (corepackage) [above = 0.5cm of memory] {Core-Instanz};
+	\node (coreext1) [above left = 0.2cm of memory] {};
+	\node (coreext2) [above right = 0.2cm of memory] {};
 	\node (coreext3) [below right = 0.2cm of coreecetera] {};
 	\node (coreext4) [below left = 0.2cm of coreecetera] {};
 	\draw [extension] (coreext1) -- (coreext2) -- (coreext3) -- (coreext4) -- (coreext1);
-	\coordinate[left = 0.2cm of projectmodule] (coreextension);
 
-	\node (scheduler) [class, below = of guiproject] {Scheduler};
+	\node (interfaces) [class, below = of guiproject] {Interfaces (Proxies)};
 
-	\draw[modulearrow] (guiproject) to node [text width=2cm, xshift=0.5cm, yshift=0.8cm] {Signal} ($ (guiextension) + (0.1cm, 0cm) $);
-	\draw[modulearrow] ($ (coreextension) + (-0.1cm, 0cm) $) to node [text width=2cm, xshift=0.3cm, yshift=0.8cm] {Callback} (guiproject);
-
-	\draw[modulearrow] ($ (guiextension) + (0.1cm, 0cm) $) to[bend right] node [text width=4cm, yshift=-0.2cm] {Interfaces (Proxies)} (scheduler);
-	\draw[modulearrow] (scheduler) to[bend right] ($ (coreextension) + (-0.1cm, 0cm) $);
-	
 	\end{tikzpicture}
 	\caption{Kommunikation der GUI mit dem Core}
 	\label{fig:dev-manual-gui-communication}
