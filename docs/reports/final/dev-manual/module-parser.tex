@@ -223,7 +223,9 @@ Während erste und zweite Eigenschaft leicht per Iterieren über die Symbole bzw
 Die Evaluierung (Klasse \texttt{SymbolGraphEvaluation}) wird anschließend an den SymbolReplacer weitergegeben. Dieser ersetzt textuell bei einem gegebenen Eingabestring alle Symbolvorkommen über mehrere Iterationen hinweg, denn es ist ja auch möglich, dass ein dynamisches Symbol zu einem weiteren dynamischen Symbol expandiert (wenn auch noch kein solcher Fall bekannt ist). In der Tat ist es wegen der Natur der dynamischen Symbole ebenfalls nicht möglich, zu sehen, ob eine Ersetzung mit Sicherheit terminiert (vgl. oben). Also brechen wir nach einer bestimmten Anzahl an Ersetzungsiterationen (standardmäßig auf 4 gesetzt) ab und geben einen Fehler zurück. Anmerkung: Die textuelle Ersetzungs ist noch alles andere als ideal, besser wäre, wenn die Ersetzung ausschließlich auf einem Stream von Tokens (siehe nächsten Abschnitt) arbeiten würde (und auch einen solchen zurückgibt).
 
 \subparagraph{Compiler für arithmetische Ausdrücke}
-\todo[inline]{TODO}
+Neben Symbolersetzung enthält die \texttt{independent}-Bibliothek auch ein System, um arithmetische Ausdrücke zu verarbeiten. Es handelt sich dabei um die Klasse \texttt{ExpressonCompiler} bzw. ihre Instanziierungen.
+
+
 
 \paragraph{RISC-V-Submodul}
 
