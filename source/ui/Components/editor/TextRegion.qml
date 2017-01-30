@@ -30,6 +30,7 @@ TextEdit {
   selectByMouse: true
   smooth: true
   focus: true
+  font.pointSize: Theme.editor.pointSize
 
   textFormat: TextEdit.PlainText
   wrapMode: TextEdit.NoWrap
