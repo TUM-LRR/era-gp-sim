@@ -147,8 +147,6 @@ addi x1, x0, magic + 2
 	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
 	\tikzstyle{follows} = [->, thick, double]
 	\tikzstyle{treearr} = [->]
-		\uncover<1->{\node (graphtxt) {Symbolgraph};}
-		\uncover<6->{\node (graphtxt) [below = of graphtxt] {Symbolgraph};}
 		\uncover<1-4>{
 			\node (s_0) [ellipse, draw = black]
 			{
@@ -197,13 +195,30 @@ addi x1, x0, magic + 2
 		\uncover<3-3>{
 			\draw [treearr] (s_1) -- (s_3);
 		}
+		\uncover<1->{\node (graphtxt) [left = of s_2] {Symbolgraph};}
+		\uncover<6->{\node (tabletxt) [below = of graphtxt] {Symbolersetzer};}
 	\end{tikzpicture}
+	\uncover<6->{
+		\begin{tabular}{l|l}
+			Symbol & Ersetzung \\
+			\hline
+			$S_0$ & $bcac$ \\
+			$S_1$ & $bc$ \\
+			$S_2$ & $b$ \\
+			$S_3$ & $c$ \\
+		\end{tabular}
+	}
 \end{center}
 \end{frame}
 
 
 \begin{frame}{.parser}{Arithmetische Ausdrücke}
-TODO: Shunting yard Algorithmus
+$$1+2\cdot 3$$
+\begin{center}
+	\begin{tikzpicture}
+		
+	\end{tikzpicture}
+\end{center}
 \end{frame}
 
 

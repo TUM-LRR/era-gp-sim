@@ -27,16 +27,58 @@
 
     \path (-3, 0.2) coordinate [block] (ti) node {toIntegral};
 
-    \path (-3, 2.2) coordinate [block] (tmv) node {toMemoryValue};
+    \path[draw=white] (-3, 2.2) coordinate [block] (tmv) node {};
 
     \path (0, 0.2) coordinate [block] (inte) node {integral};
 
-    \draw [<->] (mvae) -- (perm);
-    \draw [<->] (perm) -- (mvle);
+    \draw [->] (mvae) -- (perm);
+    \draw [->] (perm) -- (mvle);
     \draw [->] (mvle) -- (sf);
     \draw [->] (mvle) -- (ti);
     \draw [->] (sf) -- (ti);
     \draw [->] (ti) -- (inte);
+    \draw[draw=white] [->] (inte) -- (tmv);
+    \draw[draw=white] [->] (tmv) -- (mvle);
+
+  \end{tikzpicture}
+\end{slide}
+
+\begin{slide}{conversions}
+  \begin{tikzpicture}[thick]
+
+    \tikzset{block/.style={%
+      draw,%
+      rectangle,%
+      rounded corners,%
+      text width=2cm,%
+      text height=0.45cm}%
+    };
+
+    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
+
+    %%%%%%%%%%%%%%%
+    % conversions %
+    %%%%%%%%%%%%%%%
+    \path (-9, -1.8) coordinate [block] (mvae) node {Mv, ae, as};
+
+    \path (-9, 0.2) coordinate [block] (perm) node {Permtation};
+
+    \path (-6, 0.2) coordinate [block] (mvle) node {Mv, le, as};
+
+    \path[draw=white] (-3, -1.8) coordinate [block] (sf) node {};
+
+    \path[draw=white] (-3, 0.2) coordinate [block] (ti) node {};
+
+    \path (-3, 2.2) coordinate [block] (tmv) node {toMemoryValue};
+
+    \path (0, 0.2) coordinate [block] (inte) node {integral};
+
+    \draw [<-] (mvae) -- (perm);
+    \draw [<-] (perm) -- (mvle);
+    \draw[draw=white] [->] (mvle) -- (sf);
+    \draw[draw=white] [->] (mvle) -- (ti);
+    \draw[draw=white] [->] (sf) -- (ti);
+    \draw[draw=white] [->] (ti) -- (inte);
     \draw [->] (inte) -- (tmv);
     \draw [->] (tmv) -- (mvle);
 
