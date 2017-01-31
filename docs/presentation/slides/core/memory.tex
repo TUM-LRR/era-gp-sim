@@ -88,7 +88,7 @@
 	{any memory\\ representation};
 
 \node (permutation)
-	[font=\scriptsize, left=0.5cm of memory, draw=black, circle] {}
+	[font=\scriptsize, left=0.5cm of memory, draw=red, circle] {}
       edge [<->]             (anymemory)
       edge [<->]            (memory);
 
@@ -103,7 +103,7 @@
 	{Integral};
 
 
-\node [font=\scriptsize] (toIntegral) [above=1cm of center, draw=black] {toIntegral()}
+\node [font=\scriptsize] (toIntegral) [above=1cm of center, draw=red] {toIntegral()}
       edge [bend right, <-]            (memory)
       edge [bend left, ->]             (integral);
 
@@ -112,7 +112,7 @@
 		{sign function};
 
 \node (toMemoryValue)
-	[font=\scriptsize, below=1cm of center, draw=black]
+	[font=\scriptsize, below=1cm of center, draw=red]
 	{toMemoryValue()}
       edge [bend left, ->]             (memory)
       edge [bend right, <-]            (integral);
@@ -122,6 +122,17 @@
 \end{tikzpicture}
 \end{slide}
 
+\begin{slide}{RegisterSet}
+\begin{tikzpicture}
+
+  % pseudo element for centering
+  \node (center) {};
+
+  \node (mapEax)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, left=8cm of center]
+    {\texttt{"}\texttt{eax"[0,31]}};
+\end{tikzpicture}
+\end{slide}
 
 \begin{slide}{register}
   \begin{tikzpicture}[thick]
