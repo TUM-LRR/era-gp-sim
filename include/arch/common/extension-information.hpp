@@ -56,8 +56,8 @@
  * additional unit (hardware registers).
  *
  * An `ExtensionInformation` can be built easily on-top of anther via the
- * supported interface (e.g. `extend`). In general, the API follows the
- * BuilderInterface pattern.
+ * supported interface (e.g. `merge`). In general, the API follows the
+ * Builder pattern.
  */
 class ExtensionInformation : public InformationInterface {
  public:
@@ -315,7 +315,7 @@ class ExtensionInformation : public InformationInterface {
    */
   template <typename Range>
   ExtensionInformation& addUnits(const Range& range) {
-    for (auto& unit : range) {
+    for (const auto& unit : range) {
       addUnit(unit);
     }
     return *this;

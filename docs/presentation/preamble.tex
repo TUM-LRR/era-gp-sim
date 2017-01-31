@@ -1,0 +1,279 @@
+% !TEX root = presentation.tex
+% Presentation Preamble
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   BEAMER CLASS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[xcolor={dvipsnames}]{beamer}
+\usepackage{etex}
+\usetheme{default}
+\setbeamertemplate{sections/subsections in toc}[sections numbered]
+\setbeamertemplate{items}[default]
+\usefonttheme[onlymath]{serif}
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+
+\definecolor{themecolor}{rgb}{1.0, 0.5, 0.0} % orange
+\usecolortheme[named=themecolor]{structure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LANGUAGE                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[utf8]{inputenc} % This is needed for umlauts
+\usepackage[ngerman]{babel} % This is needed for umlauts
+% \usepackage[T1]{fontenc}    % This is needed for umlauts in PDFs
+% ^ makes reduces font weight of headings :(
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	DRAWING
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{3d}
+\usetikzlibrary{shapes}
+\usetikzlibrary{shadings}
+\usetikzlibrary{shadows}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows, arrows.meta}
+\usetikzlibrary{trees}
+\usetikzlibrary{calc}
+
+% GRAPH STUFF
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white]
+\tikzstyle{inheritance-arrow} = [->, thick,>=open triangle 90,every node/.style={font=\sffamily\small}]
+\tikzstyle{composition-arrow} = [{Diamond}-,every node/.style={font=\sffamily\small}]
+\tikzstyle{dashed-arrow} = [->, dashed]
+\tikzstyle{empty} = [draw=none,fill=none]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	OTHER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{gensymb}
+\usepackage{cancel}
+\usepackage{booktabs}
+\usepackage{fdsymbol}
+\usepackage{phaistos}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	CODE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{listings}
+
+\definecolor{stringgreen}{RGB}{50,220,15}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstdefinelanguage [risc-v]{Assembler}{
+  morekeywords={ADD, ADDI, SLTI, SLTU, SLTIU, AND, ANDI, OR, ORI, XOR, XORI, SLLI, SRLI, SRAI, SLAI, LUI, AUIPC, SLT, SLL, SRL, SRA, SLA, JAL, JALR, BEQ, BNE, BLT, BLTU, BGE, BGEU, LW, LH, LB, SW, SH, SB, LHU, LBU, SHU, SBU, MUL, MULH, MULHU, MULHSU, DIV, DIVU, REM, REMU, .RESB},
+  sensitive=false,
+  morecomment=[l]{;},
+}
+
+\lstdefinelanguage{ISA}{
+  alsoletter=-,
+  morekeywords={
+    alignment-behavior,
+    byte-size,
+    endianness,
+    extends,
+    format,
+    funct3,
+    id,
+    instructions,
+    key,
+    length,
+    mnemonic,
+    name,
+    opcode,
+    operand,
+    registers,
+    signed-representation,
+    size,
+    units,
+    word-size,
+  },
+  sensitive=false,
+  morecomment=[l]{\#}
+}
+
+\lstdefinestyle{C++}{%
+	basicstyle=\ttfamily\scriptsize,
+	language=C++,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	numbers=none,
+	numberstyle=\tiny\color{red},
+	keywordstyle=\color{magenta},
+	commentstyle=\color{gray},
+	stringstyle=\color{stringgreen},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=2,
+  extendedchars=true
+}
+
+\lstdefinestyle{isa}{%
+	basicstyle=\ttfamily\scriptsize,
+	language=isa,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	numbers=none,
+	keywordstyle=\color{magenta},
+	commentstyle=\color{gray},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=2,
+  extendedchars=true
+}
+
+
+\lstdefinestyle{risc-v_Assembler}{
+  basicstyle=\ttfamily\footnotesize\selectfont,
+  language={[risc-v]Assembler},
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  numbers=none,
+  numberstyle=\tiny\color{red},
+	keywordstyle=\color{magenta},
+	commentstyle=\color{gray},
+	stringstyle=\color{stringgreen},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  extendedchars=true
+}
+
+\lstdefinestyle{x86Assembler}{
+  basicstyle=\ttfamily\footnotesize\selectfont,
+  language={[x86masm]Assembler},
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  numbers=none,
+  numberstyle=\tiny\color{red},
+	keywordstyle=\color{magenta},
+	commentstyle=\color{gray},
+	stringstyle=\color{stringgreen},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  extendedchars=true
+}
+
+\lstset{literate=
+	{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+	{À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+	{ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+	{Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+	{â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+	{Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+	{œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+	{ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+	{ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+	{€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+	{»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	CONFIG
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\graphicspath{{figures/}}
+% \addtolength{\parskip}{\baselineskip}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	BEAMER FOOTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setbeamertemplate{footline}[text line]{%
+  \parbox{\linewidth}{%
+    \vspace*{-15pt}%
+    \scriptsize
+    ERA SIM\hspace{4cm}%
+    \microchip\hfill%
+    \insertpagenumber}%
+}
+\setbeamertemplate{navigation symbols}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	NEW COMMANDS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\inlineitem}[2]{{\color{themecolor}#1.} #2 \hspace{0.5cm}}
+
+\newcommand{\textframe}[1]{%
+  \begin{frame}
+    \centering
+    \Huge
+    \color{themecolor}
+    \vspace{0.2cm}
+    #1
+  \end{frame}
+}
+
+\newcommand{\pitem}{\pause\item}
+
+\newcommand{\black}{\color{black}}
+
+\newcommand{\legendsquare}[1]{
+  \tikz{\fill [#1] (0, 0) rectangle ++(0.25, 0.25);}
+}
+
+\newcommand{\barchart}[5]{
+  \fill [#4] (#1, 0) rectangle ++(#2, #3);
+  \draw ({#1 + #2/2}, {#3 + 0.3}) node {\footnotesize #5};
+}
+
+\newcommand{\microchip}{
+  \begin{tikzpicture}[thick, themecolor]
+    \fill [rounded corners=0.5pt] (0, 0) rectangle ++(6pt, 8pt);
+    \foreach \y in {2pt, 4pt, 6pt} {
+      \draw (0, \y)   -- ++(-1.5pt, 0);
+      \draw (6pt, \y) -- ++(+1.5pt, 0);
+    }
+  \end{tikzpicture}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	NEW ENVIRONMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{slide}[1]
+{
+  \centering
+	\section{#1}
+	\begin{frame}
+		\frametitle{#1}
+}
+{
+	\end{frame}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 	NEW SYMBOLS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makeatletter
+\newcommand*\bigcdot{\mathpalette\bigcdot@{.5}}
+\newcommand*\bigcdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
+\makeatother
