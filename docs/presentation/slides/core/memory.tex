@@ -73,51 +73,41 @@
   }
 \end{slide}
 
-\begin{slide}{Conversions}
-\begin{tikzpicture}
+\begin{slide}{Konvertierungen}
+\begin{tikzpicture} [thick]
+    \tikzset{block/.style={%
+      draw,%
+      rectangle,%
+      rounded corners,%
+      text width=2cm,%
+      text height=0.45cm}%
+    };
+\tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
 
-% pseudo element for centering
-\node (center) {};
+\node (memoryValue) at (-3.5, 0) {MemoryValue};
+\node (aboveMV) at (-1.9, 0.75) {};
+\node (belowMV) at (-1.9, -0.75) {};
 
-\node (memory)
-	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, left=1.5cm of center]
-	{common\\ memory\\ representation\\ (LE, AS)};
-
-\node (anymemory)
-	[font=\scriptsize, align=center, left=1.5cm of memory, minimum width=2cm, draw=black, rounded corners]
-	{any memory\\ representation};
-
-\node (permutation)
-	[font=\scriptsize, left=0.5cm of memory, draw=red, circle] {}
-      edge [<->]             (anymemory)
-      edge [<->]            (memory);
-
-\node (permutation_label)
-	[font=\scriptsize, below=0.75cm of permutation]
-	{permutation};
-
-\draw [->, dashed] (permutation_label) -- (permutation);
-
-\node (integral)
-	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, right=1.5cm of center]
-	{Integral};
+%memory value outline
+\path (memoryValue.west |- memoryValue.north)+(-0.5,1.5) node (a1) {};
+\path (memoryValue.east |- memoryValue.south)+(0.5,-1.5) node (a2) {};
+\path[rounded corners, draw=black!50, thick] (a1) rectangle (a2);
 
 
-\node [font=\scriptsize] (toIntegral) [above=1cm of center, draw=red] {toIntegral()}
-      edge [bend right, <-]            (memory)
-      edge [bend left, ->]             (integral);
+\node (integral) at (3.5, 0) {Integral};
+\node (aboveI) at (2.4, 0.75) {};
+\node (belowI) at (2.4, -0.75) {};
 
-\node (signfunction)
-	[font=\scriptsize, above left=0.7cm of toIntegral]
-		{sign function};
+%memory value outline
+\path (integral.west |- integral.north)+(-0.5,1.5) node (a1) {};
+\path (integral.east |- integral.south)+(0.5,-1.5) node (a2) {};
+\path[rounded corners, draw=black!50, thick] (a1) rectangle (a2);
 
-\node (toMemoryValue)
-	[font=\scriptsize, below=1cm of center, draw=red]
-	{toMemoryValue()}
-      edge [bend left, ->]             (memory)
-      edge [bend right, <-]            (integral);
+\draw [->] (aboveMV) -- (aboveI);
+\draw [<-] (belowMV) -- (belowI);
 
-\draw [->, dashed] (signfunction) -- (toIntegral) ;
+%text between arrows
+\node (convert) at (0.25, 0) {\texttt{convert()}};
 
 \end{tikzpicture}
 \end{slide}
