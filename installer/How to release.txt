@@ -4,22 +4,37 @@ Prerequisites:
 + Download the prebuilt framework (https://download.qt.io/official_releases/qt-installer-framework/2.0.3/)
   The os name in the framework specifies for which os the installer is generated
 
-+ Install 7zip command line utility
-  Linux: packages "p7zip-full" and "p7zip-rar"
+Naming convention: erasim-<version>-<platform> (e.g. erasim-0.9.0-linux)
 
-  If you cannot install a 7zip utility, this is fine. The automated scripts won't work though
+Note: for zipping you can use archivegen <file to zip> <output name> from the framework
+
+###################
+Linux release
+###################
+* Build a new clean version of era-sim
+* Zip era-sim executable into packages/erasim.base/data/base.7z
+* Create .erasim folder, copy isa/ and themes/ into .erasim. 
+  Zip the whole .erasim folder into packages/erasim.config/data/config.7z
+* goto installer/
+* run <path_to_framework>/bin/binarycreator -c config/config.xml -p packages <name of installer>
+* The installer is created inside this folder
+* Copy it into the respective release folder
+
+#####################################
+Windows release (using mingw 32bit)
+#####################################
+* Build a new clean version of era-sim
+* Create temporary folder, copy era-sim executable into temp folder
+* goto temporary folder
+* run <path_to_qt_mingw>\bin\windeployqt.exe era-sim.exe
+* Copy additional libraries from <qt_mingw>\bin into temporary folder: libgcc_s_dw2-1.dll, libstdc++-6.dll, libwinpthread-1.dll
+* Copy qml Dependencies from <qt_mingw>\qml\ into temporary folder: Qt, QtGraphicalEffects, QtQml, QtQuick, QtQuick.2
+* Zip the contents of the temporary folder into packages\erasim.base\data\base.7z
+* Create .erasim folder, copy isa\ and themes\ into .erasim. 
+  Zip the whole .erasim folder into packages\erasim.config\data\config.7z
+* goto installer\
+* run <path_to_framework>\bin\binarycreator.exe -c config\config.xml -p packages <name of installer>
+* The installer is created inside this folder
+* Copy it into the respective release folder
 
 
-The general steps to do:
-* Build an new clean version of era-sim
-* Zip era-sim executable and isa-Folder into packages/erasim.base/data/<archive name>.7z
-* Zip .erasim, put the archive into packages/erasim.config/data/<archive name>.7z
-* Call the binarycreator-tool of the downloaded prebuilt framework:
-  <path_from_here_to_binary_creator>/binarycreator -c config/config.xml -p packages <Output file name>
-* Remove the zipped data packages
-
-
-Release script:
-Linux:
-	call linux_release.sh <path_to_binary_creator> <cmake prefix path> <Output file name>
-	Note: The installscript puts the output file into the releases folder
