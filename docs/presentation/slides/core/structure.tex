@@ -65,46 +65,42 @@
 
 \begin{figure}
     \begin{center}
-        \begin{tikzpicture}[node distance=2.0cm and 2.5cm]
+        \begin{tikzpicture}[node distance=1.0cm and 2.5cm]
 
 
             \node (servant) [class] {Servant};
 
-            \onslide<2->{
-            \node (proxy) [class, left = of servant] {Proxy};
+            \onslide<4->{
+            \node (scheduler) [class, left = of servant] {Scheduler};
             }
 
             \onslide<3->{
-            \node (scheduler) [class, right = of servant] {Scheduler};
+            \node (proxy) [class, left = of scheduler] {Proxy};
             }
 
-            \onslide<4->{
+            \onslide<2->{
             \node (activeObject) [below = of {$(servant)!0.5!(scheduler)$}] {\textbf{Active Object Thread}};
             }
 
-            \only<2-4>{
-            \draw[dashed-arrow] (proxy) -- (servant);
+            \only<4-5>{
+            \draw[dashed-arrow] (proxy) -- (scheduler);
             }
 
-            \only<3-4>{
-            \draw[dashed-arrow] (servant) -- (scheduler);
+            \only<4-5>{
+            \draw[dashed-arrow] (scheduler) -- (servant);
             }
 
-            \only<5>{
-            \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (servant);
-            \draw[dashed-arrow] (servant) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
+            \only<5->{
+            \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
             }
-
-            \only<6>{
-            \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (servant);
-            \draw[dashed-arrow] (servant) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
-            \draw[dashed-arrow] (scheduler) to[bend left] node [yshift=-0.4cm]{\small{executeTask()}} (servant);
+            \only<6->{
+            \draw[dashed-arrow] (scheduler) to node [yshift=0.3cm]{\small{execute(task)}} (servant);
             }
 
             \begin{pgfonlayer}{background}
-                \onslide<4->{
-                \path (servant.west |- servant.north)+(-0.5, 0.5) node (a1) {};
-                \path (scheduler.east |- scheduler.south)+(0.5, -2.5) node (a2) {};
+                \onslide<2->{
+                \path (scheduler.west |- scheduler.north)+(-0.5, 0.5) node (a1) {};
+                \path (servant.east |- servant.south)+(0.5, -1.5) node (a2) {};
                 \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
                 }
             \end{pgfonlayer}{background}
