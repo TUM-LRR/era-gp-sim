@@ -128,89 +128,65 @@
   % pseudo element for centering
   \node (center) {};
 
+  \node (eax)
+    [font=\scriptsize, draw=black, rounded corners, align=center, minimum height=0.68cm, minimum width=3cm, above left=0.5cm and 3cm of center]
+    {\texttt{EAX}};
+  \node (ebx)
+    [font=\scriptsize, draw=black, rounded corners, align=center, minimum height=0.68cm, minimum width=3cm, above left=-1.5cm and 3cm of center]
+    {\texttt{EBX}};
+
   \node (mapEax)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, left=8cm of center]
-    {\texttt{"}\texttt{eax"[0,31]}};
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=1cm and 7cm of center]
+    {\texttt{"}\texttt{eax"[0,31]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapAx)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0.5cm and 7cm of center]
+    {\texttt{"}\texttt{ax"[0,15]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapAl)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0cm and 7cm of center]
+    {\texttt{"}\texttt{al"[0,7]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapAh)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-0.5cm and 7cm of center]
+    {\texttt{"}\texttt{ah"[8,15]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapEbx)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1cm and 7cm of center]
+    {\texttt{"}\texttt{ebx"[0,31]}}
+      edge [->, out=0, in=180] (ebx);
+  \node (mapBx)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1.5cm and 7cm of center]
+    {\texttt{"}\texttt{bx"[0,15]}}
+      edge [->, out=0, in=180] (ebx);
+  \node (mapBl)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2cm and 7cm of center]
+    {\texttt{"}\texttt{bl"[0,7]}}
+      edge [->, out=0, in=180] (ebx);
+  \node (mapBh)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2.5cm and 7cm of center]
+    {\texttt{"}\texttt{bh"[8,15]}}
+      edge [->, out=0, in=180] (ebx);
+
+  \node (eaxUpdate)
+    [font=\scriptsize, draw=black, align=center, minimum height=1.72cm, minimum width=0.78cm, above left=0cm and -1cm of center]
+    {\begin{tabular}{c}
+      \texttt{"}\texttt{eax"} \\
+      \texttt{"}\texttt{ax"} \\
+      \texttt{"}\texttt{al"} \\
+      \texttt{"}\texttt{ah"} \\
+    \end{tabular}};
+  \node (ebxUpdate)
+    [font=\scriptsize, draw=black, align=center, minimum height=1.72cm, minimum width=0.78cm, above left=-2cm and -1cm of center]
+    {\begin{tabular}{c}
+      \texttt{"}\texttt{ebx"} \\
+      \texttt{"}\texttt{bx"} \\
+      \texttt{"}\texttt{bl"} \\
+      \texttt{"}\texttt{bh"} \\
+    \end{tabular}};
+
+  \draw [->] (eax) -- (eaxUpdate);
+  \draw [->] (ebx) -- (ebxUpdate);
+
 \end{tikzpicture}
-\end{slide}
-
-\begin{slide}{register}
-  \begin{tikzpicture}[thick]
-
-    \tikzset{block/.style={%
-      draw,%
-      rectangle,%
-      rounded corners,%
-      text width=2cm,%
-      text height=0.45cm}%
-    };
-
-    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
-
-    %%%%%%%%%%%%%%%
-    %  register   %
-    %%%%%%%%%%%%%%%
-    \path (-4.5, 0) coordinate [block] (str) node {String};
-    \path (-1.5, 0) coordinate [block] (rid) node {Register ID};
-    \path (1.5, 0) coordinate [block] (rvc) node {Register Vector};
-    \path (4.5, 0) coordinate [block] (pre) node {Parent Register};
-    \path (4.5, -3) coordinate [block] (mvl) node {MemoryValue};
-    \path[draw=white] (-4.5, -3) coordinate [block] (white) node {};
-    \path[draw=white] (4.5, -5) coordinate [block] (white) node {};
-
-    \draw [->] (str) -- (rid);
-    \draw [->] (rid) -- (rvc) node [midway, above] {\texttt{id}};
-    \draw [->] (rvc) -- (pre);
-    \draw [->] (rid) to [out=30,in=150] node [midway, above] {\texttt{begin, end}} (pre);
-    \draw [->] (pre) -- (mvl);
-
-  \end{tikzpicture}
-\end{slide}
-
-\begin{slide}{register}
-  \begin{tikzpicture}[thick]
-
-    \tikzset{block/.style={%
-      draw,%
-      rectangle,%
-      rounded corners,%
-      text width=2cm,%
-      text height=0.45cm}%
-    };
-
-    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
-
-    %%%%%%%%%%%%%%%
-    %  register   %
-    %%%%%%%%%%%%%%%
-    \path (-4.5, 0) coordinate [block] (str) node {String};
-    \path (-1.5, 0) coordinate [block] (rid) node {Register ID};
-    \path (1.5, 0) coordinate [block] (rvc) node {Register Vector};
-    \path (4.5, 0) coordinate [block] (pre) node {Parent Register};
-    \path (-4.5, -3) coordinate [block] (mvl) node {MemoryValue};
-    \path (4.5, -3) coordinate [block] (ups) node {UpdateSet};
-    \path (4.5, -5) coordinate [block] (sig) node {Update Signal};
-
-    \draw [->] (str) -- (rid);
-    \draw [->] (rid) -- (rvc) node [midway, above] {\texttt{id}};
-    \draw [->] (rvc) -- (pre);
-    \draw [->] (rid) to [out=30,in=150] node [midway, above] {\texttt{begin, end}} (pre);
-    \draw [->] (mvl) -- (pre);
-    \draw [->] (pre) -- (ups);
-    \draw [->] (ups) -- (sig);
-
-  \end{tikzpicture}
-\end{slide}
-
-\begin{slide}{MemoryValue}
-\scalebox{0.65}{
-  \begin{tabular}{l|cccc}
-    $\times$ & rw-single-bit & rw-single-byte & rw-subString & constructionTime-size \\
-    \texttt{std::vector}\textless bool\textgreater & $\checkmark$ & $\times$ & $\checkmark$ & $\checkmark$ \\
-    \texttt{boost::dynamic\_bitset} & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ \\
-    \texttt{std::bitset} & $\checkmark$ & $\times$ & $\times$ & $\times$ \\
-    \texttt{std::vector\textless std::uint8\_t\textgreater} & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
-    \texttt{magic} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
-  \end{tabular}
-  }
 \end{slide}
