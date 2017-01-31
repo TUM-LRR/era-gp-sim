@@ -46,6 +46,7 @@ Item {
       horizontalAlignment: Qt.AlignHCenter
       anchors.fill: parent
       font.family: Theme.memory.cell.fontFamily
+      font.pixelSize: Theme.memory.cell.fontSize
 
       enabled: (styleData.row % numberOfBytes) === 0
       visible: enabled
@@ -78,7 +79,6 @@ Item {
 
       style: TextFieldStyle {
         renderType: Text.QtRendering
-        font.pixelSize: Theme.memory.cell.fontSize
         textColor: Theme.memory.cell.color
         background: Rectangle {
           border.color: Theme.memory.cell.borderColor
