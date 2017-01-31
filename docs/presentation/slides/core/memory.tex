@@ -74,102 +74,54 @@
 \end{slide}
 
 \begin{slide}{conversions}
-  \begin{tikzpicture}[thick]
+\begin{tikzpicture}
 
-    \tikzset{block/.style={%
-      draw,%
-      rectangle,%
-      rounded corners,%
-      text width=2cm,%
-      text height=0.45cm}%
-    };
-    \tikzset{reck/.style={%
-      draw,%
-      rectangle,%
-      text width=2.36cm,%
-      text height=0.9cm}%
-    };
+% pseudo element for centering
+\node (center) {};
 
-    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
+\node (memory)
+	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, left=1.5cm of center]
+	{common\\ memory\\ representation\\ (LE, AS)};
 
-    %%%%%%%%%%%%%%%
-    % conversions %
-    %%%%%%%%%%%%%%%
-    \path (-9, 2) coordinate [block] (mvae) node {MemoryValue};
+\node (anymemory)
+	[font=\scriptsize, align=center, left=1.5cm of memory, minimum width=2cm, draw=black, rounded corners]
+	{any memory\\ representation};
 
-    \path[draw=red] (-9, 0) coordinate [reck] (perm) node {
-      \begin{tabular}{c}
-        permutation \\ function
-      \end{tabular}
-    };
+\node (permutation)
+	[font=\scriptsize, left=0.5cm of memory, draw=black, circle] {}
+      edge [<->]             (anymemory)
+      edge [<->]            (memory);
 
-    \path (-6, 0) coordinate [block] (mvle) node {little endian};
+\node (permutation_label)
+	[font=\scriptsize, below=0.75cm of permutation]
+	{permutation};
 
-    \path[draw=red] (-3, -2) coordinate [reck] (sf) node {sign function};
+\draw [->, dashed] (permutation_label) -- (permutation);
 
-    \path[draw=red] (-3, 0) coordinate [reck] (ti) node {
-    \begin{tabular}{c}
-      toIntegral \\ function
-    \end{tabular}
-    };
+\node (integral)
+	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, right=1.5cm of center]
+	{Integral};
 
-    \path[draw=white] (-3, 2) coordinate [reck] (tmv) node {};
 
-    \path (0, 0) coordinate [block] (inte) node {integral};
+\node [font=\scriptsize] (toIntegral) [above=1cm of center, draw=black] {toIntegral()}
+      edge [bend right, <-]            (memory)
+      edge [bend left, ->]             (integral);
 
-    \draw [->] (mvae) -- (perm);
-    \draw [->] (perm) -- (mvle);
-    \draw [->] (mvle) -- (sf);
-    \draw [->] (mvle) -- (ti);
-    \draw [->] (sf) -- (ti);
-    \draw [->] (ti) -- (inte);
-    \draw[draw=white] [->] (inte) -- (tmv);
-    \draw[draw=white] [->] (tmv) -- (mvle);
+\node (signfunction)
+	[font=\scriptsize, above left=0.7cm of toIntegral]
+		{sign function};
 
-  \end{tikzpicture}
+\node (toMemoryValue)
+	[font=\scriptsize, below=1cm of center, draw=black]
+	{toMemoryValue()}
+      edge [bend left, ->]             (memory)
+      edge [bend right, <-]            (integral);
+
+\draw [->, dashed] (signfunction) -- (toIntegral) ;
+
+\end{tikzpicture}
 \end{slide}
 
-\begin{slide}{conversions}
-  \begin{tikzpicture}[thick]
-
-    \tikzset{block/.style={%
-      draw,%
-      rectangle,%
-      rounded corners,%
-      text width=2cm,%
-      text height=0.45cm}%
-    };
-
-    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
-
-    %%%%%%%%%%%%%%%
-    % conversions %
-    %%%%%%%%%%%%%%%
-    \path (-9, -1.8) coordinate [block] (mvae) node {Mv, ae, as};
-
-    \path (-9, 0.2) coordinate [block] (perm) node {Permtation};
-
-    \path (-6, 0.2) coordinate [block] (mvle) node {Mv, le, as};
-
-    \path[draw=white] (-3, -1.8) coordinate [block] (sf) node {};
-
-    \path[draw=white] (-3, 0.2) coordinate [block] (ti) node {};
-
-    \path (-3, 2.2) coordinate [block] (tmv) node {toMemoryValue};
-
-    \path (0, 0.2) coordinate [block] (inte) node {integral};
-
-    \draw [<-] (mvae) -- (perm);
-    \draw [<-] (perm) -- (mvle);
-    \draw[draw=white] [->] (mvle) -- (sf);
-    \draw[draw=white] [->] (mvle) -- (ti);
-    \draw[draw=white] [->] (sf) -- (ti);
-    \draw[draw=white] [->] (ti) -- (inte);
-    \draw [->] (inte) -- (tmv);
-    \draw [->] (tmv) -- (mvle);
-
-  \end{tikzpicture}
-\end{slide}
 
 \begin{slide}{register}
   \begin{tikzpicture}[thick]
