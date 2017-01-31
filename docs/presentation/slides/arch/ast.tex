@@ -45,7 +45,7 @@
 % Knotentypen ist. Selbes gilt fuer die Kinder des Knoten.
 % Bei uns sind die moeglichen konkreten Typen:
 
-\begin{slide}{Abstrake Knoten}
+\begin{slide}{Abstrakte Knoten}
   \begin{tikzpicture}[thick]
     \draw (0, 0) circle [radius=1cm] node [align=center]
           {\footnotesize Instruction\\ \scriptsize \texttt{addi}};
@@ -74,7 +74,7 @@
 \end{slide}
 
 \begin{slide}{Beispiel}
-  \LARGE\texttt{add eax, [6*ebx+ecx+9]}
+  \LARGE\texttt{add eax, [4*ebx+ecx+9]}
 \end{slide}
 
 \begin{slide}{Beispiel}
@@ -86,40 +86,40 @@
     % Code %
     %%%%%%%%
     \onslide<1>{
-      \node (code) at (8, -4.5) {\LARGE\texttt{add eax, [6*ebx+ecx+9]}};
+      \node (code) at (8, -4.5) {\LARGE\texttt{add eax, [4*ebx+ecx+9]}};
     }
     \onslide<2>{
       \node (code) at (8, -4.5) {%
-        \LARGE\texttt{\textcolor{Purple}{add} eax, [6*ebx+ecx+9]}
+        \LARGE\texttt{\textcolor{Purple}{add} eax, [4*ebx+ecx+9]}
       };
     }
     \onslide<3>{
       \node (code) at (8, -4.5) {%
         \LARGE\texttt{add \textcolor{Green}{eax}, %
-        \textcolor{ProcessBlue}{[}6*ebx+ecx+9\textcolor{ProcessBlue}{]}}
+        \textcolor{ProcessBlue}{[}4*ebx+ecx+9\textcolor{ProcessBlue}{]}}
       };
     }
     \onslide<4>{
       \node (code) at (8, -4.5) {%
-        \LARGE\texttt{add eax, [6*ebx+ecx\textcolor{orange}{+}9]}
+        \LARGE\texttt{add eax, [4*ebx+ecx\textcolor{orange}{+}9]}
       };
     }
     \onslide<5>{
       \node (code) at (8, -4.5) {%
         \LARGE\texttt{add eax,%
-        [6*ebx\textcolor{orange}{+}ecx+\textcolor{Red}{9}]}
+        [4*ebx\textcolor{orange}{+}ecx+\textcolor{Red}{9}]}
       };
     }
     \onslide<6>{
       \node (code) at (8, -4.5) {%
         \LARGE\texttt{add eax,%
-        [6\textcolor{orange}{*}ebx+\textcolor{Green}{ecx}+9]}
+        [4\textcolor{orange}{*}ebx+\textcolor{Green}{ecx}+9]}
       };
     }
     \onslide<7>{
       \node (code) at (8, -4.5) {%
         \LARGE\texttt{add eax,%
-        [\textcolor{Red}{6}*\textcolor{Green}{ebx}+ecx+9]}};
+        [\textcolor{Red}{4}*\textcolor{Green}{ebx}+ecx+9]}};
     }
 
     % Left Spacer
@@ -169,10 +169,10 @@
 
     % Level 5 (6, ebx)
     \onslide<7->{
-      \path (-2, -7.5) coordinate [Red, node] (6) node {\texttt{6}};
+      \path (-2, -7.5) coordinate [Red, node] (4) node {\texttt{4}};
       \path ( 0, -7.5) coordinate [Green, node] (ebx) node {\texttt{ebx}};
 
-      \draw (*) -- (6);
+      \draw (*) -- (4);
       \draw (*) -- (ebx);
     }
   \end{tikzpicture}

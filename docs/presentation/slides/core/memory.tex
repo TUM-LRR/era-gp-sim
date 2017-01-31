@@ -1,137 +1,192 @@
 % !TEX root = ../../presentation.tex
 % Core
 
-\begin{slide}{conversions}
-  \begin{tikzpicture}[thick]
-
-    \tikzset{block/.style={%
-      draw,%
-      rectangle,%
-      rounded corners,%
-      text width=2cm,%
-      text height=0.45cm}%
-    };
-
-    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
-
-    %%%%%%%%%%%%%%%
-    % conversions %
-    %%%%%%%%%%%%%%%
-    \path (-9, -1.8) coordinate [block] (mvae) node {Mv, ae, as};
-
-    \path (-9, 0.2) coordinate [block] (perm) node {Permtation};
-
-    \path (-6, 0.2) coordinate [block] (mvle) node {Mv, le, as};
-
-    \path (-3, -1.8) coordinate [block] (sf) node {sign function};
-
-    \path (-3, 0.2) coordinate [block] (ti) node {toIntegral};
-
-    \path[draw=white] (-3, 2.2) coordinate [block] (tmv) node {};
-
-    \path (0, 0.2) coordinate [block] (inte) node {integral};
-
-    \draw [->] (mvae) -- (perm);
-    \draw [->] (perm) -- (mvle);
-    \draw [->] (mvle) -- (sf);
-    \draw [->] (mvle) -- (ti);
-    \draw [->] (sf) -- (ti);
-    \draw [->] (ti) -- (inte);
-    \draw[draw=white] [->] (inte) -- (tmv);
-    \draw[draw=white] [->] (tmv) -- (mvle);
-
-  \end{tikzpicture}
-\end{slide}
-
-\begin{slide}{conversions}
-  \begin{tikzpicture}[thick]
-
-    \tikzset{block/.style={%
-      draw,%
-      rectangle,%
-      rounded corners,%
-      text width=2cm,%
-      text height=0.45cm}%
-    };
-
-    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
-
-    %%%%%%%%%%%%%%%
-    % conversions %
-    %%%%%%%%%%%%%%%
-    \path (-9, -1.8) coordinate [block] (mvae) node {Mv, ae, as};
-
-    \path (-9, 0.2) coordinate [block] (perm) node {Permtation};
-
-    \path (-6, 0.2) coordinate [block] (mvle) node {Mv, le, as};
-
-    \path[draw=white] (-3, -1.8) coordinate [block] (sf) node {};
-
-    \path[draw=white] (-3, 0.2) coordinate [block] (ti) node {};
-
-    \path (-3, 2.2) coordinate [block] (tmv) node {toMemoryValue};
-
-    \path (0, 0.2) coordinate [block] (inte) node {integral};
-
-    \draw [<-] (mvae) -- (perm);
-    \draw [<-] (perm) -- (mvle);
-    \draw[draw=white] [->] (mvle) -- (sf);
-    \draw[draw=white] [->] (mvle) -- (ti);
-    \draw[draw=white] [->] (sf) -- (ti);
-    \draw[draw=white] [->] (ti) -- (inte);
-    \draw [->] (inte) -- (tmv);
-    \draw [->] (tmv) -- (mvle);
-
-  \end{tikzpicture}
-\end{slide}
-
-\begin{slide}{register}
-  \begin{tikzpicture}[thick]
-
-    \tikzset{block/.style={%
-      draw,%
-      rectangle,%
-      rounded corners,%
-      text width=2cm,%
-      text height=0.45cm}%
-    };
-
-    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
-
-    %%%%%%%%%%%%%%%
-    %  register   %
-    %%%%%%%%%%%%%%%
-    \path (-3, 3) coordinate [block] (str) node {String};
-    \path (0, 3) coordinate [block] (rid) node {Register ID};
-    \path (3, 3) coordinate [block] (rvc) node {Register Vector};
-    \path (3, 0) coordinate [block] (pre) node {Parent Register};
-    \path (3, -3) coordinate [block] (mvl) node {MemoryValue};
-    \path (-3, 0) coordinate [block] (ups) node {Update Set};
-    \path (0, 0) coordinate [block] (pvc) node {Parent Vector};
-    \path (0, -3) coordinate [block] (pst) node {Parent String};
-    \path (-3, -3) coordinate [block] (sig) node {update signal};
-
-    \draw [->] (str) -- (rid);
-    \draw [->] (rid) -- (rvc) node [midway, above] {\texttt{id}};
-    \draw [->] (rvc) -- (pre);
-    \draw [->] (rid) -- (pre) node [midway, above] {\texttt{begin, end}};
-    \draw [<->] (pre) -- (mvl);
-    \draw [->] (rid) -- (ups) node [midway, above] {\texttt{id}};
-    \draw [->] (ups) -- (str);
-    \draw [->] (rid) -- (pvc) node [midway, above] {\texttt{id}};
-    \draw [->] (pvc) -- (pst);
-    \draw [->] (ups) -- (sig);
-
-  \end{tikzpicture}
+\begin{slide}{MemoryValue}
+\scalebox{1.0}{
+  \begin{tabular}{l}
+    \texttt{std::bitset}\\\\
+    \texttt{boost::dynamic\_bitset}\\\\
+    \texttt{std::vector\textless char\textgreater}\\\\
+    \texttt{std::vector}\textless bool\textgreater\\\\
+  \end{tabular}
+  }
 \end{slide}
 
 \begin{slide}{MemoryValue}
-  \begin{tabular}{l|cccc}
-    x & rw-single-bit & rw-single-byte & rw-subString & constructionTime-size \\
-    std::vector\textless bool\textgreater & v & x & v & v \\
-    boost::dynamic\_bitset & v & x & x & v \\
-    std::bitset & v & x & x & x \\
-    std::vector\textless std::uint8\_t\textgreater & x & v & v & v \\
-    magic & v & v & v & v \\
+\scalebox{1.0}{
+  \begin{tabular}{l|c}
+    & read and write single bits\\
+    \texttt{std::bitset} & $\checkmark$ \\
+    \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
+    \texttt{std::vector\textless char\textgreater} & $\times$ \\
+    \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
+  }
+\end{slide}
+
+\begin{slide}{MemoryValue}
+\scalebox{1.0}{
+  \begin{tabular}{l|c}
+    & read and write single bytes\\
+    \texttt{std::bitset} & $\times$ \\
+    \texttt{boost::dynamic\_bitset} & $\times$ \\
+    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector}\textless bool\textgreater & $\times$ \\
+  \end{tabular}
+  }
+\end{slide}
+
+\begin{slide}{MemoryValue}
+\scalebox{1.0}{
+  \begin{tabular}{l|c}
+    & read and write subStrings\\
+    \texttt{std::bitset} & $\times$ \\
+    \texttt{boost::dynamic\_bitset} & $\times$ \\
+    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
+  \end{tabular}
+  }
+\end{slide}
+
+\begin{slide}{MemoryValue}
+\scalebox{1.0}{
+  \begin{tabular}{l|c}
+    & determine size at construction time\\
+    \texttt{std::bitset} & $\times$ \\
+    \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
+    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
+  \end{tabular}
+  }
+\end{slide}
+
+\begin{slide}{MemoryValue}
+\scalebox{0.65}{
+  \begin{tabular}{l|cccc}
+    & rw-single-bit & rw-single-byte & rw-subString & constructionTime-size \\\\
+    \texttt{std::bitset} & $\checkmark$ & $\times$ & $\times$ & $\times$ \\\\
+    \texttt{boost::dynamic\_bitset} & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ \\\\
+    \texttt{std::vector\textless char\textgreater} & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
+    \texttt{std::vector}\textless bool\textgreater & $\checkmark$ & $\times$ & $\checkmark$ & $\checkmark$ \\\\
+    \texttt{MemoryValue} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
+  \end{tabular}
+  }
+\end{slide}
+
+\begin{slide}{Conversions}
+\begin{tikzpicture}
+
+% pseudo element for centering
+\node (center) {};
+
+\node (memory)
+	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, left=1.5cm of center]
+	{common\\ memory\\ representation\\ (LE, AS)};
+
+\node (anymemory)
+	[font=\scriptsize, align=center, left=1.5cm of memory, minimum width=2cm, draw=black, rounded corners]
+	{any memory\\ representation};
+
+\node (permutation)
+	[font=\scriptsize, left=0.5cm of memory, draw=red, circle] {}
+      edge [<->]             (anymemory)
+      edge [<->]            (memory);
+
+\node (permutation_label)
+	[font=\scriptsize, below=0.75cm of permutation]
+	{permutation};
+
+\draw [->, dashed] (permutation_label) -- (permutation);
+
+\node (integral)
+	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, right=1.5cm of center]
+	{Integral};
+
+
+\node [font=\scriptsize] (toIntegral) [above=1cm of center, draw=red] {toIntegral()}
+      edge [bend right, <-]            (memory)
+      edge [bend left, ->]             (integral);
+
+\node (signfunction)
+	[font=\scriptsize, above left=0.7cm of toIntegral]
+		{sign function};
+
+\node (toMemoryValue)
+	[font=\scriptsize, below=1cm of center, draw=red]
+	{toMemoryValue()}
+      edge [bend left, ->]             (memory)
+      edge [bend right, <-]            (integral);
+
+\draw [->, dashed] (signfunction) -- (toIntegral) ;
+
+\end{tikzpicture}
+\end{slide}
+
+\begin{slide}{RegisterSet}
+\begin{tikzpicture}
+
+  % pseudo element for centering
+  \node (center) {};
+
+  \node (eax)
+    [font=\scriptsize, draw=black, rounded corners, align=center, minimum height=0.68cm, minimum width=3cm, above left=0.5cm and 3cm of center]
+    {\texttt{EAX}};
+  \node (ebx)
+    [font=\scriptsize, draw=black, rounded corners, align=center, minimum height=0.68cm, minimum width=3cm, above left=-1.5cm and 3cm of center]
+    {\texttt{EBX}};
+
+  \node (mapEax)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=1cm and 7cm of center]
+    {\texttt{"}\texttt{eax"[0,31]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapAx)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0.5cm and 7cm of center]
+    {\texttt{"}\texttt{ax"[0,15]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapAl)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0cm and 7cm of center]
+    {\texttt{"}\texttt{al"[0,7]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapAh)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-0.5cm and 7cm of center]
+    {\texttt{"}\texttt{ah"[8,15]}}
+      edge [->, out=0, in=180] (eax);
+  \node (mapEbx)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1cm and 7cm of center]
+    {\texttt{"}\texttt{ebx"[0,31]}}
+      edge [->, out=0, in=180] (ebx);
+  \node (mapBx)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1.5cm and 7cm of center]
+    {\texttt{"}\texttt{bx"[0,15]}}
+      edge [->, out=0, in=180] (ebx);
+  \node (mapBl)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2cm and 7cm of center]
+    {\texttt{"}\texttt{bl"[0,7]}}
+      edge [->, out=0, in=180] (ebx);
+  \node (mapBh)
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2.5cm and 7cm of center]
+    {\texttt{"}\texttt{bh"[8,15]}}
+      edge [->, out=0, in=180] (ebx);
+
+  \node (eaxUpdate)
+    [font=\scriptsize, draw=black, align=center, minimum height=1.72cm, minimum width=0.78cm, above left=0cm and -1cm of center]
+    {\begin{tabular}{c}
+      \texttt{"}\texttt{eax"} \\
+      \texttt{"}\texttt{ax"} \\
+      \texttt{"}\texttt{al"} \\
+      \texttt{"}\texttt{ah"} \\
+    \end{tabular}};
+  \node (ebxUpdate)
+    [font=\scriptsize, draw=black, align=center, minimum height=1.72cm, minimum width=0.78cm, above left=-2cm and -1cm of center]
+    {\begin{tabular}{c}
+      \texttt{"}\texttt{ebx"} \\
+      \texttt{"}\texttt{bx"} \\
+      \texttt{"}\texttt{bl"} \\
+      \texttt{"}\texttt{bh"} \\
+    \end{tabular}};
+
+  \draw [->] (eax) -- (eaxUpdate);
+  \draw [->] (ebx) -- (ebxUpdate);
+
+\end{tikzpicture}
 \end{slide}

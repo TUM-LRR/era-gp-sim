@@ -1,110 +1,96 @@
 % !TEX root = ../../presentation.tex
 % Core: Aufbau
 
-\begin{slide}{Interface des Core Moduls}
+\begin{slide}{Aufgaben des Core Moduls}
+\begin{tikzpicture}
+    \tikzset{block/.style={%
+      draw,%
+      rectangle,%
+      rounded corners,%
+      text width=2cm,%
+      text height=0.45cm}%
+    };
+    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
 
-\begin{figure}[H]
-    \begin{center}
-        \begin{tikzpicture}[node distance=0.7cm and 2.5cm]
+    \pause
+    % gui
+    \path (0, 0) coordinate [block] (gui) node {GUI};
 
-            \onslide<1->{
-            \node (gui) [class] {GuiProject};
-            }
+    \pause
+    % Core
+    \node (topConnection) at (0, -1.3) {};
+    \node (core) [below = 1.3 of gui] {\textbf{Core}};
+    \draw [<->] (gui) -- (topConnection);
+    % core outline
+    \path (core.west |- core.north)+(-1.0,0.5) node (a1) {};
+    \path (core.east |- core.south)+(1.0,-3.8) node (a2) {};
+    \path[rounded corners, draw=black!50] (a1) rectangle (a2);
 
-            \onslide<2->{
-            \node (projectModule) [class, below = of gui] {ProjectModule};
-            \draw[composition-arrow] (gui) -- (projectModule);
-            }
+    \pause
+    % Memory
+    \node (memory) [block, below = 0.5 of core, align=center] {Speicher};
 
-            \onslide<3->{
-            \node (memoryAccess) [class, right = of projectModule, yshift = 2.6cm] {MemoryAccess};
-            \draw[composition-arrow] (projectModule) -- (memoryAccess);
-            }
+    %Register
+    \node (register) [block, below = of memory, align=center] {Register};
 
-            \onslide<4->{
-            \node (memoryManager) [class, below = of memoryAccess] {MemoryManager};
-            \draw[composition-arrow] (projectModule) -- (memoryManager);
-            }
+    \pause
 
-            \onslide<5->{
-            \node (architectureAccess) [class, below = of memoryManager] {ArchitectureAccess};
-            \draw[composition-arrow] (projectModule) -- (architectureAccess);
-            }
+    %arch
+    \path (-4.0, -3.5) coordinate [block] (arch) node {Architektur};
+    \node (leftConnection) at (-1.4, -3.5) {};
+    \draw [<->] (arch) -- (leftConnection);
 
-            \onslide<6->{
-            \node (commandInterface) [class, below = of architectureAccess] {CommandInterface};
-            \draw[composition-arrow] (projectModule) -- (commandInterface);
-            }
+    \pause
 
-            \onslide<7->{
-            \node (parserInterface) [class, below = of commandInterface] {ParserInterface};
-            \draw[composition-arrow] (projectModule) -- (parserInterface);
-            }
-
-            \onslide<8>{
-            \node (interface) [below =0.4cm of parserInterface] {\textbf{Synchronisiertes Interface}};
-            }
-
-            \begin{pgfonlayer}{background}
-                \onslide<8>{
-                \path (memoryAccess.west |- memoryAccess.north)+(-1.3,0.5) node (a1) {};
-                \path (parserInterface.east |- parserInterface.south)+(1.3,-1.3) node (a2) {};
-                \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
-                }
-            \end{pgfonlayer}{background}
-
-        \end{tikzpicture}
-    \end{center}
-    \label{fig:core-interface}
-\end{figure}
+    %parser
+    \path (4.0, -3.5) coordinate [block] (parser) node {Parser};
+    \node (rightConnection) at (1.4, -3.5) {};
+    \draw [<->] (parser) -- (rightConnection);
 
 
+\end{tikzpicture}
 \end{slide}
 
 \begin{slide}{Threading Konzept}
 
 \begin{figure}
     \begin{center}
-        \begin{tikzpicture}[node distance=2.0cm and 2.5cm]
+        \begin{tikzpicture}[node distance=1.0cm and 2.5cm]
 
 
             \node (servant) [class] {Servant};
 
-            \onslide<2->{
-            \node (proxy) [class, left = of servant] {Proxy};
+            \onslide<4->{
+            \node (scheduler) [class, left = of servant] {Scheduler};
             }
 
             \onslide<3->{
-            \node (scheduler) [class, right = of servant] {Scheduler};
+            \node (proxy) [class, left = of scheduler] {Proxy};
             }
 
-            \onslide<4->{
+            \onslide<2->{
             \node (activeObject) [below = of {$(servant)!0.5!(scheduler)$}] {\textbf{Active Object Thread}};
             }
 
-            \only<2-4>{
-            \draw[dashed-arrow] (proxy) -- (servant);
+            \only<4-5>{
+            \draw[dashed-arrow] (proxy) -- (scheduler);
             }
 
-            \only<3-4>{
-            \draw[dashed-arrow] (servant) -- (scheduler);
+            \only<4-5>{
+            \draw[dashed-arrow] (scheduler) -- (servant);
             }
 
-            \only<5>{
-            \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (servant);
-            \draw[dashed-arrow] (servant) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
+            \only<5->{
+            \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
             }
-
-            \only<6>{
-            \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (servant);
-            \draw[dashed-arrow] (servant) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
-            \draw[dashed-arrow] (scheduler) to[bend left] node [yshift=-0.4cm]{\small{executeTask()}} (servant);
+            \only<6->{
+            \draw[dashed-arrow] (scheduler) to node [yshift=0.3cm]{\small{execute(task)}} (servant);
             }
 
             \begin{pgfonlayer}{background}
-                \only<4->{
-                \path (servant.west |- servant.north)+(-0.5, 0.5) node (a1) {};
-                \path (scheduler.east |- scheduler.south)+(0.5, -2.5) node (a2) {};
+                \onslide<2->{
+                \path (scheduler.west |- scheduler.north)+(-0.5, 0.5) node (a1) {};
+                \path (servant.east |- servant.south)+(0.5, -1.5) node (a2) {};
                 \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
                 }
             \end{pgfonlayer}{background}
@@ -113,96 +99,5 @@
     \end{center}
     \label{fig:active-object-structure}
 \end{figure}
-
-\end{slide}
-
-\begin{slide}{Innerer Aufbau}
-
-\only<1>{
-\begin{figure}
-    \begin{center}
-        \begin{tikzpicture}
-            \node (memoryAccess) [class] {MemoryAccess};
-            \node (memoryManager) [class, below = of memoryAccess] {MemoryManager};
-            \node (architectureAccess) [class, below = of memoryManager] {ArchitectureAccess};
-            \node (projectLabel) [below = 0.5cm of architectureAccess] {\textbf{Project Proxy}};
-
-            \begin{pgfonlayer}{background}
-                \path (memoryAccess.west |- memoryAccess.north)+(-1.0, 0.5) node (a1) {};
-                \path (architectureAccess.east |- architectureAccess.south)+(1.0, -1.5) node (a2) {};
-                \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
-            \end{pgfonlayer}{background}
-
-            \node (project) [class, right = 5cm of memoryManager] {Project};
-
-            \draw[dashed-arrow] (memoryAccess) -- (project);
-            \draw[dashed-arrow] (memoryManager) -- (project);
-            \draw[dashed-arrow] (architectureAccess) -- (project);
-
-        \end{tikzpicture}
-
-    \end{center}
-
-\end{figure}
-}
-
-\only<2>{
-\begin{figure}
-    \begin{center}
-        \begin{tikzpicture}
-            \node (commandInterface) [class] {CommandInterface};
-            \node (parserInterface) [class, below = of commandInterface] {ParserInterface};
-            \node (parsingLabel) [below = 0.5cm of parserInterface] {\textbf{ParsingAndExecution Proxy}};
-
-            \node (parsingUnit) [class, right = 3.5cm of {$(commandInterface)!0.5!(parserInterface)$}] {ParsingAndExecutionUnit};
-
-            \draw[dashed-arrow] (commandInterface) -- (parsingUnit);
-            \draw[dashed-arrow] (parserInterface) -- (parsingUnit);
-
-            \begin{pgfonlayer}{background}
-                \path (commandInterface.west |- commandInterface.north)+(-1.6, 1.0) node (a1) {};
-                \path (parserInterface.east |- parserInterface.south)+(1.6, -1.5) node (a2) {};
-                \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
-            \end{pgfonlayer}{background}
-
-        \end{tikzpicture}
-    \end{center}
-\end{figure}}
-
-\only<3> {
-\begin{figure}
-    \begin{center}
-        \begin{tikzpicture}[node distance=1.0cm and 1.5cm]
-
-            \node (project) [class] {Project};
-            \node (memory) [class, right = 4cm of project] {Memory};
-            \node (register) [class, above = of memory] {RegisterSet};
-            \node (arch) [class, below = of memory] {Architecture};
-
-            \draw[composition-arrow] (project) -- (memory);
-            \draw[composition-arrow] (project) -- (register);
-            \draw[composition-arrow] (project) -- (arch);
-        \end{tikzpicture}
-    \end{center}
-\end{figure}
-}
-
-\only<4> {
-\begin{figure}
-    \begin{center}
-        \begin{tikzpicture}[node distance=1.0cm and 1.5cm]
-
-            \node (parsingUnit) [class] {ParsingAndExecutionUnit};
-            \node (parser) [class, right = 4cm of project] {Parser};
-            \node (memoryAccess) [class, above = of memory] {MemoryAccess};
-            \node (finalRep) [class, below = of memory] {FinalRepresentation};
-
-            \draw[composition-arrow] (parsingUnit) -- (parser);
-            \draw[composition-arrow] (parsingUnit) -- (memoryAccess);
-            \draw[composition-arrow] (parsingUnit) -- (finalRep);
-        \end{tikzpicture}
-    \end{center}
-\end{figure}
-}
 
 \end{slide}
