@@ -19,7 +19,7 @@
 	{
 		\textbf{Programmcode}
 	};}
-	\node (parser) [rounded corners=1pt, rectangle, draw = black, minimum height = 5cm, right = of invis1]
+	\node (parser) [rounded corners=10pt, rectangle, draw = black, minimum height = 5cm, right = of invis1]
 	{
 		\textbf{Parser}
 	};
@@ -47,7 +47,7 @@ Verschiedene Parser ermöglicht durch Factory-Pattern:
 	\begin{tikzpicture}[node distance=1.0cm and 2.0cm]
 	\tikzstyle{myarrow} = [->, thick]
 
-	\node (name) [ellipse, draw = black]
+	\node (name) [circle, draw = black]
 	{
 		\texttt{"name"}
 	};
@@ -55,7 +55,7 @@ Verschiedene Parser ermöglicht durch Factory-Pattern:
 	{
 		\textbf{Factory}
 	};
-	\node (parser) [ellipse, right = of factory, draw = black]
+	\node (parser) [circle, right = of factory, draw = black]
 	{
 		\textbf{Parser}
 	};
@@ -108,19 +108,19 @@ addi x1, x0, magic + 2
 	\node (codetxt) [above = of intertxt] {Programmcode};
 	\uncover<3->{\node (treetxt) [below = of intertxt] {Syntaxbaum};}
 	\uncover<3->{
-		\node (tree_add) [ellipse, draw = black, below = of help]
+		\node (tree_add) [circle, draw = black, below = of help]
 		{
 			\texttt{addi}
 		};
-		\node (tree_x0) [ellipse, draw = black, below = of tree_add, yshift=1cm]
+		\node (tree_x0) [circle, draw = black, below = of tree_add, yshift=1cm]
 		{
 			\texttt{x0}
 		};
-		\node (tree_x1) [ellipse, draw = black, left = of tree_x0]
+		\node (tree_x1) [circle, draw = black, left = of tree_x0]
 		{
 			\texttt{x1}
 		};
-		\node (tree_n) [ellipse, draw = black, right = of tree_x0]
+		\node (tree_n) [circle, draw = black, right = of tree_x0]
 		{
 			\texttt{23}
 		};
@@ -148,21 +148,21 @@ addi x1, x0, magic + 2
 	\tikzstyle{inher} = [->, thick, >=open triangle 90]
     \tikzstyle{myline} = [thick]
 
-	\uncover<2->{\node (op) [draw = black] {\textbf{Operation}};}
+	\uncover<2->{\node (op) [rounded corners=1pt, draw = black] {\textbf{Operation}};}
     
-    \uncover<3->{\node (dir) [draw = black, right = of op] {\textbf{Direktive}};
-    \node (inst) [draw = black, above = of dir] {\textbf{Instruktion}};
-    \node (mac_inst) [draw = black, below = of dir] {\textbf{Makro-Instr.}};
+    \uncover<3->{\node (dir) [rounded corners=1pt, draw = black, right = of op] {\textbf{Direktive}};
+    \node (inst) [rounded corners=1pt, draw = black, above = of dir] {\textbf{Instruktion}};
+    \node (mac_inst) [rounded corners=1pt, draw = black, below = of dir] {\textbf{Makro-Instr.}};
     
     \draw [inher] (dir) -- (op);
     \draw [myline] (op.east) ++(1cm,0) |- (inst);
     \draw [myline] (op.east) ++(1cm,0) |- (mac_inst);}
     
-    \uncover<4->{\node (sec) [draw = black, right = of dir] {\textbf{Sektion}};}
-    \uncover<6->{\node (mac) [draw = black, above = of sec] {\textbf{Makro}};}
-    \uncover<5->{\node (const) [draw = black, above = of mac] {\textbf{Konstante}};}
-    \uncover<7->{\node (res) [draw = black, below = of sec, align = center] {\textbf{Speicher}\\\textbf{Reservierung}};
-    \node (def) [draw = black, below = of res, align = center] {\textbf{Speicher}\\\textbf{Definition}};}
+    \uncover<4->{\node (sec) [rounded corners=1pt, draw = black, right = of dir] {\textbf{Sektion}};}
+    \uncover<6->{\node (mac) [rounded corners=1pt, draw = black, above = of sec] {\textbf{Makro}};}
+    \uncover<5->{\node (const) [rounded corners=1pt, draw = black, above = of mac] {\textbf{Konstante}};}
+    \uncover<7->{\node (res) [rounded corners=1pt, draw = black, below = of sec, align = center] {\textbf{Speicher-}\\\textbf{Reservierung}};
+    \node (def) [rounded corners=1pt, draw = black, below = of res, align = center] {\textbf{Speicher-}\\\textbf{Definition}};}
     
     \uncover<4->{\draw [inher] (sec) -- (dir);}
     \uncover<6->{\draw [myline] (dir.east) ++(1cm,0) |- (mac);}
@@ -180,58 +180,58 @@ addi x1, x0, magic + 2
 	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
 	\tikzstyle{follows} = [->, thick, double]
 	\tikzstyle{treearr} = [->]
-		\uncover<1-4>{
-			\node (s_0) [ellipse, draw = black]
+		\uncover<1-6>{
+			\node (s_0) [rounded corners=5pt, rectangle, draw = black]
 			{
 				$S_0\rightarrow S_1aS_3$
 			};
 		}
-		\uncover<1-3>{
-			\node (s_1) [ellipse, draw = black, below = of s_0]
+		\uncover<1-5>{
+			\node (s_1) [rounded corners=5pt, rectangle, draw = black, below = of s_0]
 			{
 				$S_1\rightarrow S_2S_3$
 			};
 		}
-		\uncover<5->{
-			\node (s_0_) [ellipse, draw = black]
+		\uncover<7->{
+			\node (s_0_) [rounded corners=5pt, rectangle, draw = black]
 			{
 				$S_0\rightarrow bcac$
 			};
 		}
-		\uncover<4->{
-			\node (s_1_) [ellipse, draw = black, below = of s_0]
+		\uncover<6->{
+			\node (s_1_) [rounded corners=5pt, rectangle, draw = black, below = of s_0]
 			{
 				$S_1\rightarrow bc$
 			};
 		}
 		\uncover<1->{
-			\node (s_2) [ellipse, draw = black, left = of s_1]
+			\node (s_2) [rounded corners=5pt, rectangle, draw = black, left = of s_1]
 			{
 				$S_2\rightarrow b$
 			};
 		}
 		\uncover<1->{			
-			\node (s_3) [ellipse, draw = black, right = of s_1]
+			\node (s_3) [rounded corners=5pt, rectangle, draw = black, right = of s_1]
 			{
 				$S_3\rightarrow c$
 			};
 		}
-		\uncover<2-4>{
+		\uncover<4-6>{
 			\draw [treearr] (s_3) -- (s_0);
 		}
-		\uncover<2-4>{
+		\uncover<2-6>{
 			\draw [treearr] (s_1) -- (s_0);
 		}
-		\uncover<3-3>{
+		\uncover<3-5>{
 			\draw [treearr] (s_2) -- (s_1);
 		}
-		\uncover<3-3>{
+		\uncover<4-5>{
 			\draw [treearr] (s_3) -- (s_1);
 		}
 		\uncover<1->{\node (graphtxt) [left = of s_2] {Symbolgraph};}
-		\uncover<6->{\node (tabletxt) [below = of graphtxt] {Symbolersetzer};}
-	\end{tikzpicture}
-	\uncover<6->{
+		\uncover<8->{\node (tabletxt) [below = of graphtxt] {Symboltabelle};}
+		\uncover<8->{
+			\node (table) [right = of tabletxt] {
 		\begin{tabular}{l|l}
 			Symbol & Ersetzung \\
 			\hline
@@ -240,7 +240,9 @@ addi x1, x0, magic + 2
 			$S_2$ & $b$ \\
 			$S_3$ & $c$ \\
 		\end{tabular}
-	}
+		};
+		}
+	\end{tikzpicture}
 \end{center}
 \end{frame}
 
@@ -256,59 +258,59 @@ addi x1, x0, magic + 2
 					{\color<1-2>[rgb]{1,0,0}{\color<3->[rgb]{0.5,0.5,0.5}1}}
 					{\color<3-4>[rgb]{1,0,0}{\color<5->[rgb]{0.5,0.5,0.5}+}}
 					{\color<5-6>[rgb]{1,0,0}{\color<7->[rgb]{0.5,0.5,0.5}2}}
-					{\color<7-8>[rgb]{1,0,0}{\color<9->[rgb]{0.5,0.5,0.5}*}}
+					{\color<7-8>[rgb]{1,0,0}{\color<9->[rgb]{0.5,0.5,0.5}\cdot}}
 					{\color<9-10>[rgb]{1,0,0}{\color<11->[rgb]{0.5,0.5,0.5}3}}
 					{\color<11-16>[rgb]{1,0,0}{\color<17->[rgb]{0.5,0.5,0.5}+}}
 					{\color<17-18>[rgb]{1,0,0}{\color<19->[rgb]{0.5,0.5,0.5}4}}
 				$
 			};
 			\uncover<4-14> {
-				\node (op_add)[rectangle, draw = black, right = of opstacktxt] {
+				\node (op_add)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt] {
 					\color<14>[rgb]{1,0,0}$+$
 				};
 			}
 			\uncover<8-12> {
-				\node (op_mul)[rectangle, right = of op_add, draw = black] {
-					\color<12>[rgb]{1,0,0}$*$
+				\node (op_mul)[rounded corners=1pt, rectangle, right = of op_add, draw = black] {
+					\color<12>[rgb]{1,0,0}$\cdot$
 				};
 			}
 			\uncover<16-20> {
-				\node (op_add2)[rectangle, draw = black, right = of opstacktxt] {
+				\node (op_add2)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt] {
 					\color<20>[rgb]{1,0,0}$+$
 				};
 			}
 			\uncover<2-14> {
-				\node (num1)[rectangle, draw = black, right = of outstacktxt] {
+				\node (num1)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt] {
 					\color<14>[rgb]{1,0,0}$1$
 				};
 			}
 			\uncover<6-12> {
-				\node (num2)[rectangle, draw = black, right = of num1] {
+				\node (num2)[rounded corners=1pt, rectangle, draw = black, right = of num1] {
 					\color<12>[rgb]{1,0,0}$2$
 				};
 			}
 			\uncover<10-12> {
-				\node (num3)[rectangle, draw = black, right = of num2] {
+				\node (num3)[rounded corners=1pt, rectangle, draw = black, right = of num2] {
 					\color<12>[rgb]{1,0,0}$3$
 				};
 			}
 			\uncover<15-20> {
-				\node (num6)[rectangle, draw = black, right = of outstacktxt] {
+				\node (num6)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt] {
 					\color<20>[rgb]{1,0,0}$7$
 				};
 			}
 			\uncover<18-20> {
-				\node (num4)[rectangle, draw = black, right = of num6] {
+				\node (num4)[rounded corners=1pt, rectangle, draw = black, right = of num6] {
 					\color<20>[rgb]{1,0,0}$4$
 				};
 			}
 			\uncover<13-14> {
-				\node (num5)[rectangle, draw = black, right = of num1] {
+				\node (num5)[rounded corners=1pt, rectangle, draw = black, right = of num1] {
 					\color<14>[rgb]{1,0,0}$6$
 				};
 			}
 			\uncover<21-> {
-				\node (num10)[rectangle, draw = black, right = of outstacktxt] {
+				\node (num10)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt] {
 					$11$
 				};
 			}
@@ -400,18 +402,18 @@ Syntaxbaum generieren.
 	\draw [dashed] (inter1) -- (inter2) -- (inter3);}
 
 	\uncover<3->{
-	\node (tree1) [ellipse, below left = of inter4, draw = black] {add};
-	\node (tree12) [ellipse, below = of tree1, draw = black, yshift = 1cm] {x1};
-	\node (tree11) [ellipse, left = of tree12, draw = black] {x1};
-	\node (tree13) [ellipse, right = of tree12, draw = black] {x1};
+	\node (tree1) [circle, below left = of inter4, draw = black] {add};
+	\node (tree12) [circle, below = of tree1, draw = black, yshift = 1cm] {x1};
+	\node (tree11) [circle, left = of tree12, draw = black] {x1};
+	\node (tree13) [circle, right = of tree12, draw = black] {x1};
 	\draw [treearr] (tree1) -- (tree11);
 	\draw [treearr] (tree1) -- (tree12);
 	\draw [treearr] (tree1) -- (tree13);
 
-	\node (tree2) [ellipse, below right = of inter4, draw = black] {add};
-	\node (tree22) [ellipse, below = of tree2, draw = black, yshift = 1cm] {x2};
-	\node (tree21) [ellipse, left = of tree22, draw = black] {x2};
-	\node (tree23) [ellipse, right = of tree22, draw = black] {x2};
+	\node (tree2) [circle, below right = of inter4, draw = black] {add};
+	\node (tree22) [circle, below = of tree2, draw = black, yshift = 1cm] {x2};
+	\node (tree21) [circle, left = of tree22, draw = black] {x2};
+	\node (tree23) [circle, right = of tree22, draw = black] {x2};
 	\draw [treearr] (tree2) -- (tree21);
 	\draw [treearr] (tree2) -- (tree22);
 	\draw [treearr] (tree2) -- (tree23);
