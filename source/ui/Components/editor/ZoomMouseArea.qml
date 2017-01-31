@@ -34,12 +34,9 @@ MouseArea {
   onWheel: {
     if (wheel.modifiers == Qt.ControlModifier) {
       if (wheel.angleDelta.y > 0){
-        scale.zoom += 0.1;
+        parent.addToZoom(0.1);
       } else if (wheel.angleDelta.y < 0){
-        scale.zoom -= 0.1;
-        if (scale.zoom < 1) {
-          scale.zoom = 1.0;
-        }
+        parent.addToZoom(-0.1);
       }
 
       textRegion.cursorScroll(textRegion.cursorRectangle);
