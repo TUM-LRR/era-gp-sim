@@ -13,21 +13,27 @@
 \end{slide}
 
 \begin{slide}{MemoryValue}
+    {\large
+    Lesen und Schreiben einzelner Bits\\
+    }
+    \vspace{1cm}
 \scalebox{1.0}{
   \begin{tabular}{l|c}
-    & read and write single bits\\
     \texttt{std::bitset} & $\checkmark$ \\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
     \texttt{std::vector\textless uint8\textgreater} & $\times$ \\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
-  }
+ }
 \end{slide}
 
 \begin{slide}{MemoryValue}
+{\large
+    Lesen und Schreiben einzelner Bytes\\
+}
+\vspace{1cm}
 \scalebox{1.0}{
   \begin{tabular}{l|c}
-    & read and write single bytes\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\times$ \\
     \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
@@ -37,9 +43,12 @@
 \end{slide}
 
 \begin{slide}{MemoryValue}
+{\large
+    Lesen und Schreiben einzelner Teilabschnitten\\
+}
+\vspace{1cm}
 \scalebox{1.0}{
   \begin{tabular}{l|c}
-    & read and write subStrings\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\times$ \\
     \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
@@ -49,9 +58,12 @@
 \end{slide}
 
 \begin{slide}{MemoryValue}
+{\large
+    Größe kann dynamisch festgelegt werden\\
+}
+\vspace{1cm}
 \scalebox{1.0}{
   \begin{tabular}{l|c}
-    & determine size at construction time\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
     \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
@@ -63,7 +75,6 @@
 \begin{slide}{MemoryValue}
 \scalebox{0.65}{
   \begin{tabular}{l|cccc}
-    & rw-single-bit & rw-single-byte & rw-subString & constructionTime-size \\\\
     \texttt{std::bitset} & $\checkmark$ & $\times$ & $\times$ & $\times$ \\\\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ \\\\
     \texttt{std::vector\textless uint8\textgreater} & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\

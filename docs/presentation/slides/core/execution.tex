@@ -3,33 +3,29 @@
 
 \begin{frame}[fragile]{Ausführung}
 \begin{lstlisting}[style=C++]
-void execute() {
-  // ...
-  while (true) {
-    if (stopRequested) break;
-    if (!_executeNode(nextNode)) break;
+      void execute() {
+        while (true) {
+          if (stopRequested) break;
+          if (!_executeNode(nextNode)) break;
 
-    nextNode = _updateLineNumber(nextNode);
-    _syncCallback();
-    _syncCondition->waitAndReset();
-  }
-  // ...
-}
+          nextNode = _calculateNextNode(nextNode);
+          _syncCallback();
+          _waitForGui();
+          }
+        }
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Ausführung}
 \begin{lstlisting}[style=C++]
-bool _executeNode(size_t nodeIndex) {
-  // ...
-  if (!currentCommand.isValid()) {
-    _throwError(validationResult.getMessage());
-    return false;
-  }
-  // ...
-  MemoryValue programCounterValue = currentCommand.getValue(_memoryAccess);
-  _memoryAccess.putRegisterValue(programCounter, programCounterValue);
-  return true;
-}
+      bool _executeNode(size_t nodeIndex) {
+        if (!currentCommand.isValid()) {
+          _throwError();
+          return false;
+        }
+        programCounterValue = currentCommand.getValue(_memoryAccess);
+        _memoryAccess.putRegisterValue(pc, programCounterValue);
+        return true;
+      }
 \end{lstlisting}
 \end{frame}
