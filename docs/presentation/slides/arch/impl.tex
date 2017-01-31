@@ -29,32 +29,32 @@
     \tikzset{node/.style={draw, circle, inner sep=0.35cm}};
 
     % Nodes
-    \path (0, 0) coordinate [Purple, node] (mov) node {\texttt{mov}};
+    \path (0, 0) coordinate [Purple, node] (add) node {\texttt{add}};
     \path (-1, -1.5) coordinate [Green, node] (eax) node {\texttt{eax}};
     \path (+1, -1.5) coordinate [ProcessBlue, node] (mem) node {\texttt{[]}};
     \path (+1, -3.2) coordinate [Red, node] (42) node {\texttt{42}};
 
     % Edges
-    \draw (mov) -- (eax);
-    \draw (mov) -- (mem);
+    \draw (add) -- (eax);
+    \draw (add) -- (mem);
     \draw (mem) -- (42);
 
     % Code
     \draw (0, -4.5) node {\large\texttt{%
-      \textcolor{Purple}{mov} \textcolor{Green}{eax},%
+      \textcolor{Purple}{add} \textcolor{Green}{eax},%
       \textcolor{ProcessBlue}{[}\textcolor{Red}{42}\textcolor{ProcessBlue}{]}}%
     };
 
     % getValue() calls
     \onslide<2-6>{
       \node (getValue) at (0, 1.2) {\footnotesize\texttt{getValue()}};
-      \draw [->, shorten <= -3pt] (getValue) -- (mov);
+      \draw [->, shorten <= -3pt] (getValue) -- (add);
     }
 
     \onslide<3-5>{
-      \draw [->] (mov) -- (eax)
+      \draw [->] (add) -- (eax)
             node [pos=0.4, left] {\scriptsize\texttt{getValue()}};
-      \draw [->] (mov) -- (mem)
+      \draw [->] (add) -- (mem)
             node [pos=0.4, right] {\scriptsize\texttt{getValue()}};
     }
 
@@ -70,16 +70,19 @@
     }
 
     \onslide<6->{
-      \draw [->] (eax) -- (mov)
+      \draw [->] (eax) -- (add)
             node [pos=0.6, left]
             {\tiny\texttt{getRegisterValue(eax)}};
-      \draw [->] (mem) -- (mov)
+      \draw [->] (mem) -- (add)
             node [pos=0.6, right]
             {\tiny\texttt{getMemoryValueAt(42, 4)}};
     }
+	\onslide<7>{
+	\node [right =of add, node distance=0cm, xshift=-1.1cm] {\tiny\texttt{setRegisterValue(eax, op1+op2)}};
+	}
 
-    \onslide<7->{
-      \draw [->] (mov) -- (getValue);
+    \onslide<8->{
+      \draw [->] (add) -- (getValue);
       \node (getValue) at (-1.9, 1.2) {%
         \footnotesize\texttt{%
         \onslide<8>{setRegisterValue(eip, }eip + 4\onslide<8>{)}}
