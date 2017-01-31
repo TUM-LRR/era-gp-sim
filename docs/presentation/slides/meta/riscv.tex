@@ -1,0 +1,55 @@
+% !TEX root = ../../presentation.tex
+% Meta: RISC-V
+
+\begin{slide}{RISC-V}
+  \begin{tikzpicture}[thick]
+    \tikzset{box/.style={
+      draw,
+      rectangle,
+      rounded corners=1pt,
+      text width=1.5cm,
+      text height=0.5cm
+    }};
+
+    % RISC-V
+    \path (0, 0) coordinate [box] (riscv) node {\large RISC-V};
+
+    % Extensions
+    \newcount\slidecount\relax
+    \foreach \name/\x/\y/\bend/\stage in {%
+      RVA/-4.5/-5/bend right/2,
+      RV32E/-3/-4/bend right/2,
+      RVM/-1.5/-3/bend right/1,
+      RV32I/0/-2//1,
+      RV64I/1.5/-3/bend left/1,
+      RVF/3/-4/bend left/2,
+      RVD/4.5/-5/bend left/2} {
+
+      \slidecount=\stage\relax
+      \advance\slidecount by 1\relax
+      \ifnum\stage=1
+        \newcommand{\extcolor}{Red}
+        \newcommand{\lastslide}{}
+      \else
+        \newcommand{\extcolor}{}
+        \newcommand{\lastslide}{3}
+      \fi
+
+      \onslide<\slidecount-\lastslide>{
+        \onslide<\slidecount-4>{
+          \path (\x, \y) coordinate [box] (\name) node {\large \name};
+        }
+        \onslide<4-\lastslide>{
+          \path (\x, \y) coordinate [\extcolor, box]
+                (\name) node {\large \name};
+        }
+        \path (riscv) edge [->, \bend] (\name);
+      }
+    }
+
+    \only<5>{
+      \node at (0, -5)
+        {$\mathtt{RV32I} -\{\mathtt{SYSTEM, CSR, Timer/Counter, FENCE}\}$};
+    }
+  \end{tikzpicture}
+\end{slide}

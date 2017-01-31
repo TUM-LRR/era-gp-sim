@@ -5,10 +5,8 @@
 \begin{lstlisting}[style=C++]
 void execute() {
   // ...
-  size_t nextNode = _findNextNode();
   while (true) {
-    if (_stopCondition->getFlag()) break;
-    if (nextNode >= _finalRepresentation.commandList().size()) break;
+    if (stopRequested) break;
     if (!_executeNode(nextNode)) break;
 
     nextNode = _updateLineNumber(nextNode);
@@ -24,17 +22,13 @@ void execute() {
 \begin{lstlisting}[style=C++]
 bool _executeNode(size_t nodeIndex) {
   // ...
-  auto &currentCommand = _finalRepresentation.commandList()[nodeIndex];
-  auto validationResult = currentCommand.node()->validateRuntime(_memoryAccess);
-  if (!validationResult.isSuccess()) {
+  if (!currentCommand.isValid()) {
     _throwError(validationResult.getMessage());
     return false;
   }
   // ...
-  MemoryValue programCounterValue =
-      currentCommand.node()->getValue(_memoryAccess);
-  _memoryAccess.putRegisterValue(_programCounter.getName(),
-                                 programCounterValue);
+  MemoryValue programCounterValue = currentCommand.getValue(_memoryAccess);
+  _memoryAccess.putRegisterValue(programCounter, programCounterValue);
   return true;
 }
 \end{lstlisting}
