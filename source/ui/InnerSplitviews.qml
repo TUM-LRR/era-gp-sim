@@ -31,6 +31,11 @@ SplitView {
   property int quotient
   property int faktor
 
+  // Allows parent items to set a default tab of each component,
+  // if they consist of multiple tabs (i.e. InputOutput).
+  property var defaultTabUpper: 0
+  property var defaultTabLower: 0
+
   SystemPalette {
     id: systemPalette
   }
@@ -49,6 +54,7 @@ SplitView {
     Layout.minimumHeight: 25
     height: parent.height/2
     usual: parent.usual1
+    defaultTab: defaultTabUpper
   }
 
   SplitviewItem {
@@ -56,10 +62,7 @@ SplitView {
     height: parent.height/2
     Layout.minimumHeight: 10
     usual: parent.usual2
-    onUsualChanged: {
-      //console.info("SplitviewItem: "+usual+parent.usual2);
-
-    }
+    defaultTab: defaultTabLower
   }
 
 

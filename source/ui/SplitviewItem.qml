@@ -23,9 +23,13 @@ import QtQuick.Controls.Styles 1.4
 import "Components"
 
 Item {
+  id: root
 
   // default value in the item
   property var usual
+  // Allows parent items to set a default tab if the newly selected item
+  // offers multiple tabs (i.e. InputOutput).
+  property var defaultTab: 0
   property bool isExpanded: false
 
   onIsExpandedChanged: {
@@ -173,6 +177,12 @@ Item {
         return  "Components/" + currentComponent;
       } else {
         return "Components/help/HelpWindow.qml";
+      }
+    }
+
+    onLoaded: {
+      if (componentSelector.currentIndex === 1) {
+        componentLoader.item.defaultTab = root.defaultTab;
       }
     }
   }

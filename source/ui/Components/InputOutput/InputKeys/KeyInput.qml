@@ -50,6 +50,7 @@ Rectangle {
       activeFocusOnPress: false; activeFocusOnTab: false
       wrapMode: TextEdit.Wrap
       color: Theme.input.keyInput.inactive.color
+      padding: Theme.input.keyInput.textPadding
 
       text: focusRectangle.defaultInfoText
     }
