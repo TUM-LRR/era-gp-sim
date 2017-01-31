@@ -3,7 +3,7 @@
 
 \begin{frame}[fragile]{Implementierung einer Instruktion}
   \pause
-  \begin{lstlisting}[style=C++]
+  \begin{lstlisting}[style=C++,emph={getValue, validate, assemble},emphstyle=\underline]
     class AbstractSyntaxTreeNode {
      public:
       using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
@@ -15,9 +15,7 @@
       validate(MemoryAccess& memoryAccess) const = 0;
 
       virtual MemoryValue assemble() const = 0;
-
-      virtual const std::string& getIdentifier() const = 0;
-
+      
      protected:
       std::vector<Node> _children;
     };
@@ -90,7 +88,41 @@
   \end{tikzpicture}
 \end{slide}
 
-\begin{frame}[fragile]{Beispiel}
+\begin{frame}[fragile]{Beispiel RISC-V}
+
+\begin{lstlisting}[style=risc-v_Assembler]
+    lb rd, rs, offset
+\end{lstlisting}
+\pause
+\begin{lstlisting}[style=C++]
+
+class LoadInstructionNode {
+ public:
+  // ...
+  MemoryValue getValue(MemoryAccess& memoryAccess) const {
+    const auto& destination = _children[0]->getIdentifier();
+
+    UnsignedWord base = _children[1]->getValue(memoryAccess);
+    SignedWord offset = _children[2]->getValue(memoryAccess);
+    auto address = base + offset;
+
+    // byteAmount in {1, 2, 4, 8}
+    auto result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    memoryAccess.putRegisterValue(destination, result);
+
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
+  }
+  // ...
+};
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Beispiel RISC-V}
+	
+\begin{lstlisting}[style=risc-v_Assembler]
+    lb rd, rs, offset
+\end{lstlisting}
 \begin{lstlisting}[style=C++]
 template<typename UnsignedWord, typename SignedWord>
 class LoadInstructionNode {
@@ -115,19 +147,17 @@ class LoadInstructionNode {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Beispiel}
+\begin{frame}[fragile]{Beispiel RISC-V}
+\begin{lstlisting}[style=risc-v_Assembler]
+	beq
+	bne cmp1, cmp2, offset
+	blt
+\end{lstlisting}
 \begin{lstlisting}[style=C++]
-template <typename UnsignedWord, typename SignedWord>
-struct BranchEqualInstructionNode
-    : public AbstractBranchInstructionNode<UnsignedWord, SignedWord> {
-  using super = AbstractBranchInstructionNode<UnsignedWord, SignedWord>;
-
-  explicit
+using super = AbstractBranchInstructionNode<...>;
   BranchEqualInstructionNode(const InstructionInformation& information)
   : super(information, [](const auto& first, const auto& second) {
     return first == second;
-  }) {
-  }
-};
+  }) {}
 \end{lstlisting}
 \end{frame}
