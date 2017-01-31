@@ -3,11 +3,11 @@
 
 \begin{slide}{MemoryValue}
 \scalebox{1.0}{
-  \begin{tabular}{l}
-    \texttt{std::bitset}\\\\
-    \texttt{boost::dynamic\_bitset}\\\\
-    \texttt{std::vector\textless char\textgreater}\\\\
-    \texttt{std::vector}\textless bool\textgreater\\\\
+  \begin{tabular}{l} \pause
+    \texttt{std::bitset}\\\\ \pause
+    \texttt{boost::dynamic\_bitset}\\\\ \pause
+    \texttt{std::vector\textless uint8\textgreater}\\\\ \pause
+    \texttt{std::vector}\textless bool\textgreater\\\\ \pause
   \end{tabular}
   }
 \end{slide}
@@ -18,7 +18,7 @@
     & read and write single bits\\
     \texttt{std::bitset} & $\checkmark$ \\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
-    \texttt{std::vector\textless char\textgreater} & $\times$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\times$ \\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
   }
@@ -30,7 +30,7 @@
     & read and write single bytes\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\times$ \\
-    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
     \texttt{std::vector}\textless bool\textgreater & $\times$ \\
   \end{tabular}
   }
@@ -42,7 +42,7 @@
     & read and write subStrings\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\times$ \\
-    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
   }
@@ -54,7 +54,7 @@
     & determine size at construction time\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
-    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
   }
@@ -66,7 +66,7 @@
     & rw-single-bit & rw-single-byte & rw-subString & constructionTime-size \\\\
     \texttt{std::bitset} & $\checkmark$ & $\times$ & $\times$ & $\times$ \\\\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ \\\\
-    \texttt{std::vector\textless char\textgreater} & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
+    \texttt{std::vector\textless uint8\textgreater} & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ & $\times$ & $\checkmark$ & $\checkmark$ \\\\
     \texttt{MemoryValue} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
   \end{tabular}
