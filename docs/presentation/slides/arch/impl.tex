@@ -15,7 +15,7 @@
       validate(MemoryAccess& memoryAccess) const = 0;
 
       virtual MemoryValue assemble() const = 0;
-      
+
      protected:
       std::vector<Node> _children;
     };
@@ -85,23 +85,22 @@
       \draw [->] (add) -- (getValue);
       \node (getValue) at (-1.9, 1.2) {%
         \footnotesize\texttt{%
-        \onslide<8>{setRegisterValue(eip, }eip + 4\onslide<8>{)}}
+        \onslide<9>{setRegisterValue(eip, }eip + 4\onslide<9>{)}}
       };
     }
   \end{tikzpicture}
 \end{slide}
 
 \begin{frame}[fragile]{Beispiel RISC-V}
-
-\begin{lstlisting}[style=risc-v_Assembler]
-    lb rd, rs, offset
+\begin{lstlisting}[style=risc-v_Assembler, basicstyle=\ttfamily\large]
+                lb rd, rs, offset
 \end{lstlisting}
+\vspace{-0.2cm}
 \pause
 \begin{lstlisting}[style=C++]
 
 class LoadInstructionNode {
  public:
-  // ...
   MemoryValue getValue(MemoryAccess& memoryAccess) const {
     const auto& destination = _children[0]->getIdentifier();
 
@@ -116,21 +115,19 @@ class LoadInstructionNode {
 
     return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
-  // ...
 };
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Beispiel RISC-V}
-	
-\begin{lstlisting}[style=risc-v_Assembler]
-    lb rd, rs, offset
+\begin{lstlisting}[style=risc-v_Assembler, basicstyle=\ttfamily\large]
+                lb rd, rs, offset
 \end{lstlisting}
+\vspace{-0.2cm}
 \begin{lstlisting}[style=C++]
 template<typename UnsignedWord, typename SignedWord>
 class LoadInstructionNode {
  public:
-  // ...
   MemoryValue getValue(MemoryAccess& memoryAccess) const {
     const auto& destination = _children[0]->getIdentifier();
 
@@ -145,19 +142,23 @@ class LoadInstructionNode {
 
     return _incrementProgramCounter<UnsignedWord>(memoryAccess);
   }
-  // ...
 };
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Beispiel RISC-V}
-\begin{lstlisting}[style=risc-v_Assembler]
-	beq
-	bne cmp1, cmp2, offset
-	blt
+\vspace{-0.75cm}
+\begin{lstlisting}[style=risc-v_Assembler, basicstyle=\ttfamily\large]
+                  beq
+                  bne cmp1, cmp2, offset
+                  blt
 \end{lstlisting}
+\vspace{0.4cm}
+
+\pause
 \begin{lstlisting}[style=C++]
-using super = AbstractBranchInstructionNode<...>;
+  using super = AbstractBranchInstructionNode<...>;
+
   BranchEqualInstructionNode(const InstructionInformation& information)
   : super(information, [](const auto& first, const auto& second) {
     return first == second;

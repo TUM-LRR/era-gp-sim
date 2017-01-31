@@ -149,27 +149,27 @@ addi x1, x0, magic + 2
     \tikzstyle{myline} = [thick]
 
 	\uncover<2->{\node (op) [rounded corners=1pt, draw = black] {\textbf{Operation}};}
-    
+
     \uncover<3->{\node (dir) [rounded corners=1pt, draw = black, right = of op] {\textbf{Direktive}};
     \node (inst) [rounded corners=1pt, draw = black, above = of dir] {\textbf{Instruktion}};
     \node (mac_inst) [rounded corners=1pt, draw = black, below = of dir] {\textbf{Makro-Instr.}};
-    
+
     \draw [inher] (dir) -- (op);
     \draw [myline] (op.east) ++(1cm,0) |- (inst);
     \draw [myline] (op.east) ++(1cm,0) |- (mac_inst);}
-    
+
     \uncover<4->{\node (sec) [rounded corners=1pt, draw = black, right = of dir] {\textbf{Sektion}};}
     \uncover<6->{\node (mac) [rounded corners=1pt, draw = black, above = of sec] {\textbf{Makro}};}
     \uncover<5->{\node (const) [rounded corners=1pt, draw = black, above = of mac] {\textbf{Konstante}};}
     \uncover<7->{\node (res) [rounded corners=1pt, draw = black, below = of sec, align = center] {\textbf{Speicher-}\\\textbf{Reservierung}};
     \node (def) [rounded corners=1pt, draw = black, below = of res, align = center] {\textbf{Speicher-}\\\textbf{Definition}};}
-    
+
     \uncover<4->{\draw [inher] (sec) -- (dir);}
     \uncover<6->{\draw [myline] (dir.east) ++(1cm,0) |- (mac);}
     \uncover<5->{\draw [myline] (dir.east) ++(1cm,0) |- (const);}
     \uncover<7->{\draw [myline] (dir.east) ++(1cm,0) |- (res);}
     \uncover<7->{\draw [myline] (dir.east) ++(1cm,0) |- (def);}
-    
+
 	\end{tikzpicture}
 \end{center}
 \end{frame}
@@ -210,7 +210,7 @@ addi x1, x0, magic + 2
 				$S_2\rightarrow b$
 			};
 		}
-		\uncover<1->{			
+		\uncover<1->{
 			\node (s_3) [rounded corners=5pt, rectangle, draw = black, right = of s_1]
 			{
 				$S_3\rightarrow c$
@@ -248,7 +248,6 @@ addi x1, x0, magic + 2
 
 
 \begin{frame}{Arithmetische Ausdrücke}
-
 \[
 					{\color<1-2>[rgb]{1,0,0}{\color<3->[rgb]{0.5,0.5,0.5}1}}
 					{\color<3-4>[rgb]{1,0,0}{\color<5->[rgb]{0.5,0.5,0.5}+}}
