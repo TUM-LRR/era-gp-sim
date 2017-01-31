@@ -142,6 +142,39 @@ addi x1, x0, magic + 2
 \end{frame}
 
 
+\begin{frame}{Zwischendarstellung}
+\begin{center}
+	\begin{tikzpicture}[node distance=0.5cm and 2.0cm]
+	\tikzstyle{inher} = [->, thick, >=open triangle 90]
+    \tikzstyle{myline} = [thick]
+
+	\uncover<2->{\node (op) [draw = black] {\textbf{Operation}};}
+    
+    \uncover<3->{\node (dir) [draw = black, right = of op] {\textbf{Direktive}};
+    \node (inst) [draw = black, above = of dir] {\textbf{Instruktion}};
+    \node (mac_inst) [draw = black, below = of dir] {\textbf{Makro-Instr.}};
+    
+    \draw [inher] (dir) -- (op);
+    \draw [myline] (op.east) ++(1cm,0) |- (inst);
+    \draw [myline] (op.east) ++(1cm,0) |- (mac_inst);}
+    
+    \uncover<4->{\node (sec) [draw = black, right = of dir] {\textbf{Sektion}};}
+    \uncover<6->{\node (mac) [draw = black, above = of sec] {\textbf{Makro}};}
+    \uncover<5->{\node (const) [draw = black, above = of mac] {\textbf{Konstante}};}
+    \uncover<7->{\node (res) [draw = black, below = of sec, align = center] {\textbf{Speicher}\\\textbf{Reservierung}};
+    \node (def) [draw = black, below = of res, align = center] {\textbf{Speicher}\\\textbf{Definition}};}
+    
+    \uncover<4->{\draw [inher] (sec) -- (dir);}
+    \uncover<6->{\draw [myline] (dir.east) ++(1cm,0) |- (mac);}
+    \uncover<5->{\draw [myline] (dir.east) ++(1cm,0) |- (const);}
+    \uncover<7->{\draw [myline] (dir.east) ++(1cm,0) |- (res);}
+    \uncover<7->{\draw [myline] (dir.east) ++(1cm,0) |- (def);}
+    
+	\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
 \begin{frame}{Symboltabelle}
 \begin{center}
 	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]

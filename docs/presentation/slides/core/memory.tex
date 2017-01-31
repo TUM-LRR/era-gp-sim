@@ -3,11 +3,11 @@
 
 \begin{slide}{MemoryValue}
 \scalebox{1.0}{
-  \begin{tabular}{l}
-    \texttt{std::bitset}\\\\
-    \texttt{boost::dynamic\_bitset}\\\\
-    \texttt{std::vector\textless char\textgreater}\\\\
-    \texttt{std::vector}\textless bool\textgreater\\\\
+  \begin{tabular}{l} \pause
+    \texttt{std::bitset}\\\\ \pause
+    \texttt{boost::dynamic\_bitset}\\\\ \pause
+    \texttt{std::vector\textless uint8\textgreater}\\\\ \pause
+    \texttt{std::vector}\textless bool\textgreater\\\\ \pause
   \end{tabular}
   }
 \end{slide}
@@ -18,7 +18,7 @@
     & read and write single bits\\
     \texttt{std::bitset} & $\checkmark$ \\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
-    \texttt{std::vector\textless char\textgreater} & $\times$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\times$ \\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
   }
@@ -30,7 +30,7 @@
     & read and write single bytes\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\times$ \\
-    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
     \texttt{std::vector}\textless bool\textgreater & $\times$ \\
   \end{tabular}
   }
@@ -42,7 +42,7 @@
     & read and write subStrings\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\times$ \\
-    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
   }
@@ -54,7 +54,7 @@
     & determine size at construction time\\
     \texttt{std::bitset} & $\times$ \\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ \\
-    \texttt{std::vector\textless char\textgreater} & $\checkmark$ \\
+    \texttt{std::vector\textless uint8\textgreater} & $\checkmark$ \\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ \\
   \end{tabular}
   }
@@ -66,58 +66,48 @@
     & rw-single-bit & rw-single-byte & rw-subString & constructionTime-size \\\\
     \texttt{std::bitset} & $\checkmark$ & $\times$ & $\times$ & $\times$ \\\\
     \texttt{boost::dynamic\_bitset} & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ \\\\
-    \texttt{std::vector\textless char\textgreater} & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
+    \texttt{std::vector\textless uint8\textgreater} & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
     \texttt{std::vector}\textless bool\textgreater & $\checkmark$ & $\times$ & $\checkmark$ & $\checkmark$ \\\\
     \texttt{MemoryValue} & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$ \\\\
   \end{tabular}
   }
 \end{slide}
 
-\begin{slide}{Conversions}
-\begin{tikzpicture}
+\begin{slide}{Konvertierungen}
+\begin{tikzpicture} [thick]
+    \tikzset{block/.style={%
+      draw,%
+      rectangle,%
+      rounded corners,%
+      text width=2cm,%
+      text height=0.45cm}%
+    };
+\tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
 
-% pseudo element for centering
-\node (center) {};
+\node (memoryValue) at (-3.5, 0) {MemoryValue};
+\node (aboveMV) at (-1.9, 0.75) {};
+\node (belowMV) at (-1.9, -0.75) {};
 
-\node (memory)
-	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, left=1.5cm of center]
-	{common\\ memory\\ representation\\ (LE, AS)};
-
-\node (anymemory)
-	[font=\scriptsize, align=center, left=1.5cm of memory, minimum width=2cm, draw=black, rounded corners]
-	{any memory\\ representation};
-
-\node (permutation)
-	[font=\scriptsize, left=0.5cm of memory, draw=red, circle] {}
-      edge [<->]             (anymemory)
-      edge [<->]            (memory);
-
-\node (permutation_label)
-	[font=\scriptsize, below=0.75cm of permutation]
-	{permutation};
-
-\draw [->, dashed] (permutation_label) -- (permutation);
-
-\node (integral)
-	[font=\scriptsize, draw=black, rounded corners,  align=center, minimum height=1cm, minimum width=2cm, right=1.5cm of center]
-	{Integral};
+%memory value outline
+\path (memoryValue.west |- memoryValue.north)+(-0.5,1.5) node (a1) {};
+\path (memoryValue.east |- memoryValue.south)+(0.5,-1.5) node (a2) {};
+\path[rounded corners, draw=black!50, thick] (a1) rectangle (a2);
 
 
-\node [font=\scriptsize] (toIntegral) [above=1cm of center, draw=red] {toIntegral()}
-      edge [bend right, <-]            (memory)
-      edge [bend left, ->]             (integral);
+\node (integral) at (3.5, 0) {Integral};
+\node (aboveI) at (2.4, 0.75) {};
+\node (belowI) at (2.4, -0.75) {};
 
-\node (signfunction)
-	[font=\scriptsize, above left=0.7cm of toIntegral]
-		{sign function};
+%memory value outline
+\path (integral.west |- integral.north)+(-0.5,1.5) node (a1) {};
+\path (integral.east |- integral.south)+(0.5,-1.5) node (a2) {};
+\path[rounded corners, draw=black!50, thick] (a1) rectangle (a2);
 
-\node (toMemoryValue)
-	[font=\scriptsize, below=1cm of center, draw=red]
-	{toMemoryValue()}
-      edge [bend left, ->]             (memory)
-      edge [bend right, <-]            (integral);
+\draw [->] (aboveMV) -- (aboveI);
+\draw [<-] (belowMV) -- (belowI);
 
-\draw [->, dashed] (signfunction) -- (toIntegral) ;
+%text between arrows
+\node (convert) at (0.25, 0) {\texttt{convert()}};
 
 \end{tikzpicture}
 \end{slide}
@@ -136,40 +126,40 @@
     {\texttt{EBX}};
 
   \node (mapEax)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=1cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=1.35cm and 7cm of center]
     {\texttt{"}\texttt{eax"[0,31]}}
       edge [->, out=0, in=180] (eax);
   \node (mapAx)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0.5cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0.85cm and 7cm of center]
     {\texttt{"}\texttt{ax"[0,15]}}
       edge [->, out=0, in=180] (eax);
   \node (mapAl)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0.35cm and 7cm of center]
     {\texttt{"}\texttt{al"[0,7]}}
       edge [->, out=0, in=180] (eax);
   \node (mapAh)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-0.5cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-0.15cm and 7cm of center]
     {\texttt{"}\texttt{ah"[8,15]}}
       edge [->, out=0, in=180] (eax);
   \node (mapEbx)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-0.65cm and 7cm of center]
     {\texttt{"}\texttt{ebx"[0,31]}}
       edge [->, out=0, in=180] (ebx);
   \node (mapBx)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1.5cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1.15cm and 7cm of center]
     {\texttt{"}\texttt{bx"[0,15]}}
       edge [->, out=0, in=180] (ebx);
   \node (mapBl)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1.65cm and 7cm of center]
     {\texttt{"}\texttt{bl"[0,7]}}
       edge [->, out=0, in=180] (ebx);
   \node (mapBh)
-    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2.5cm and 7cm of center]
+    [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2.15cm and 7cm of center]
     {\texttt{"}\texttt{bh"[8,15]}}
       edge [->, out=0, in=180] (ebx);
 
   \node (eaxUpdate)
-    [font=\scriptsize, draw=black, align=center, minimum height=1.72cm, minimum width=0.78cm, above left=0cm and -1cm of center]
+    [font=\scriptsize, draw=black, align=center, minimum height=1.70cm, minimum width=0.8cm, above left=0cm and -1cm of center, rounded corners]
     {\begin{tabular}{c}
       \texttt{"}\texttt{eax"} \\
       \texttt{"}\texttt{ax"} \\
@@ -177,7 +167,7 @@
       \texttt{"}\texttt{ah"} \\
     \end{tabular}};
   \node (ebxUpdate)
-    [font=\scriptsize, draw=black, align=center, minimum height=1.72cm, minimum width=0.78cm, above left=-2cm and -1cm of center]
+    [font=\scriptsize, draw=black, align=center, minimum height=1.70cm, minimum width=0.8cm, above left=-2cm and -1cm of center, rounded corners]
     {\begin{tabular}{c}
       \texttt{"}\texttt{ebx"} \\
       \texttt{"}\texttt{bx"} \\
