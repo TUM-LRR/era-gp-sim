@@ -37,12 +37,12 @@
  * specifier. The latter is an architecture-dependent string such as "F", for
  * the F-type instruction format in the RISC-V architecture.
  *
- * The class' interface is intended to support the BuilderInterface pattern.
+ * The class' interface is intended to support the Builder.
  */
 class InstructionInformation : public InformationInterface {
  public:
   using length_t = std::size_t;
-    using OperandLengthList = std::vector<unsigned int>;
+    using OperandLengthContainer = std::vector<unsigned int>;
 
   /**
   * Deserializes and constructs the `InstructionInformation` from the given
@@ -180,7 +180,7 @@ class InstructionInformation : public InformationInterface {
    * \param operandLengths The operand length(s) to put
    * \return The current instruction object
    */
-  InstructionInformation& operandLengths(const OperandLengthList& operandLengths);
+  InstructionInformation& operandLengths(const OperandLengthContainer& operandLengths);
 
   /**
    *
@@ -191,7 +191,7 @@ class InstructionInformation : public InformationInterface {
   /**
    * \return The information about operand length(s), if any.
    */
-  const OperandLengthList& getOperandLengths() const;
+  const OperandLengthContainer& getOperandLengths() const;
 
  private:
   /**
@@ -215,7 +215,7 @@ class InstructionInformation : public InformationInterface {
   Optional<length_t> _length;
 
   /** The operand lengths, if any */
-  Optional<OperandLengthList> _operandLengths;
+  Optional<OperandLengthContainer> _operandLengths;
 };
 
 #endif /* ERAGPSIM_ARCH_INSTRUCTION_INFORMATION_HPP */

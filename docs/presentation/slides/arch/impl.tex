@@ -1,0 +1,167 @@
+% !TEX root = ../../presentation.tex
+% Architektur: Implementierung
+
+\begin{frame}[fragile]{Implementierung einer Instruktion}
+  \pause
+  \begin{lstlisting}[style=C++,emph={getValue, validate, assemble},emphstyle=\underline]
+    class AbstractSyntaxTreeNode {
+     public:
+      using Node = std::shared_ptr<AbstractSyntaxTreeNode>;
+
+      virtual MemoryValue
+      getValue(MemoryAccess& memoryAccess) const = 0;
+
+      virtual ValidationResult
+      validate(MemoryAccess& memoryAccess) const = 0;
+
+      virtual MemoryValue assemble() const = 0;
+
+     protected:
+      std::vector<Node> _children;
+    };
+  \end{lstlisting}
+\end{frame}
+
+% Anmerkung: in RISC-V ist der AST nie tiefer als 2 Knoten
+
+\begin{slide}{\texttt{getValue()}}
+  \begin{tikzpicture}[thick]
+    \tikzset{node/.style={draw, circle, inner sep=0.35cm}};
+
+    % Nodes
+    \path (0, 0) coordinate [Purple, node] (add) node {\texttt{add}};
+    \path (-1, -1.5) coordinate [Green, node] (eax) node {\texttt{eax}};
+    \path (+1, -1.5) coordinate [ProcessBlue, node] (mem) node {\texttt{[]}};
+    \path (+1, -3.2) coordinate [Red, node] (42) node {\texttt{42}};
+
+    % Edges
+    \draw (add) -- (eax);
+    \draw (add) -- (mem);
+    \draw (mem) -- (42);
+
+    % Code
+    \draw (0, -4.5) node {\large\texttt{%
+      \textcolor{Purple}{add} \textcolor{Green}{eax},%
+      \textcolor{ProcessBlue}{[}\textcolor{Red}{42}\textcolor{ProcessBlue}{]}}%
+    };
+
+    % getValue() calls
+    \onslide<2-6>{
+      \node (getValue) at (0, 1.2) {\footnotesize\texttt{getValue()}};
+      \draw [->, shorten <= -3pt] (getValue) -- (add);
+    }
+
+    \onslide<3-5>{
+      \draw [->] (add) -- (eax)
+            node [pos=0.4, left] {\scriptsize\texttt{getValue()}};
+      \draw [->] (add) -- (mem)
+            node [pos=0.4, right] {\scriptsize\texttt{getValue()}};
+    }
+
+    \onslide<4>{
+      \draw [->] (mem) -- (42)
+            node [pos=0.4, right] {\scriptsize\texttt{getValue()}};
+    }
+
+    % getValue() results
+    \onslide<5->{
+    \draw [->] (42) -- (mem)
+          node [pos=0.4, right] {\scriptsize\texttt{42}};
+    }
+
+    \onslide<6->{
+      \draw [->] (eax) -- (add)
+            node [pos=0.6, left]
+            {\tiny\texttt{getRegisterValue(eax)}};
+      \draw [->] (mem) -- (add)
+            node [pos=0.6, right]
+            {\tiny\texttt{getMemoryValueAt(42, 4)}};
+    }
+	\onslide<7>{
+	\node [right =of add, node distance=0cm, xshift=-1.1cm] {\tiny\texttt{setRegisterValue(eax, op1+op2)}};
+	}
+
+    \onslide<8->{
+      \draw [->] (add) -- (getValue);
+      \node (getValue) at (-1.9, 1.2) {%
+        \footnotesize\texttt{%
+        \onslide<9>{setRegisterValue(eip, }eip + 4\onslide<9>{)}}
+      };
+    }
+  \end{tikzpicture}
+\end{slide}
+
+\begin{frame}[fragile]{Beispiel RISC-V}
+\begin{lstlisting}[style=risc-v_Assembler, basicstyle=\ttfamily\large]
+                lb rd, rs, offset
+\end{lstlisting}
+\vspace{-0.2cm}
+\pause
+\begin{lstlisting}[style=C++]
+
+class LoadInstructionNode {
+ public:
+  MemoryValue getValue(MemoryAccess& memoryAccess) const {
+    const auto& destination = _children[0]->getIdentifier();
+
+    UnsignedWord base = _children[1]->getValue(memoryAccess);
+    SignedWord offset = _children[2]->getValue(memoryAccess);
+    auto address = base + offset;
+
+    // byteAmount in {1, 2, 4, 8}
+    auto result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    memoryAccess.putRegisterValue(destination, result);
+
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
+  }
+};
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Beispiel RISC-V}
+\begin{lstlisting}[style=risc-v_Assembler, basicstyle=\ttfamily\large]
+                lb rd, rs, offset
+\end{lstlisting}
+\vspace{-0.2cm}
+\begin{lstlisting}[style=C++]
+template<typename UnsignedWord, typename SignedWord>
+class LoadInstructionNode {
+ public:
+  MemoryValue getValue(MemoryAccess& memoryAccess) const {
+    const auto& destination = _children[0]->getIdentifier();
+
+    UnsignedWord base = _children[1]->getValue(memoryAccess);
+    SignedWord offset = _children[2]->getValue(memoryAccess);
+    auto address = base + offset;
+
+    // byteAmount in {1, 2, 4, 8}
+    auto result = memoryAccess.getMemoryValueAt(address, byteAmount);
+
+    memoryAccess.putRegisterValue(destination, result);
+
+    return _incrementProgramCounter<UnsignedWord>(memoryAccess);
+  }
+};
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Beispiel RISC-V}
+\vspace{-0.75cm}
+\begin{lstlisting}[style=risc-v_Assembler, basicstyle=\ttfamily\large]
+                  beq
+                  bne cmp1, cmp2, offset
+                  blt
+\end{lstlisting}
+\vspace{0.4cm}
+
+\pause
+\begin{lstlisting}[style=C++]
+  using super = AbstractBranchInstructionNode<...>;
+
+  BranchEqualInstructionNode(const InstructionInformation& information)
+  : super(information, [](const auto& first, const auto& second) {
+    return first == second;
+  }) {}
+\end{lstlisting}
+\end{frame}

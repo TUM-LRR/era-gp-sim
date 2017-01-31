@@ -1,0 +1,103 @@
+% !TEX root = ../../presentation.tex
+% Core: Aufbau
+
+\begin{slide}{Aufgaben des Core Moduls}
+\begin{tikzpicture}[thick]
+    \tikzset{block/.style={%
+      draw,%
+      rectangle,%
+      rounded corners,%
+      text width=2cm,%
+      text height=0.45cm}%
+    };
+    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
+
+    \pause
+    % gui
+    \path (0, 0) coordinate [block] (gui) node {GUI};
+
+    \pause
+    % Core
+    \node (topConnection) at (0, -1.3) {};
+    \node (core) [below = 1.3 of gui] {\textbf{Core}};
+    \draw [<->] (gui) -- (topConnection);
+    % core outline
+    \path (core.west |- core.north)+(-1.0,0.5) node (a1) {};
+    \path (core.east |- core.south)+(1.0,-3.8) node (a2) {};
+    \path[rounded corners, draw=black!50] (a1) rectangle (a2);
+
+    \pause
+    % Memory
+    \node (memory) [block, below = 0.5 of core, align=center] {Speicher};
+
+    %Register
+    \node (register) [block, below = of memory, align=center] {Register};
+
+    \pause
+
+    %arch
+    \path (-4.0, -3.5) coordinate [block] (arch) node {Architektur};
+    \node (leftConnection) at (-1.4, -3.5) {};
+    \draw [<->] (arch) -- (leftConnection);
+
+    \pause
+
+    %parser
+    \path (4.0, -3.5) coordinate [block] (parser) node {Parser};
+    \node (rightConnection) at (1.4, -3.5) {};
+    \draw [<->] (parser) -- (rightConnection);
+
+
+\end{tikzpicture}
+\end{slide}
+
+\begin{slide}{Threading Konzept}
+
+\begin{figure}
+    \begin{center}
+        \begin{tikzpicture}[node distance=1.0cm and 2.5cm]
+
+
+            \node (servant) [class] {Servant};
+
+            \onslide<4->{
+            \node (scheduler) [class, left = of servant] {Scheduler};
+            }
+
+            \onslide<3->{
+            \node (proxy) [class, left = of scheduler] {Proxy};
+            }
+
+            \onslide<2->{
+            \node (activeObject) [below = of {$(servant)!0.5!(scheduler)$}] {\textbf{Active Object Thread}};
+            }
+
+            \only<4-5>{
+            \draw[dashed-arrow] (proxy) -- (scheduler);
+            }
+
+            \only<4-5>{
+            \draw[dashed-arrow] (scheduler) -- (servant);
+            }
+
+            \only<5->{
+            \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
+            }
+            \only<6->{
+            \draw[dashed-arrow] (scheduler) to node [yshift=0.3cm]{\small{execute(task)}} (servant);
+            }
+
+            \begin{pgfonlayer}{background}
+                \onslide<2->{
+                \path (scheduler.west |- scheduler.north)+(-0.5, 0.5) node (a1) {};
+                \path (servant.east |- servant.south)+(0.5, -1.5) node (a2) {};
+                \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+                }
+            \end{pgfonlayer}{background}
+        \end{tikzpicture}
+
+    \end{center}
+    \label{fig:active-object-structure}
+\end{figure}
+
+\end{slide}

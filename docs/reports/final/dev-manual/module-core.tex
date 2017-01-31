@@ -1,0 +1,100 @@
+\subsection{Core}
+
+\subsubsection{Aufbau}
+
+Der Core ist zwar das zentrale Modul des Simulators, seine Instanzen werden
+jedoch von der GUI verwaltet. Dabei erstellt die GUI für jedes neue Projekt, was
+in der Benutzeroberfläche einem Tab entspricht, eine neue Instanz des Cores über
+das \texttt{ProjectModule}. Dieses verwaltet (indirekt) die Komponenten eines
+Projektes, also Speicher, Register, Architekturdefinition und Parser, und
+ermöglicht der GUI über Interface-Klassen sicheren Zugriff auf die anderen
+Komponenten des Simulators. Um den GUI-Thread, in dem ein Event-Loop der
+Qt-Engine läuft, von der Übersetzung und Ausführung unabhängig zu machen, werden
+dabei pro Core-Instanz mehrere Threads benötigt.
+
+\subsubsection{Threading}
+
+Zur Vermeidung von Race Conditions und anderen Problemen wird das Konzept des
+\textit{Active Object Pattern} verwendet: Dabei wird für ein Objekt ein Thread
+erstellt und sichergestellt, dass die Methoden dieses Objektes nur in diesem
+Thread laufen. Dazu wird pro \textit{Active Object} ein \textit{Scheduler}
+benötigt, der Befehle zur Ausführung einer Methode des Objektes in einer
+Warteschlange verwaltet und nacheinander ausführt. Der Zugriff von außen auf das
+\textit{Active Object} darf daher nur über sogenannte \textit{Proxy} Objekte
+erfolgen, die Methodenaufrufe in die Warteschlange des Schedulers einreihen. Die
+Rückgabe von Werten erfolgt dabei über \texttt{futures} oder callbacks, wobei
+letzteres nur zu anderen Active Objects möglich ist und bisher nicht verwendet
+wird. Dieses Konzept wurde gewählt, um die Risiken von Threading-bezogenen
+Fehlern zu minimieren und den Aufwand zur Synchronisierung, bis auf die
+Implementierung des Active Object Patterns, gering zu halten.
+
+Im \texttt{ProjectModule} werden zwei \textit{Active Objects} verwaltet: Das
+\texttt{Project} Objekt verwaltet den Memory und die Register. Dabei wird ein
+eigenes Active Object mit einem Thread benötigt, da es beispielsweise möglich
+sein muss, über die Benutzeroberfläche während der Ausführung auf den Speicher
+zuzugreifen. Das zweite Active Object wird für die Ausführung und Übersetzung
+der Programme benötigt. Dies ist in der \texttt{ParsingAndExecutionUnit}
+umgesetzt. Dadurch bleibt die GUI auch während der Ausführung ansprechbar.
+
+\subsubsection{Interface}
+
+Die Kommunikation des Cores mit der GUI teilt sich auf zwei Richtungen auf:
+
+Die GUI muss auf Methoden des Cores zugreifen können, um an den Zustand von
+Speicher und Register zu gelangen und diesen zu ändern, oder auch um Befehle
+auszuführen. Dabei werden der GUI über das \texttt{ProjectModule} Interface
+Klassen zur Verfügung gestehlt, die \texttt{Proxy} Klassen der Active Objects
+sind. Diese Interface Klassen werden teilweise auch an die anderen Komponenten
+übergeben, um dem Parser und den Befehlen beispielsweise Zugriff auf Speicher
+und Register zu ermöglichen. Im einzelnen sind die Interface Klassen des
+\texttt{Project}s der \texttt{MemoryAccess}, der Zugriff auf Speicher und
+Register ermöglicht, der \texttt{MemoryManager}, über den weitere Funktionen von
+Speichern und Register verwaltet werden können, und der
+\texttt{ArchitectureAccess}, über den auf das Architekturobjekt des Projekts
+zugegriffen werden kann. Die Interfaces der \texttt{ParsingAndExecutionUnit}
+sind das \texttt{CommandInterface}, das beispielsweise die Übermittlung von
+Ausführungsbefehlen erlaubt, und das \texttt{ParserInterface}, über das auf
+Informationen des Parsers zugegriffen werden kann.
+
+Desweiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
+Cores geändert hat und die Ansichten aktualisiert werden sollen. Dafür werden
+Callbacks verwendet, damit der Core keine Referenz auf die GUI braucht und daher
+unabhängig von deren Aufbau ist. Diese Callbacks werden über die Interface
+Klassen gesetzt und bei entsprechenden Änderungen durch die Core-Komponenten
+aufgerufen. Dabei ist zu beachten, dass die Callbacks im jeweiligen Active
+Object ausgeführt werden, also auch in dessen Thread. Daher ist es nötig, in den
+Callback Funktionen, die in der GUI Implementiert werden, Qt-Signals mit
+\texttt{QueuedConnections} zu verwenden, um die entsprechenden die
+erforderlichen Aktionen in der GUI im richtigen Thread auszuführen. Da jeweils
+nur ein Callback im Core gesetzt werden kann, ist es über diesen Mechanismus
+auch möglich, mehrere Komponenten in der GUI zu benachrichtigen.
+
+\subsubsection{Ausführung}
+
+Der Core ist auch die Schnittstelle der GUI zum Parser, daher übernimmt er den
+Aufruf des Parsers und das Einfügen der assemblierten Befehlsdarstellung in den
+Speicher. Dabei wird dieser Speicherbereich vor der normalen Bearbeitung durch
+den Nutzer oder Assemblerbefehle geschützt.
+
+Nach der Übersetzung liefert der Parser dem Core ein Liste von Befehlen, die
+ausgeführt werden können, oder eine List an Fehlermeldungen. Die Ausführung
+läuft dabei auch in einem Active Object, wodurch die GUI nicht beeinträchigt
+wird. Da deshalb während der laufenden Ausführung alle anderen Befehle für
+dieses Active Object warten müssen, kann ein Stop-Signal nicht wie ein normaler
+Aufruf realisiert werden. Deshalb wird dazu ein mit dem \texttt{ProjectModule}
+geteiltes Flag verwendet. Dieses wird immer geprüft, wenn ein neuer Befehl
+ausgeführt wird.
+
+Falls nicht nur einzelne Befehle ausgeführt werden, ist auch zu beachten, dass
+durch die Ausführung jedes Befehls einige Callbacks an die GUI geschickt werden,
+wodurch in bestimmten Situationen das Message-System der Qt-Engine überlastet
+werden kann. Um dies zu verhindern, wird nach jedem Befehl ein
+Synchronisations-Callback aufgerufen und mit der Ausführung gewartet, bis dieser
+in der GUI ausgeführt wurde. Der Synchronisations-Callback muss dazu die
+\texttt{ProjectModule::guiReady()} Methode aufrufen. Dadurch wird
+sichergestellt, dass die Message-Queue abgearbeitet wurde und eine Überlastung
+verhindert.
+
+\subsubsection{Memory und Register}
+
+Hier passiert viel Magie.
