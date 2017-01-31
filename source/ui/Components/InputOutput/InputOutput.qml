@@ -41,6 +41,8 @@ Item {
 
   // Tell SplitViewItem (i.e. component wrapper) that settings are available to make it display settings icon.
   property var hasComponentSettings: true
+  // Tab that should be selected by default.
+  property var defaultTab: 0
 
   // Allows to select the available output items (e.g. Lightstrip, Seven-Segment, Console)
   TabView {
@@ -50,6 +52,8 @@ Item {
 
     // Position tab bar below the content frame.
     tabPosition: Qt.BottomEdge
+
+    currentIndex: defaultTab
 
 
     /* Each output item is represented by its corresponding tab inside the output tab bar.
