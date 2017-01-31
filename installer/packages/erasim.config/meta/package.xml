@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Package>
+<!-- What is this package -->
+    <DisplayName>Configuration files</DisplayName>
+    <Description>Installs neccessary configuration files for the ERASIM simulator on this pc</Description>
+    <Version>0.9.0</Version>
+    <ReleaseDate>2017-01-28</ReleaseDate>
+    <Name>erasim.config</Name>
+    <Default>true</Default>
+    <ForcedInstallation>true</ForcedInstallation>
+
+<!-- Styling -->
+    <SortingPriority>99</SortingPriority><!-- Highest prio sorts to the top-->
+
+<!-- Install -->
+    <Script>installconfigfiles.js</Script>
+</Package>

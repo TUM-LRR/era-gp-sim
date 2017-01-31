@@ -40,13 +40,12 @@ Q_DECLARE_METATYPE(Status)
 Ui::id_t Ui::_rollingProjectId = 0;
 
 Ui::Ui(int& argc, char** argv)
-: _architectureMap(), _qmlApplication(argc, argv), _engine(), _projects() {
-  _loadArchitectures();
-}
+: _architectureMap(), _qmlApplication(argc, argv), _engine(), _projects() {}
 
 int Ui::runUi() {
   _registerCustomTypes();
   if (_setupEngine()) {
+    _loadArchitectures();
     _startMainEngine();
   } else {
     _startErrorEngine();
@@ -200,7 +199,7 @@ QString Ui::translate(const Translateable& translateable) {
 
 void Ui::_loadArchitectures() {
   assert::that(_architectureMap.empty());
-  std::string path = Utility::joinToRoot("isa", "isa-list.json");
+  std::string path = Utility::joinToConfigPath("isa", "isa-list.json");
   Ui::Json data = Ui::Json::parse(Utility::loadFromFile(path));
   assert::that(data.count("architectures"));
   assert::that(!data["architectures"].empty());
@@ -256,6 +255,7 @@ bool Ui::_setupEngine() {
 
   auto status = Settings::Make();
   if (status) {
+    Utility::_configPath = Settings::pointer()->settingsDirectoryPath().toStdString();
     _setupSnapshots(Settings::get("snapshotLocation").toString());
     status = Theme::Make(Settings::get("theme").toString());
   }

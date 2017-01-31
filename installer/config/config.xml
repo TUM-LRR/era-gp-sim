@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+<!-- Who we are -->
+    <Name>ERASIM</Name>
+    <Version>0.9.0</Version>
+    <Title>ERASIM</Title><!-- The installer default adds a "... setup"-->
+    <Publisher>TUM-LRR</Publisher>
+    <ProductUrl>https://github.com/TUM-LRR/era-gp-sim</ProductUrl>
+
+<!-- Styling -->
+    <!--<InstallerWindowIcon></InstallerWindowIcon>-->
+    <!--<Logo></Logo>-->
+
+<!-- Install -->
+    <StartMenuDir>ERASIM</StartMenuDir>
+    <AllowSpaceInPath>true</AllowSpaceInPath>
+    <AllowNonAsciiCharacters>true</AllowNonAsciiCharacters>
+    <!-- 
+    We offer the user to install at the common applications directory:
+    Windows: C:\Programs
+    Linux: /opt/
+    -->
+    <TargetDir>@ApplicationsDir@/ERASIM/</TargetDir>
+
+<!-- Config for unistaller/updater -->
+    <MaintenanceToolName>erasim-maintenance</MaintenanceToolName>
+    <MaintenanceToolIniFile>erasim-maintenance-ini</MaintenanceToolIniFile>
+</Installer>
