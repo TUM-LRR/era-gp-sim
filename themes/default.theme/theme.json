@@ -275,6 +275,8 @@
     "editor": {
         "color": "black",
         "background": "white",
+        "fontFamily": "Hack",
+        "fontSize": 15,
         "selection": "#2d2d91",
         "keywords": {
             "immediate": {
@@ -341,6 +343,7 @@
             "color": "#212121",
             "borderColor": "#BDBDBD",
             "borderRadius": 3,
+            "fontFamily": "Hack",
             "fontSize": 12,
             "height": 24,
             "minWidth": 120
@@ -352,6 +355,7 @@
         "address": {
             "background": "transparent",
             "color": "#212121",
+            "fontFamily": "Hack",
             "fontSize": 12,
             "fontWeight": "normal",
             "marginLeft": -10,
@@ -424,6 +428,7 @@
         "content": {
             "background": "white",
             "color": "#212121",
+            "fontFamily": "Hack",
             "fontSize": 12,
             "height": 25,
             "margin": 4,
@@ -585,7 +590,8 @@
         "promptColor": "#FF4081",
         "prompt": "$",
         "promptMargin": 5,
-        "fontSize": 12,
+        "fontFamily": "Hack",
+        "fontSize": 16,
         "settings": {
             "width": 400,
             "height": 200,

@@ -31,6 +31,7 @@ import "Components/ProjectCreation"
 import "Components/Settings"
 import "Components/tabview"
 import "Components/Snapshots"
+import "Fonts/"
 
 import Theme 1.0
 
@@ -217,4 +218,6 @@ ApplicationWindow {
     selectMultiple: false
     onAccepted: onAcceptedFunction(fileDialog.fileUrl);
   }
+
+  FontLoaderComponent {}
 }

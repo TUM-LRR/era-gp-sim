@@ -49,6 +49,7 @@ Item {
     anchors.left: promptColumn.right
     anchors.right: parent.right
 
+    font.family: Theme.console.fontFamily
     font.pixelSize: Theme.console.fontSize
     color: Theme.console.textColor
     wrapMode: Text.WrapAnywhere
@@ -117,6 +118,7 @@ Item {
     anchors.right: parent.right
     anchors.top: readonlyConsole.bottom
 
+    font.family: Theme.console.fontFamily
     font.pixelSize: Theme.console.fontSize
     color: Theme.console.textColor
     wrapMode: Text.WrapAnywhere
