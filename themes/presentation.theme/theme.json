@@ -344,8 +344,8 @@
             "borderColor": "#BDBDBD",
             "borderRadius": 3,
             "fontFamily": "Hack",
-            "fontSize": 12,
-            "height": 24,
+            "fontSize": 18,
+            "height": 35,
             "minWidth": 120
         },
         "divider": {
@@ -356,7 +356,7 @@
             "background": "transparent",
             "color": "#212121",
             "fontFamily": "Hack",
-            "fontSize": 12,
+            "fontSize": 18,
             "fontWeight": "normal",
             "marginLeft": -10,
             "width": 90
@@ -422,14 +422,14 @@
         "overflow": "auto",
         "label": {
             "color": "#212121",
-            "fontSize": 12,
+            "fontSize": 16,
             "fontWeight": "bold"
         },
         "content": {
             "background": "white",
             "color": "#212121",
             "fontFamily": "Hack",
-            "fontSize": 12,
+            "fontSize": 18,
             "height": 25,
             "margin": 4,
             "radius": 2,
@@ -457,7 +457,6 @@
     "input": {
         "keyInput": {
             "background": "white",
-            "textPadding": 10,
             "inactive": {
                 "margins": 40,
                 "color": "black",
@@ -474,9 +473,9 @@
             },
             "active": {
                 "margins": 20,
-                "color": "black",
+                "color": "white",
                 "background": "#2196F3",
-                "fontSize": 16,
+                "fontSize": 30,
                 "animation": {
                     "marginAnimation": {
                         "duration": 300
@@ -594,7 +593,7 @@
         "prompt": "$",
         "promptMargin": 5,
         "fontFamily": "Hack",
-        "fontSize": 16,
+        "fontSize": 30,
         "settings": {
             "width": 400,
             "height": 200,
