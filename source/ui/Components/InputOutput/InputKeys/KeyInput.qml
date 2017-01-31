@@ -51,6 +51,7 @@ Rectangle {
       wrapMode: TextEdit.Wrap
       color: Theme.input.keyInput.inactive.color
       padding: Theme.input.keyInput.textPadding
+      font.pixelSize: Theme.input.keyInput.inactive.fontSize
 
       text: focusRectangle.defaultInfoText
     }
@@ -76,11 +77,13 @@ Rectangle {
         infoText.text = "";
         infoText.font.bold = true;
         infoText.color = Theme.input.keyInput.active.color;
+        infoText.font.pixelSize = Theme.input.keyInput.active.fontSize
       } else {
         looseFocusAnimation.start();
         infoText.text = focusRectangle.defaultInfoText;
         infoText.font.bold = false;
         infoText.color = Theme.input.keyInput.inactive.color;
+        infoText.font.pixelSize = Theme.input.keyInput.inactive.fontSize
       }
     }
 
