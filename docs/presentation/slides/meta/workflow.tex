@@ -1,10 +1,13 @@
 % !TEX root = ../../presentation.tex
 % Meta: Workflow
 
+\newlength{\height}\setlength{\height}{0.4cm}\relax
+
+% Only for the header
+\begin{slide}{Workflow}\end{slide}
+
 \begin{slide}{Workflow: Programmiersprachen}
   \begin{tikzpicture}
-    \newlength{\height}\setlength{\height}{0.4cm}\relax
-
     % C++
     \fill [Red, rounded corners=2pt]
           (0, 0) rectangle ++(6, \height);
@@ -42,7 +45,7 @@
   \begin{tabular}{lrrr}
     \textbf{Programmiersprache} & \textbf{Kommentarzeilen} & \textbf{Codezeilen} & \textbf{Gesamt} \\
     \midrule
-    C++ & 17475 & 23637 & 41112 \\
+    C\texttt{++} & 17475 & 23637 & 41112 \\
     QML & 1973 & 5567 & 7540 \\
     TeX & 247 & 3966 & 4213 \\
     Python & 242 & 543 & 785 \\
@@ -59,19 +62,18 @@
 \begin{slide}{Workflow: Methoden \& Hilfsmittel}
   \onslide<2->{
     {\Large \emph{Definitions of Done}}
-    \vspace{0.2cm}
+    \vspace{0.25cm}
   }
 
   \small
   \begin{enumerate}
-    \item<3-> Code wurde (vorerst) geschrieben,
-    \item<4-> Unit-Tests sind geschrieben und passen (\textbf{GoogleTest, Travis}),
+    \item<3-> Code wurde geschrieben,
+    \item<4-> Unit Tests stehen und passen (\textbf{GoogleTest, Travis}),
     \item<5-> Der Code ist dokumentiert (\textbf{Doxygen}),
     \item<6-> Der Code ist formattiert (\textbf{clang-format}),
     \item<7-> Ein Pull Request wurde ge\"{o}ffnet (\textbf{Waffle, GitHub}),
-    \item<8-> OK von den Code-Reviewern (\textbf{GitHub}),
+    \item<8-> OK von Code-Reviewern (\textbf{GitHub}),
     \item<9-> Merge des Feature Branch in den Master Branch (\textbf{Git}),
-    \item<10-> Task wurde von Code Review nach Done geschoben (\textbf{Waffle}),
-    \item<11-> Profit.
+    \item<10-> Profit.
   \end{enumerate}
 \end{slide}
