@@ -30,6 +30,7 @@ END {
 }
 EOF
 
-cloc source include tests scripts/*.py docs themes \
+cloc source include tests scripts docs themes isa \
+  --not-match-f=".*\.json$" \
   | awk 'NR>8 && NR < 19' \
   | awk -F'[[:space:]]{2,}' "$process_counts"
