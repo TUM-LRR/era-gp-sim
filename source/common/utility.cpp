@@ -25,8 +25,6 @@
 
 namespace Utility {
 
-std::string _configPath = "";
-
 namespace Detail {
 bool performSignedBitWidthCheck(const MemoryValue& memory,
                                 std::size_t numberOfBits) {
@@ -79,13 +77,26 @@ std::string toUpper(const std::string& string) {
   return transform(string, [](auto& c) { return std::toupper(c); });
 }
 
+const std::string& rootPath() {
+  static const std::string query("era-gp-sim");
+  static std::string root;
+
+  if (root.empty()) {
+    // Hope it exists
+    root = __FILE__;
+
+    auto index = root.rfind(query) + query.length();
+    root.erase(index);
+  }
+
+  return root;
+}
+
 std::string joinPaths(const std::string& single) {
   return single;
 }
 
 std::string loadFromFile(const std::string& filePath) {
-  std::cout << filePath << std::endl;
-  std::cout.flush();
   std::string input;
   std::ifstream file(filePath);
   file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
