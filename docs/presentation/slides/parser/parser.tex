@@ -248,13 +248,8 @@ addi x1, x0, magic + 2
 
 
 \begin{frame}{Arithmetische Ausdrücke}
-\begin{center}
-	\begin{tikzpicture}
-		\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
-		\node (outstacktxt)  {Ausgabe-Stack};
-		\node (opstacktxt) [above = of outstacktxt] {Operator-Stack};
-			\node (expr) [above = of opstacktxt] {				
-				$
+
+\[
 					{\color<1-2>[rgb]{1,0,0}{\color<3->[rgb]{0.5,0.5,0.5}1}}
 					{\color<3-4>[rgb]{1,0,0}{\color<5->[rgb]{0.5,0.5,0.5}+}}
 					{\color<5-6>[rgb]{1,0,0}{\color<7->[rgb]{0.5,0.5,0.5}2}}
@@ -262,60 +257,67 @@ addi x1, x0, magic + 2
 					{\color<9-10>[rgb]{1,0,0}{\color<11->[rgb]{0.5,0.5,0.5}3}}
 					{\color<11-16>[rgb]{1,0,0}{\color<17->[rgb]{0.5,0.5,0.5}+}}
 					{\color<17-18>[rgb]{1,0,0}{\color<19->[rgb]{0.5,0.5,0.5}4}}
-				$
-			};
+				\]
+				\vspace{0.8cm}
+\begin{center}
+		\begin{tikzpicture}[node distance=1.0cm and 0.3cm]
+		\tikzstyle{follows} = [->, thick, double]
+		\tikzstyle{treearr} = [->]
+
+			\node (opstacktxt)   {Operator-Stack};
+		\node (outstacktxt) [below = of opstacktxt]  {Ausgabe-Stack};
+			
 			\uncover<4-14> {
-				\node (op_add)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt] {
+				\node (op_add)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt, minimum size=16pt] {
 					\color<14>[rgb]{1,0,0}$+$
 				};
 			}
 			\uncover<8-12> {
-				\node (op_mul)[rounded corners=1pt, rectangle, right = of op_add, draw = black] {
+				\node (op_mul)[rounded corners=1pt, rectangle, right = of op_add, draw = black, minimum size=16pt] {
 					\color<12>[rgb]{1,0,0}$\cdot$
 				};
 			}
 			\uncover<16-20> {
-				\node (op_add2)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt] {
+				\node (op_add2)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt, minimum size=16pt] {
 					\color<20>[rgb]{1,0,0}$+$
 				};
 			}
 			\uncover<2-14> {
-				\node (num1)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt] {
+				\node (num1)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt, minimum size=16pt] {
 					\color<14>[rgb]{1,0,0}$1$
 				};
 			}
 			\uncover<6-12> {
-				\node (num2)[rounded corners=1pt, rectangle, draw = black, right = of num1] {
+				\node (num2)[rounded corners=1pt, rectangle, draw = black, right = of num1, minimum size=16pt] {
 					\color<12>[rgb]{1,0,0}$2$
 				};
 			}
 			\uncover<10-12> {
-				\node (num3)[rounded corners=1pt, rectangle, draw = black, right = of num2] {
+				\node (num3)[rounded corners=1pt, rectangle, draw = black, right = of num2, minimum size=16pt] {
 					\color<12>[rgb]{1,0,0}$3$
 				};
 			}
 			\uncover<15-20> {
-				\node (num6)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt] {
+				\node (num6)[rounded corners=1pt, rectangle, draw = black, below = of op_add, minimum size=16pt] {
 					\color<20>[rgb]{1,0,0}$7$
 				};
 			}
 			\uncover<18-20> {
-				\node (num4)[rounded corners=1pt, rectangle, draw = black, right = of num6] {
+				\node (num4)[rounded corners=1pt, rectangle, draw = black, right = of num6, minimum size=16pt] {
 					\color<20>[rgb]{1,0,0}$4$
 				};
 			}
 			\uncover<13-14> {
-				\node (num5)[rounded corners=1pt, rectangle, draw = black, right = of num1] {
+				\node (num5)[rounded corners=1pt, rectangle, draw = black, right = of num1, minimum size=16pt] {
 					\color<14>[rgb]{1,0,0}$6$
 				};
 			}
 			\uncover<21-> {
-				\node (num10)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt] {
+				\node (num10)[rounded corners=1pt, rectangle, draw = black, below = of op_add, minimum size=16pt] {
 					$11$
 				};
 			}
 		\end{tikzpicture}
-	\end{tikzpicture}
 \end{center}
 \end{frame}
 
