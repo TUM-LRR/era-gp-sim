@@ -1,8 +1,6 @@
 
 \tikzset{hide on/.code={\only<#1>{\color{white}}}}
-\tikzset{font=\tiny,
-  edge from parent fork down,
-  level distance=1.3cm,
+\tikzset{
   guitree/.style=
     {rectangle,rounded corners,
     minimum height=7mm,
@@ -144,7 +142,7 @@
 
 % Mit SplitViewItems, Editor
 \begin{slide}{Aufbau der GUI}
-\begin{tikzpicture}
+\begin{tikzpicture}[edge from parent fork down, level distance=1.3cm, font=\tiny]
   \Tree [.\node[guitree]{ApplicationWindow\\(main.qml)};
             [.\node[guitree]{Menubar}; ]
             [.\node[guitree]{Toolbar}; ]
