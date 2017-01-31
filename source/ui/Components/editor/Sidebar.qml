@@ -70,7 +70,7 @@ Rectangle {
       target: editor
       onAddIssue: {
         // Note: Parser uses line numbering 1...n.
-        errorBar.addIssue(message, line, color);
+        errorBar.addIssue(message, line, issueType);
       }
 
       onDeleteErrors: errorBar.issueMarks = ({})

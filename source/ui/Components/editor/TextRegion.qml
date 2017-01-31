@@ -35,6 +35,9 @@ TextEdit {
   wrapMode: TextEdit.NoWrap
   color: Theme.editor.color
 
+  font.family: Theme.editor.fontFamily
+  font.pixelSize: Theme.editor.fontSize
+
   // Line that is going to be executed in the next step.
   property int currentlyExecutedLine: 0
   property var cursorLine: 1
