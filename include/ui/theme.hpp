@@ -54,7 +54,7 @@ class Theme : public QQmlPropertyMap {
 
   using super = QQmlPropertyMap;
 
- public:
+public:
   /**
    * Creates a new Theme instance.
    *
@@ -65,7 +65,7 @@ class Theme : public QQmlPropertyMap {
    * \param themeName The theme to initialize the new theme singleton with.
    * \returns A pointer to the newly created theme.
    */
-  static Status Make(const QString& themeName);
+  static Status Make(const QString &themeName);
 
   /**
    * Note: Make() must have been called before.
@@ -73,7 +73,7 @@ class Theme : public QQmlPropertyMap {
    * \see Make()
    * \see pointer()
    */
-  static Theme& instance();
+  static Theme &instance();
 
   /**
    * Note: Make() must have been called before.
@@ -81,7 +81,7 @@ class Theme : public QQmlPropertyMap {
    * \see Make()
    * \see instance()
    */
-  static Theme* pointer();
+  static Theme *pointer();
 
   /**
    * Loads the theme with the given name from disk.
@@ -90,22 +90,22 @@ class Theme : public QQmlPropertyMap {
    *
    * \param themeName The theme to load.
    */
-  Q_INVOKABLE Status load(const QString& themeName);
+  Q_INVOKABLE Status load(const QString &themeName);
 
   /**
    * \returns The name of the theme currently loaded into the singleton.
    */
-  const QString& currentThemeName() const noexcept;
+  Q_INVOKABLE const QString currentThemeName() const noexcept;
 
- signals:
+signals:
 
   /**
    * A signal sent when the current theme loaded into the singleton changes.
    * \paran newName The name of the newly loaded theme.
    */
-  void themeChanged(const QString& newName);
+  void themeChanged(const QString &newName);
 
- private:
+private:
   using Json = QJsonObject;
 
   /**
@@ -114,7 +114,7 @@ class Theme : public QQmlPropertyMap {
   static const std::size_t CACHE_CAPACITY = 8;
 
   /** The singleton. */
-  static Theme* _theme;
+  static Theme *_theme;
 
   /**
    * Loads raw data from disk for a given theme.
@@ -122,7 +122,7 @@ class Theme : public QQmlPropertyMap {
    * \param name The name of the theme to load.
    * \returns A QByteArray of raw JSON bytes.
    */
-  static StatusWithValue<QByteArray> _loadThemeData(const QString& name);
+  static StatusWithValue<QByteArray> _loadThemeData(const QString &name);
 
   /**
    * Constructor.
@@ -138,7 +138,7 @@ class Theme : public QQmlPropertyMap {
    * \param name The name of the theme to load.
    * \return The JSON of the specified theme.
    */
-  StatusWithValue<const Json&> _loadJson(const QString& name);
+  StatusWithValue<const Json &> _loadJson(const QString &name);
 
   /**
    * Stores a theme's JSON in the cache.
@@ -151,7 +151,7 @@ class Theme : public QQmlPropertyMap {
    * \param  object The json object to store in the cache.
    * \return A reference to the cached object. The old object is invalidated!
    */
-  const Json& _cacheTheme(const QString& name, Json& object);
+  const Json &_cacheTheme(const QString &name, Json &object);
 
   /** A cache to store recently-loaded styles. */
   QHash<QString, Json> _cache;
