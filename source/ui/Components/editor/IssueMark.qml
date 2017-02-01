@@ -211,6 +211,15 @@ Item {
             _offsetFirstIssueItemIfNecessary();
         }
 
+        // Check if the first issueItem needs to be offset by one line after the
+        // text insde the editor has changed.
+        Connections {
+          target: textRegion
+          onTextChanged: {
+            issueLineHighlight._offsetFirstIssueItemIfNecessary();
+          }
+        }
+
         // Checks if the first issueText would overlap the line text and offsets it by one line
         // if necessary.
         function _offsetFirstIssueItemIfNecessary() {
