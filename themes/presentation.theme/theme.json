@@ -359,7 +359,9 @@
             "fontSize": 18,
             "fontWeight": "normal",
             "marginLeft": -10,
-            "width": 90
+            "width": 90,
+            "lockSymbol": "L",
+            "lockColor": "red"
         },
         "header": {
             "background": "transparent",
