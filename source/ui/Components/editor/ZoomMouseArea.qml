@@ -29,7 +29,7 @@ MouseArea {
 
   propagateComposedEvents: true
   scrollGestureEnabled: true
-  acceptedButtons: Qt.MidButton
+  acceptedButtons: Qt.MiddleButton
 
   onWheel: {
     if (wheel.modifiers == Qt.ControlModifier) {
