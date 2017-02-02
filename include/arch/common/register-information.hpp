@@ -53,7 +53,7 @@
  * prevents the need to propagate template parameters into enclosing classes
  * (e.g. `Unit` or `Architecture`).
  *
- * The class' interface is intended to support the BuilderInterface pattern. As
+ * The class' interface is intended to support the Builder. As
  * such, it defaults certain values internally:
  * - The type defauls to `Type::INTEGER`.
  * - The ID defaults to an instance-unique (static), incrementing ID.

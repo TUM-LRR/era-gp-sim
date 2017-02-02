@@ -1,0 +1,428 @@
+% !TEX root = ../../presentation.tex
+% Parser
+
+\textframe{\texttt{.parser}}
+
+
+\begin{frame}{Aufgabe des Parsers}
+\begin{center}
+	\begin{tikzpicture}[node distance=1.0cm and 2.5cm]
+	\tikzstyle{myarrow} = [->, thick]
+
+	\uncover<2->{\node (intern) [align=center]
+	{
+		\textbf{Interne}\\
+		\textbf{Definitionen}
+	};}
+	\node (invis1) [below = of intern] {};
+	\uncover<3->{\node (code) [below = of invis1]
+	{
+		\textbf{Programmcode}
+	};}
+	\node (parser) [rounded corners=10pt, rectangle, draw = black, minimum height = 5cm, right = of invis1]
+	{
+		\textbf{Parser}
+	};
+	\node (invis2) [right = of parser] {};
+	\uncover<4->{\node (tree) [above = of invis2]
+	{
+		\textbf{Syntaxbaum}
+	};}
+	\uncover<5->{\node (errors) [below = of invis2]
+	{
+		\textbf{Fehlerliste}
+	};}
+	\uncover<2->{\draw[myarrow] (intern) -- (intern -| parser.west);}
+	\uncover<3->{\draw[myarrow] (code) -- (code -| parser.west);}
+	\uncover<4->{\draw[myarrow] (parser.east |- tree) -- (tree);}
+	\uncover<5->{\draw[myarrow] (parser.east |- errors) -- (errors);}
+	\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Parser-Factory}
+Verschiedene Parser ermöglicht durch Factory-Pattern:
+\uncover<2->{\begin{center}
+	\begin{tikzpicture}[node distance=1.0cm and 2.0cm]
+	\tikzstyle{myarrow} = [->, thick]
+
+	\node (name) [circle, draw = black]
+	{
+		\texttt{"name"}
+	};
+	\node (factory) [rounded corners=1pt, rectangle, draw = black, right = of name]
+	{
+		\textbf{Factory}
+	};
+	\node (parser) [circle, right = of factory, draw = black]
+	{
+		\textbf{Parser}
+	};
+	\draw[myarrow] (name) -- (factory);
+	\draw[myarrow] (factory) -- (parser);
+	\end{tikzpicture}
+\end{center}}
+\end{frame}
+
+
+\begin{frame}[fragile]{Prinzip}
+\begin{center}
+	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
+	\tikzstyle{follows} = [->, thick, double]
+	\tikzstyle{treearr} = [->]
+
+	\node (code) [draw = black]
+	{
+		\begin{lstlisting}[basicstyle=\tiny]{style=risc-v_Assembler}
+.equ magic, 3 * 7
+addi x1, x0, magic + 2
+		\end{lstlisting}
+	};
+	\node (help) [below = of code] {};
+	\uncover<2->{
+		\node (inter1) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, left = of help]
+		{
+			\textbf{Konstante}
+			\nodepart{second}
+			{\tiny
+			\begin{tabular}{rl}
+			name: & \texttt{"magic"} \\
+			value: & \texttt{"3 * 7"}
+			\end{tabular}}
+		};
+		\node (inter2) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of help]
+		{
+			\textbf{Instruktion}
+			\nodepart{second}
+			{\tiny
+			\begin{tabular}{rl}
+			name: & \texttt{\char`\"addi"} \\
+			targets: & \texttt{["x1"]} \\
+			sources: & \texttt{["x0",} \\
+			& \texttt{   "magic + 2" ]}
+			\end{tabular}}
+		};
+	}
+	\uncover<2->{\node (intertxt) [left = of inter1] {Zwischendarstellung};}
+	\node (codetxt) [above = of intertxt] {Programmcode};
+	\uncover<3->{\node (treetxt) [below = of intertxt] {Syntaxbaum};}
+	\uncover<3->{
+		\node (tree_add) [circle, draw = black, below = of help]
+		{
+			\texttt{addi}
+		};
+		\node (tree_x0) [circle, draw = black, below = of tree_add, yshift=1cm]
+		{
+			\texttt{x0}
+		};
+		\node (tree_x1) [circle, draw = black, left = of tree_x0]
+		{
+			\texttt{x1}
+		};
+		\node (tree_n) [circle, draw = black, right = of tree_x0]
+		{
+			\texttt{23}
+		};
+	}
+
+	\uncover<2->{\draw [dashed] (inter1) -- (inter2);}
+
+	\uncover<3->{
+		\draw [treearr] (tree_add) -- (tree_x1);
+		\draw [treearr] (tree_add) -- (tree_x0);
+		\draw [treearr] (tree_add) -- (tree_n);
+	}
+
+	\uncover<2->{\draw [follows] (code) -- (code |- inter2.north);}
+	\uncover<3->{\draw [follows] (tree_add |- inter2.south) -- (tree_add);}
+
+	\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Zwischendarstellung}
+\begin{center}
+	\begin{tikzpicture}[node distance=0.5cm and 2.0cm]
+	\tikzstyle{inher} = [->, thick, >=open triangle 90]
+    \tikzstyle{myline} = [thick]
+
+	\uncover<2->{\node (op) [rounded corners=1pt, draw = black] {\textbf{Operation}};}
+
+    \uncover<3->{\node (dir) [rounded corners=1pt, draw = black, right = of op] {\textbf{Direktive}};
+    \node (inst) [rounded corners=1pt, draw = black, above = of dir] {\textbf{Instruktion}};
+    \node (mac_inst) [rounded corners=1pt, draw = black, below = of dir] {\textbf{Makro-Instr.}};
+
+    \draw [inher] (dir) -- (op);
+    \draw [myline] (op.east) ++(1cm,0) |- (inst);
+    \draw [myline] (op.east) ++(1cm,0) |- (mac_inst);}
+
+    \uncover<4->{\node (sec) [rounded corners=1pt, draw = black, right = of dir] {\textbf{Sektion}};}
+    \uncover<6->{\node (mac) [rounded corners=1pt, draw = black, above = of sec] {\textbf{Makro}};}
+    \uncover<5->{\node (const) [rounded corners=1pt, draw = black, above = of mac] {\textbf{Konstante}};}
+    \uncover<7->{\node (res) [rounded corners=1pt, draw = black, below = of sec, align = center] {\textbf{Speicher-}\\\textbf{Reservierung}};
+    \node (def) [rounded corners=1pt, draw = black, below = of res, align = center] {\textbf{Speicher-}\\\textbf{Definition}};}
+
+    \uncover<4->{\draw [inher] (sec) -- (dir);}
+    \uncover<6->{\draw [myline] (dir.east) ++(1cm,0) |- (mac);}
+    \uncover<5->{\draw [myline] (dir.east) ++(1cm,0) |- (const);}
+    \uncover<7->{\draw [myline] (dir.east) ++(1cm,0) |- (res);}
+    \uncover<7->{\draw [myline] (dir.east) ++(1cm,0) |- (def);}
+
+	\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Symboltabelle}
+\begin{center}
+	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
+	\tikzstyle{follows} = [->, thick, double]
+	\tikzstyle{treearr} = [->]
+		\uncover<1-6>{
+			\node (s_0) [rounded corners=5pt, rectangle, draw = black]
+			{
+				$S_0\rightarrow S_1aS_3$
+			};
+		}
+		\uncover<1-5>{
+			\node (s_1) [rounded corners=5pt, rectangle, draw = black, below = of s_0]
+			{
+				$S_1\rightarrow S_2S_3$
+			};
+		}
+		\uncover<7->{
+			\node (s_0_) [rounded corners=5pt, rectangle, draw = black]
+			{
+				$S_0\rightarrow bcac$
+			};
+		}
+		\uncover<6->{
+			\node (s_1_) [rounded corners=5pt, rectangle, draw = black, below = of s_0]
+			{
+				$S_1\rightarrow bc$
+			};
+		}
+		\uncover<1->{
+			\node (s_2) [rounded corners=5pt, rectangle, draw = black, left = of s_1]
+			{
+				$S_2\rightarrow b$
+			};
+		}
+		\uncover<1->{
+			\node (s_3) [rounded corners=5pt, rectangle, draw = black, right = of s_1]
+			{
+				$S_3\rightarrow c$
+			};
+		}
+		\uncover<4-6>{
+			\draw [treearr] (s_3) -- (s_0);
+		}
+		\uncover<2-6>{
+			\draw [treearr] (s_1) -- (s_0);
+		}
+		\uncover<3-5>{
+			\draw [treearr] (s_2) -- (s_1);
+		}
+		\uncover<4-5>{
+			\draw [treearr] (s_3) -- (s_1);
+		}
+		\uncover<1->{\node (graphtxt) [left = of s_2] {Symbolgraph};}
+		\uncover<8->{\node (tabletxt) [below = of graphtxt] {Symboltabelle};}
+		\uncover<8->{
+			\node (table) [right = of tabletxt] {
+		\begin{tabular}{l|l}
+			Symbol & Ersetzung \\
+			\hline
+			$S_0$ & $bcac$ \\
+			$S_1$ & $bc$ \\
+			$S_2$ & $b$ \\
+			$S_3$ & $c$ \\
+		\end{tabular}
+		};
+		}
+	\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Arithmetische Ausdrücke}
+\[
+					{\color<1-2>[rgb]{1,0,0}{\color<3->[rgb]{0.5,0.5,0.5}1}}
+					{\color<3-4>[rgb]{1,0,0}{\color<5->[rgb]{0.5,0.5,0.5}+}}
+					{\color<5-6>[rgb]{1,0,0}{\color<7->[rgb]{0.5,0.5,0.5}2}}
+					{\color<7-8>[rgb]{1,0,0}{\color<9->[rgb]{0.5,0.5,0.5}\cdot}}
+					{\color<9-10>[rgb]{1,0,0}{\color<11->[rgb]{0.5,0.5,0.5}3}}
+					{\color<11-16>[rgb]{1,0,0}{\color<17->[rgb]{0.5,0.5,0.5}+}}
+					{\color<17-18>[rgb]{1,0,0}{\color<19->[rgb]{0.5,0.5,0.5}4}}
+				\]
+				\vspace{0.8cm}
+\begin{center}
+		\begin{tikzpicture}[node distance=1.0cm and 0.3cm]
+		\tikzstyle{follows} = [->, thick, double]
+		\tikzstyle{treearr} = [->]
+
+			\node (opstacktxt)   {Operator-Stack};
+		\node (outstacktxt) [below = of opstacktxt]  {Ausgabe-Stack};
+			
+			\uncover<4-14> {
+				\node (op_add)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt, minimum size=16pt] {
+					\color<14>[rgb]{1,0,0}$+$
+				};
+			}
+			\uncover<8-12> {
+				\node (op_mul)[rounded corners=1pt, rectangle, right = of op_add, draw = black, minimum size=16pt] {
+					\color<12>[rgb]{1,0,0}$\cdot$
+				};
+			}
+			\uncover<16-20> {
+				\node (op_add2)[rounded corners=1pt, rectangle, draw = black, right = of opstacktxt, minimum size=16pt] {
+					\color<20>[rgb]{1,0,0}$+$
+				};
+			}
+			\uncover<2-14> {
+				\node (num1)[rounded corners=1pt, rectangle, draw = black, right = of outstacktxt, minimum size=16pt] {
+					\color<14>[rgb]{1,0,0}$1$
+				};
+			}
+			\uncover<6-12> {
+				\node (num2)[rounded corners=1pt, rectangle, draw = black, right = of num1, minimum size=16pt] {
+					\color<12>[rgb]{1,0,0}$2$
+				};
+			}
+			\uncover<10-12> {
+				\node (num3)[rounded corners=1pt, rectangle, draw = black, right = of num2, minimum size=16pt] {
+					\color<12>[rgb]{1,0,0}$3$
+				};
+			}
+			\uncover<15-20> {
+				\node (num6)[rounded corners=1pt, rectangle, draw = black, below = of op_add, minimum size=16pt] {
+					\color<20>[rgb]{1,0,0}$7$
+				};
+			}
+			\uncover<18-20> {
+				\node (num4)[rounded corners=1pt, rectangle, draw = black, right = of num6, minimum size=16pt] {
+					\color<20>[rgb]{1,0,0}$4$
+				};
+			}
+			\uncover<13-14> {
+				\node (num5)[rounded corners=1pt, rectangle, draw = black, right = of num1, minimum size=16pt] {
+					\color<14>[rgb]{1,0,0}$6$
+				};
+			}
+			\uncover<21-> {
+				\node (num10)[rounded corners=1pt, rectangle, draw = black, below = of op_add, minimum size=16pt] {
+					$11$
+				};
+			}
+		\end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Makros}
+\begin{overprint}
+\onslide<1>
+Makroaufrufe suchen und ersetzen.
+\onslide<2>
+Syntaxbaum generieren.
+\end{overprint}
+
+\begin{center}
+	\begin{tikzpicture}[node distance=1.5cm and 0.3cm]
+	\tikzstyle{follows} = [->, thick, double]
+	\tikzstyle{treearr} = [->]
+
+	\node (inter1) [rounded corners=1pt, rectangle split, rectangle split parts = 4, draw = black]
+	{
+		\textbf{Makro}
+		\nodepart{second}
+		{\tiny
+		\begin{tabular}{rl}
+		name: & \texttt{"verdopple"} \\
+		args: & \texttt{["reg"]}
+		\end{tabular}}
+		\nodepart{three}
+		\textbf{\small{Instruktionen}}
+		\nodepart{four}
+		{\tiny
+		\begin{tabular}{rl}
+		name: & \texttt{\char`\"add"} \\
+		targets: & \texttt{["\textbackslash{}reg"]} \\
+		sources: & \texttt{["\textbackslash{}reg", "\textbackslash{}reg"]}
+		\end{tabular}}
+	};
+
+	\uncover<2->{
+	\node (inter4) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of inter1]
+	{
+		\textbf{Makro-Instr.}
+		\nodepart{second}
+		{\tiny
+		\begin{tabular}{rl}
+		name: & \texttt{\char`\"add"} \\
+		targets: & \texttt{["x1"]} \\
+		sources: & \texttt{["x1", "x1"]}
+		\end{tabular}}
+	};
+	\node (inter5) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, right = of inter4]
+	{
+		\textbf{Makro-Instr.}
+		\nodepart{second}
+		{\tiny
+		\begin{tabular}{rl}
+		name: & \texttt{\char`\"add"} \\
+		targets: & \texttt{["x2"]} \\
+		sources: & \texttt{["x2", "x2"]}
+		\end{tabular}}
+	};
+	\draw [dashed] (inter1) -- (inter4) -- (inter5);}
+
+	\uncover<1>{
+	\node (inter2) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, at = (inter4)]
+	{
+		\textbf{Instruktion}
+		\nodepart{second}
+		{\tiny
+		\begin{tabular}{rl}
+		name: & \texttt{\char`\"verdopple"} \\
+		targets: & \texttt{["x1"]}
+		\end{tabular}}
+	};
+	\node (inter3) [rounded corners=1pt, rectangle split, rectangle split parts = 2, draw = black, at = (inter5)]
+	{
+		\textbf{Instruktion}
+		\nodepart{second}
+		{\tiny
+		\begin{tabular}{rl}
+		name: & \texttt{\char`\"verdopple"} \\
+		targets: & \texttt{["x2"]}
+		\end{tabular}}
+	};
+	\draw [dashed] (inter1) -- (inter2) -- (inter3);}
+
+	\uncover<3->{
+	\node (tree1) [circle, below left = of inter4, draw = black] {add};
+	\node (tree12) [circle, below = of tree1, draw = black, yshift = 1cm] {x1};
+	\node (tree11) [circle, left = of tree12, draw = black] {x1};
+	\node (tree13) [circle, right = of tree12, draw = black] {x1};
+	\draw [treearr] (tree1) -- (tree11);
+	\draw [treearr] (tree1) -- (tree12);
+	\draw [treearr] (tree1) -- (tree13);
+
+	\node (tree2) [circle, below right = of inter4, draw = black] {add};
+	\node (tree22) [circle, below = of tree2, draw = black, yshift = 1cm] {x2};
+	\node (tree21) [circle, left = of tree22, draw = black] {x2};
+	\node (tree23) [circle, right = of tree22, draw = black] {x2};
+	\draw [treearr] (tree2) -- (tree21);
+	\draw [treearr] (tree2) -- (tree22);
+	\draw [treearr] (tree2) -- (tree23);
+
+	\draw [dashed] (tree1) -- (tree2);
+
+	\draw [follows] (inter4 |- inter1.south) -- (inter4 |- tree1);}
+
+	\end{tikzpicture}
+\end{center}
+\end{frame}

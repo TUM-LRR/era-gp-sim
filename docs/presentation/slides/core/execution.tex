@@ -1,0 +1,31 @@
+% !TEX root = ../../presentation.tex
+% Core: Ausführung
+
+\begin{frame}[fragile]{Ausführung}
+\begin{lstlisting}[style=C++]
+      void execute() {
+        while (true) {
+          if (stopRequested) break;
+          if (!_executeNode(nextNode)) break;
+
+          nextNode = _calculateNextNode(nextNode);
+          _syncCallback();
+          _waitForGui();
+          }
+        }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Ausführung}
+\begin{lstlisting}[style=C++]
+      bool _executeNode(size_t nodeIndex) {
+        if (!currentCommand.isValid()) {
+          _throwError();
+          return false;
+        }
+        programCounterValue = currentCommand.getValue(_memoryAccess);
+        _memoryAccess.putRegisterValue(pc, programCounterValue);
+        return true;
+      }
+\end{lstlisting}
+\end{frame}
