@@ -41,6 +41,9 @@ Setting {
       topMargin: Theme.settings.h2.marginBottom
       horizontalCenter: parent.horizontalCenter
     }
+    currentIndex: {
+      return Settings.listOfAllThemeNames().indexOf(Theme.currentThemeName());
+    }
     onCurrentTextChanged: {
       if (selector.currentText !== Theme.current) {
         Theme.load(selector.currentText);

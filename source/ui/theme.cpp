@@ -80,7 +80,7 @@ Status Theme::load(const QString& themeName) {
   return Status::OK;
 }
 
-const QString& Theme::currentThemeName() const noexcept {
+const QString Theme::currentThemeName() const noexcept {
   return _currentThemeName;
 }
 
