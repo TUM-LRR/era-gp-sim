@@ -21,6 +21,7 @@
 #define ERAGPSIM_UI_THEME_HPP
 
 #include <QByteArray>
+#include <QDir>
 #include <QHash>
 #include <QJsonObject>
 #include <QQmlPropertyMap>
@@ -115,6 +116,17 @@ class Theme : public QQmlPropertyMap {
 
   /** The singleton. */
   static Theme* _theme;
+
+  /**
+   * Attempts to copy a theme from the resource directory (located in the
+   * theme/ directory relative to the executable/working directory) into the
+   * given destination directory.
+   *
+   * \param name The name of the theme to copy.
+   * \param destination the destination directory, to copy the theme into.
+   * \return true if theme could be copied into the destination directory.
+   */
+  static bool _copyTheme(const QString& name, QDir destination);
 
   /**
    * Loads raw data from disk for a given theme.
