@@ -115,7 +115,7 @@ StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
   return contents;
 }
 
-StatusWithValue<const Theme::Json&> Theme::_loadJson(const QString& dasname) {
+StatusWithValue<const Theme::Json&> Theme::_loadJson(const QString& name) {
   auto iterator = _cache.constFind(name);
   if (iterator != _cache.cend()) {
     return iterator.value();
