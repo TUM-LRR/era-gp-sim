@@ -106,7 +106,7 @@ ScrollView {
 
         TextRegion {
           id: textRegion
-          property real unscaledWidth:{
+          property real unscaledWidth: {
               //If you add -sidebar.width there a binding loops
               return Math.max(scrollView.viewport.width, contentWidth);
           }
@@ -127,9 +127,8 @@ ScrollView {
 
         ZoomMouseArea { }
 
-        //used for zoom from ZoomMouseArea
-        function addToZoom(i){
-            scale.zoom += i;
+        function addToZoom(value) {
+            scale.zoom += value;
             if (scale.zoom < 1) {
               scale.zoom = 1.0;
             }

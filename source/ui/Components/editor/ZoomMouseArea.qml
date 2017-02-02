@@ -33,9 +33,9 @@ MouseArea {
 
   onWheel: {
     if (wheel.modifiers == Qt.ControlModifier) {
-      if (wheel.angleDelta.y > 0){
+      if (wheel.angleDelta.y > 0) {
         parent.addToZoom(0.1);
-      } else if (wheel.angleDelta.y < 0){
+      } else if (wheel.angleDelta.y < 0) {
         parent.addToZoom(-0.1);
       }
 
