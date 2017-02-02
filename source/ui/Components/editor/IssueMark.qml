@@ -179,7 +179,7 @@ Item {
             return Math.max(scrollView.width, textRegion.contentWidth)
               - sidebar.width
               - issueItemIcon.width
-              (- 3 * _textMargin);
+              - (3 * _textMargin);
           }
 
           font.pixelSize: Math.floor(0.85 * textRegion.font.pixelSize)
