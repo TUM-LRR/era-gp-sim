@@ -80,6 +80,7 @@ ScrollView {
       transform: Scale {
         id: scale
         property real zoom: 1
+
         origin.x: 0;
         origin.y: 0;
         xScale: zoom;
@@ -106,10 +107,8 @@ ScrollView {
         TextRegion {
           id: textRegion
           property real unscaledWidth: {
-            return Math.max(
-              scrollView.viewport.width - sidebar.width,
-              contentWidth
-            );
+              //If you add -sidebar.width there a binding loops
+              return Math.max(scrollView.viewport.width, contentWidth);
           }
           property real unscaledHeight: {
             return Math.max(scrollView.viewport.height, contentHeight);
@@ -127,6 +126,13 @@ ScrollView {
         Sidebar { id: sidebar }
 
         ZoomMouseArea { }
+
+        function addToZoom(value) {
+            scale.zoom += value;
+            if (scale.zoom < 1) {
+              scale.zoom = 1.0;
+            }
+        }
       }
     }
   }
