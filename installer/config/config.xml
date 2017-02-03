@@ -9,7 +9,9 @@
 
 <!-- Styling -->
     <InstallerWindowIcon>../../icons/erasim-icon_64.png</InstallerWindowIcon>
-    <Logo>../../icons/erasim-icon_64.png</Logo>
+    <InstallerApplicationIcon>../../icons/erasim-install-icon</InstallerApplicationIcon>
+    <Logo>../../icons/erasim-icon_64</Logo>
+    <WizardStyle>Modern</WizardStyle>
 
 <!-- Install -->
     <StartMenuDir>ERASIM</StartMenuDir>
@@ -24,9 +26,6 @@
 
 <!-- After installation, we offer to launch ERASIM -->
     <RunProgram>@TargetDir@/era-sim</RunProgram>
-    <RunProgramArguments>
-	<Argument></Argument>
-    </RunprogramArguments>
     <RunProgramDescription>Launch ERASIM now</RunProgramDescription>
 
 <!-- Config for unistaller/updater -->

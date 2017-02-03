@@ -12,7 +12,9 @@ Note: for zipping you can use archivegen <file to zip> <output name> from the fr
 Linux release
 ###################
 * Build a new clean version of era-sim
-* Zip era-sim executable into packages/erasim.base/data/base.7z
+* Zip the following files into packages/erasim.base/data/base.7z
+ + era-sim executable
+ + icons/erasim-icon_64.png as icon.png
 * goto installer/
 * run <path_to_framework>/bin/binarycreator -c config/config.xml -p packages <name of installer>
 * The installer is created inside this folder
