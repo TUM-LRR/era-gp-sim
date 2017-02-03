@@ -13,8 +13,6 @@ Linux release
 ###################
 * Build a new clean version of era-sim
 * Zip era-sim executable into packages/erasim.base/data/base.7z
-* Create .erasim folder, copy isa/ and themes/ into .erasim. 
-  Zip the whole .erasim folder into packages/erasim.config/data/config.7z
 * goto installer/
 * run <path_to_framework>/bin/binarycreator -c config/config.xml -p packages <name of installer>
 * The installer is created inside this folder
