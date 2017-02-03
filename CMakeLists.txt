@@ -20,6 +20,23 @@ else()
 endif()
 
 ########################################
+# CONFIG
+########################################
+
+# Specify default build type
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
+    "Available build types: Debug Release RelWithDebInfoMinSizeRel" FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
+
+# Interpret warnings as errors
+add_compile_options(-Werror)
+
+# Debug specific options
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+
+########################################
 # DEPENDENCIES
 ########################################
 
@@ -28,12 +45,11 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party)
 # The following variables are for Qt support
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 # Find the actual Qt5 packages
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
-
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 ########################################
 # INCLUDES
@@ -75,12 +91,26 @@ if(ERA_SIM_TESTS)
   add_subdirectory(tests)
 endif()
 
-#############
-# QTCREATOR #
-#############
+########################################
+# QTCREATOR
+########################################
+
 # Unfortunately this is needed for QtCreator (CMake-Project) to
 # recognize all header files in the include directory
 # Obviously DON'T build or link these created targets/libraries
 FILE(GLOB_RECURSE QTCREATOR_INCLUDES "include/*")
 add_custom_target(dummy-qtcreator-includes SOURCES ${QTCREATOR_INCLUDES})
 add_library(dummy-qtcreator-lib EXCLUDE_FROM_ALL ${QTCREATOR_INCLUDES})
+
+
+########################################
+# CUSTOM TARGETS
+########################################
+
+# Creates symlinks from the binary directory to the resource directories
+add_custom_target(symlinks ALL
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_SOURCE_DIR}/isa ${ERA_SIM_BINARY_DIR}/isa
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_SOURCE_DIR}/themes ${ERA_SIM_BINARY_DIR}/themes
+)

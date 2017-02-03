@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <string>
 
+#include <QCoreApplication>
+
 #include "common/utility.hpp"
 #include "core/memory-value.hpp"
 
@@ -77,19 +79,8 @@ std::string toUpper(const std::string& string) {
   return transform(string, [](auto& c) { return std::toupper(c); });
 }
 
-const std::string& rootPath() {
-  static const std::string query("era-gp-sim");
-  static std::string root;
-
-  if (root.empty()) {
-    // Hope it exists
-    root = __FILE__;
-
-    auto index = root.rfind(query) + query.length();
-    root.erase(index);
-  }
-
-  return root;
+std::string rootPath() {
+  return QCoreApplication::applicationDirPath().toStdString();
 }
 
 std::string joinPaths(const std::string& single) {

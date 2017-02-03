@@ -15,4 +15,5 @@ set(COMMON_SOURCES
 
 add_library(era-sim-common STATIC ${COMMON_SOURCES})
 
+target_link_libraries(era-sim-common Qt5::Core)
 target_link_libraries(era-sim-common era-sim-core)
