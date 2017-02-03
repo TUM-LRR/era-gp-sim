@@ -49,7 +49,7 @@ void ConsoleComponent::appendText(QString text) {
     _memoryAccess.putMemoryValueAt(_start + _length, m);
     // A nullbyte signals the last byte of the console, so we should not have
     // one inside the text.
-    if (qchar == '\0') return;
+    if (qchar == QChar{'\0'}) return;
 
     // Don't count a nullbyte as length, otherwise text can't be appended
     // afterwards!

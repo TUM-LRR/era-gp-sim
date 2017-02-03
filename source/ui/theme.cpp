@@ -19,7 +19,7 @@
 
 #include "ui/theme.hpp"
 
-#include <QDir>
+#include <QCoreApplication>
 #include <QIODevice>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -84,15 +84,53 @@ const QString Theme::currentThemeName() const noexcept {
   return _currentThemeName;
 }
 
+bool Theme::_copyTheme(const QString& name, QDir destination) {
+  // Obtain the executable directory
+  QDir directory(QCoreApplication::applicationDirPath());
+
+  if (!directory.cd("themes/" + name + ".theme")) {
+    return false;
+  }
+
+  if (!destination.mkdir(name + ".theme")) {
+    return false;
+  }
+
+  if (!destination.cd(name + ".theme")) {
+    return false;
+  }
+
+  // Copy theme files
+  for (const auto& fileInfo : directory.entryInfoList(QDir::Files)) {
+    QFile file(fileInfo.absoluteFilePath());
+    if (!file.copy(destination.filePath(fileInfo.fileName()))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 StatusWithValue<QByteArray> Theme::_loadThemeData(const QString& name) {
+  static const auto path = ".erasim/themes";
   auto directory = QDir::home();  // Represents an absolute path to $HOME.
 
   if (!directory.exists()) {
     return Status::Fail("Could not find home directory");
   }
 
-  if (!directory.cd(".erasim/themes/")) {
+  if (!directory.exists(path) && !directory.mkdir(path)) {
+    return Status::Fail("Could not create theme directory");
+  }
+
+  if (!directory.cd(path)) {
     return Status::Fail("Could not find theme directory");
+  }
+
+  if (!directory.exists(name + ".theme")) {
+    // Attempt to copy the theme directory. Return value ignored, because that
+    // case is handled in the subsequent if statement.
+    _copyTheme(name, directory);
   }
 
   if (!directory.cd(name + ".theme")) {
