@@ -9,6 +9,12 @@
     <Default>true</Default>
     <ForcedInstallation>true</ForcedInstallation>
 
+<!-- License -->
+    <Licenses>
+        <License name="LGPLv3 for the use of Qt" file="qt_license.txt" />
+	<License name="GPLv3 for ERASIM" file="GPLv3.txt" />
+    </Licenses>
+
 <!-- Styling -->
     <SortingPriority>100</SortingPriority><!-- Highest prio sorts to the top-->
 

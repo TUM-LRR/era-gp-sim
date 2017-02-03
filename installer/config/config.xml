@@ -8,8 +8,8 @@
     <ProductUrl>https://github.com/TUM-LRR/era-gp-sim</ProductUrl>
 
 <!-- Styling -->
-    <!--<InstallerWindowIcon></InstallerWindowIcon>-->
-    <!--<Logo></Logo>-->
+    <InstallerWindowIcon>../../icons/erasim-icon_64.png</InstallerWindowIcon>
+    <Logo>../../icons/erasim-icon_64.png</Logo>
 
 <!-- Install -->
     <StartMenuDir>ERASIM</StartMenuDir>
@@ -21,6 +21,13 @@
     Linux: /opt/
     -->
     <TargetDir>@ApplicationsDir@/ERASIM/</TargetDir>
+
+<!-- After installation, we offer to launch ERASIM -->
+    <RunProgram>@TargetDir@/era-sim</RunProgram>
+    <RunProgramArguments>
+	<Argument></Argument>
+    </RunprogramArguments>
+    <RunProgramDescription>Launch ERASIM now</RunProgramDescription>
 
 <!-- Config for unistaller/updater -->
     <MaintenanceToolName>erasim-maintenance</MaintenanceToolName>
