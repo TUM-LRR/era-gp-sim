@@ -96,7 +96,7 @@ class Theme : public QQmlPropertyMap {
   /**
    * \returns The name of the theme currently loaded into the singleton.
    */
-  const QString& currentThemeName() const noexcept;
+  Q_INVOKABLE const QString currentThemeName() const noexcept;
 
  signals:
 

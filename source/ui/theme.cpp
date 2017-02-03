@@ -80,13 +80,13 @@ Status Theme::load(const QString& themeName) {
   return Status::OK;
 }
 
-const QString& Theme::currentThemeName() const noexcept {
+const QString Theme::currentThemeName() const noexcept {
   return _currentThemeName;
 }
 
 bool Theme::_copyTheme(const QString& name, QDir destination) {
   // Obtain the executable directory
-  QDir directory{QCoreApplication::applicationDirPath()};
+  QDir directory(QCoreApplication::applicationDirPath());
 
   if (!directory.cd("themes/" + name + ".theme")) {
     return false;
@@ -102,7 +102,7 @@ bool Theme::_copyTheme(const QString& name, QDir destination) {
 
   // Copy theme files
   for (const auto& fileInfo : directory.entryInfoList(QDir::Files)) {
-    QFile file{fileInfo.absoluteFilePath()};
+    QFile file(fileInfo.absoluteFilePath());
     if (!file.copy(destination.filePath(fileInfo.fileName()))) {
       return false;
     }

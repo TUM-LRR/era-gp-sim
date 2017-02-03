@@ -134,7 +134,7 @@ Settings::Json Settings::toJson() const {
 }
 
 StatusWithValue<QString> Settings::_findSettingsDirectory() {
-  const auto path = ".erasim";
+  static const auto path = ".erasim";
   auto directory = QDir::home();  // Represents an absolute path to $HOME.
 
   if (!directory.exists()) {
