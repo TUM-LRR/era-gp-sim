@@ -1,6 +1,18 @@
 \subsection{Core}
 \label{Dev-Kapitel: Core}
 
+Der Core ist das zentrale Modul des Simulators. Er übernimmt die Verbindung der
+GUI mit den anderen Modulen, der Architektur und dem Parser. Dabei ist der Core
+aber nicht nur ein Interface, sondern verwaltet auch das interne Speicher- und
+Registermodell. Dabei werden Art, Anzahl und Namen der Register direkt aus der
+Architekturdefinition geladen, die dem Core über ein Architekturobjekt zur
+Verfügung steht. Weiterhin verwaltet der Core auch das Parser-Objekt und erhält
+auch eine Liste fertiger Befehlsknoten, wenn der Parser ein Programm übersetzt
+hat. Dabei ist der Core dafür zuständig, die Assemblierungsfunktionen der
+Befehlsknoten aufzurufen und das Ergebnis in den Speicher zu schreiben. Der Core
+steuert auch die Ausführung, indem die Befehlsknoten nacheinander ausgeführt
+werden.
+
 \subsubsection{Aufbau}
 
 Der Core ist zwar das zentrale Modul des Simulators, seine Instanzen werden
@@ -9,42 +21,155 @@ in der Benutzeroberfläche einem Tab entspricht, eine neue Instanz des Cores üb
 das \texttt{ProjectModule}. Dieses verwaltet (indirekt) die Komponenten eines
 Projektes, also Speicher, Register, Architekturdefinition und Parser, und
 ermöglicht der GUI über Interface-Klassen sicheren Zugriff auf die anderen
-Komponenten des Simulators. Um den GUI-Thread, in dem ein Event-Loop der
-Qt-Engine läuft, von der Übersetzung und Ausführung unabhängig zu machen, werden
-dabei pro Core-Instanz mehrere Threads benötigt.
+Komponenten des Simulators. Eine zentrale Anforderung an den Simulator war, dass
+die Ausführung der Befehle nicht die Ansprechbarkeit der GUI beeinflusst. Daher
+ist es notwendig den GUI-Thread, in dem ein Event-Loop der Qt-Engine läuft, von
+der Ausführung unabhängig zu machen. Daher werden pro Core-Instanz weitere
+Threads erstellt.
+
+\begin{figure}[H]
+    \begin{center}
+        \begin{tikzpicture}[node distance=1.0cm and 2.5cm]
+
+            \node (projectModule) [class] {ProjectModule};
+
+            \node (architectureAccess) [class, right = of projectModule] {ArchitectureAccess};
+            \node (commandInterface) [class, below = of architectureAccess] {CommandInterface};
+            \node (parserInterface) [class, below = of commandInterface] {ParserInterface};
+            \node (memoryManager) [class, above = of architectureAccess] {MemoryManager};
+            \node (memoryAccess) [class, above = of memoryManager] {MemoryAccess};
+            \node (interface) [below = of parserInterface] {\textbf{Synchronisiertes Interface}};
+
+            \draw[composition-arrow] (projectModule) -- (memoryAccess);
+            \draw[composition-arrow] (projectModule) -- (memoryManager);
+            \draw[composition-arrow] (projectModule) -- (architectureAccess);
+            \draw[composition-arrow] (projectModule) -- (commandInterface);
+            \draw[composition-arrow] (projectModule) -- (parserInterface);
+
+            \begin{pgfonlayer}{background}
+                \path (memoryAccess.west |- memoryAccess.north)+(-1.3,1.0) node (a1) {};
+                \path (parserInterface.east |- parserInterface.south)+(1.3,-2.0) node (a2) {};
+                \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+            \end{pgfonlayer}{background}
+
+        \end{tikzpicture}
+    \end{center}
+    \caption{Core Modul von außen}
+    \label{fig:core-structure}
+\end{figure}
 
 \subsubsection{Threading}
 
-Zur Vermeidung von Race Conditions und anderen Problemen wird das Konzept des
-\textit{Active Object Pattern} verwendet: Dabei wird für ein Objekt ein Thread
-erstellt und sichergestellt, dass die Methoden dieses Objektes nur in diesem
-Thread laufen. Dazu wird pro \textit{Active Object} ein \textit{Scheduler}
-benötigt, der Befehle zur Ausführung einer Methode des Objektes in einer
-Warteschlange verwaltet und nacheinander ausführt. Der Zugriff von außen auf das
-\textit{Active Object} darf daher nur über sogenannte \textit{Proxy} Objekte
-erfolgen, die Methodenaufrufe in die Warteschlange des Schedulers einreihen. Die
-Rückgabe von Werten erfolgt dabei über \texttt{futures} oder callbacks, wobei
-letzteres nur zu anderen Active Objects möglich ist und bisher nicht verwendet
-wird. Dieses Konzept wurde gewählt, um die Risiken von Threading-bezogenen
-Fehlern zu minimieren und den Aufwand zur Synchronisierung, bis auf die
-Implementierung des Active Object Patterns, gering zu halten.
+Bei der Verwendung von mehreren Threads ist erhöhter Programmieraufwand
+notwendig, um Probleme wie Race-Conditions zu vermeiden. Daher verwenden wir das
+\textit{Active Object Pattern}, da dadurch der Aufwand hauptsächlich auf die
+Implementierung dieses Patterns im Core reduziert wird. Das \textit{Active
+Object Pattern} sieht vor, dass für ein Objekt auf dem Synchronisierung
+notwendig ist, auch \textit{Active Object} oder \textit{Servant} genannt, ein
+eigener Thread erstellt wird. Dabei wird sichergestellt, dass die Methoden
+dieses Objektes nur in diesem Thread laufen. Dazu wird pro \textit{Servant} ein
+\textit{Scheduler} benötigt, der Befehle zur Ausführung einer Methode des
+Objektes in einer Warteschlange verwaltet und nacheinander ausführt. Dieser
+verwaltet auch den Thread des Servants. Der Zugriff von außen auf dieses
+\textit{Active Object} darf nur über sogenannte \textit{Proxy}-Objekte erfolgen,
+die Methodenaufrufe in die Warteschlange des Schedulers einreihen. Die Rückgabe
+von Werten erfolgt dabei über \texttt{futures} oder Callbacks. Es wurden dabei
+auch sichere Callbacks implementiert, die jeweils im aufrufenden Thread
+ausgeführt werden. Diese können jedoch nur verwendet werden, wenn der Aufrufer
+auch ein Active Object ist. Diese Art der Callbacks fand daher bis jetzt keine
+Verwendung. Bei normalen Callbacks muss darauf geachtet werden, dass diese immer
+noch im jeweiligen Active-Object-Thread ausgeführt werden. Im Bereich der GUI
+werden die Callbacks daher über Qt-Signals in den GUI-Thread übertragen (siehe
+\ref{Dev-Kapitel: gui-kommunikation}).
 
-Im \texttt{ProjectModule} werden zwei \textit{Active Objects} verwaltet: Das
-\texttt{Project} Objekt verwaltet den Memory und die Register. Dabei wird ein
-eigenes Active Object mit einem Thread benötigt, da es beispielsweise möglich
-sein muss, über die Benutzeroberfläche während der Ausführung auf den Speicher
-zuzugreifen. Das zweite Active Object wird für die Ausführung und Übersetzung
-der Programme benötigt. Dies ist in der \texttt{ParsingAndExecutionUnit}
-umgesetzt. Dadurch bleibt die GUI auch während der Ausführung ansprechbar.
+Wenn in einem \textit{Active Object} gerade kein Befehl ausgeführt wird, schläft
+der Scheduler (also der Active-Object-Thread) so lange, bis er durch das
+Einfügen eines Befehls in seine Warteschlange aufgeweckt wird. Dadurch wird
+durch die zusätzlichen Threads im Allgemeinen keine zusätzliche Performance
+beansprucht. Trotzdem ist es natürlich nicht sinnvoll, sehr viele \textit{Active
+Objects} zu erstellen. Im \texttt{ProjectModule} werden daher nur zwei
+\textit{Active Objects} verwaltet: Das \texttt{Project} Objekt verwaltet den
+Speicher, die Register und das Architekturobjekt. Dabei wird ein eigenes Active
+Object mit einem Thread benötigt, da es beispielsweise möglich sein muss, über
+die Benutzeroberfläche während der Ausführung auf den Speicher zuzugreifen. Das
+zweite Active Object wird für die Ausführung und Übersetzung der Programme
+benötigt. Dies ist in der \texttt{ParsingAndExecutionUnit} umgesetzt. Dadurch
+bleibt die GUI auch während der Ausführung ansprechbar. Zusammenfassend gibt es
+also pro Projekt (Tab in der GUI) zwei Threads im Core.
+
+Weiterführende Informationen zum Threading-Konzept mit Beispielen können in der Datei \texttt{include/core/proxy.hpp} gefunden werden.
+
+\begin{figure}
+    \begin{center}
+        \begin{tikzpicture}[node distance=1.0cm and 2.5cm]
+        \node (servant) [class] {Servant};
+        \node (scheduler) [class, left = of servant] {Scheduler};
+        \node (proxy) [class, left = of scheduler] {Proxy};
+
+        \node (activeObject) [below = of {$(servant)!0.5!(scheduler)$}] {\textbf{Active Object Thread}};
+
+        \draw[dashed-arrow] (proxy) to node[yshift=0.3cm]{\small{push(task)}} (scheduler);
+        \draw[dashed-arrow] (scheduler) to node [yshift=0.3cm]{\small{execute(task)}} (servant);
+
+        \begin{pgfonlayer}{background}
+            \path (scheduler.west |- scheduler.north)+(-0.5, 0.5) node (a1) {};
+            \path (servant.east |- servant.south)+(0.5, -1.5) node (a2) {};
+            \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+        \end{pgfonlayer}{background}
+    \end{tikzpicture}
+    \end{center}
+    \caption{Aufbau eines Active Objects}
+    \label{fig:active-object-pattern}
+\end{figure}
 
 \subsubsection{Interface}
+
+\begin{figure}
+    \begin{center}
+        \begin{tikzpicture}
+            \node (memoryAccess) [class] {MemoryAccess};
+            \node (memoryManager) [class, below = of memoryAccess] {MemoryManager};
+            \node (architectureAccess) [class, below = of memoryManager] {ArchitectureAccess};
+            \node (projectLabel) [below = 0.5cm of architectureAccess] {\textbf{Project Proxy}};
+
+            \node (commandInterface) [class, below = 2cm of projectLabel] {CommandInterface};
+            \node (parserInterface) [class, below = of commandInterface] {ParserInterface};
+            \node (parsingLabel) [below = 0.5cm of parserInterface] {\textbf{ParsingAndExecutionUnit Proxy}};
+
+            \begin{pgfonlayer}{background}
+                \path (memoryAccess.west |- memoryAccess.north)+(-1.0, 0.5) node (a1) {};
+                \path (architectureAccess.east |- architectureAccess.south)+(1.0, -1.5) node (a2) {};
+                \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+            \end{pgfonlayer}{background}
+
+
+            \begin{pgfonlayer}{background}
+                \path (commandInterface.west |- commandInterface.north)+(-2.5, 1.0) node (a1) {};
+                \path (parserInterface.east |- parserInterface.south)+(2.5, -1.5) node (a2) {};
+                \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+            \end{pgfonlayer}{background}
+
+            \node (project) [class, right = 5cm of memoryManager] {Project};
+            \node (parsingUnit) [class, right = 5cm of {$(commandInterface)!0.5!(parserInterface)$}] {ParsingAndExecutionUnit};
+
+            \draw[dashed-arrow] (memoryAccess) -- (project);
+            \draw[dashed-arrow] (memoryManager) -- (project);
+            \draw[dashed-arrow] (architectureAccess) -- (project);
+            \draw[dashed-arrow] (commandInterface) -- (parsingUnit);
+            \draw[dashed-arrow] (parserInterface) -- (parsingUnit);
+
+        \end{tikzpicture}
+
+    \end{center}
+
+\end{figure}
 
 Die Kommunikation des Cores mit der GUI teilt sich auf zwei Richtungen auf:
 
 Die GUI muss auf Methoden des Cores zugreifen können, um an den Zustand von
 Speicher und Register zu gelangen und diesen zu ändern, oder auch um Befehle
 auszuführen. Dabei werden der GUI über das \texttt{ProjectModule} Interface
-Klassen zur Verfügung gestehlt, die \texttt{Proxy} Klassen der Active Objects
+Klassen zur Verfügung gestellt, die \texttt{Proxy} Klassen der Active Objects
 sind. Diese Interface Klassen werden teilweise auch an die anderen Komponenten
 übergeben, um dem Parser und den Befehlen beispielsweise Zugriff auf Speicher
 und Register zu ermöglichen. Im einzelnen sind die Interface Klassen des
@@ -57,7 +182,7 @@ sind das \texttt{CommandInterface}, das beispielsweise die Übermittlung von
 Ausführungsbefehlen erlaubt, und das \texttt{ParserInterface}, über das auf
 Informationen des Parsers zugegriffen werden kann.
 
-Desweiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
+Des weiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
 Cores geändert hat und die Ansichten aktualisiert werden sollen. Dafür werden
 Callbacks verwendet, damit der Core keine Referenz auf die GUI braucht und daher
 unabhängig von deren Aufbau ist. Diese Callbacks werden über die Interface
@@ -79,12 +204,20 @@ den Nutzer oder Assemblerbefehle geschützt.
 
 Nach der Übersetzung liefert der Parser dem Core ein Liste von Befehlen, die
 ausgeführt werden können, oder eine List an Fehlermeldungen. Die Ausführung
-läuft dabei auch in einem Active Object, wodurch die GUI nicht beeinträchigt
+läuft dabei auch in einem Active Object, wodurch die GUI nicht beeinträchtigt
 wird. Da deshalb während der laufenden Ausführung alle anderen Befehle für
 dieses Active Object warten müssen, kann ein Stop-Signal nicht wie ein normaler
 Aufruf realisiert werden. Deshalb wird dazu ein mit dem \texttt{ProjectModule}
 geteiltes Flag verwendet. Dieses wird immer geprüft, wenn ein neuer Befehl
 ausgeführt wird.
+
+Vor der Ausführung wird jeder Befehl mit seiner \texttt{validateRuntime()}
+Methode validiert, um Fehler, die nur während der Laufzeit überprüfbar sind,
+abzufangen. Bei einem Fehler wird dabei die Ausführung abgebrochen und die GUI
+über einen Callback benachrichtigt. Falls kein Fehler aufgetreten ist, wird der
+Befehl mit über seine \texttt{getValue()} Methode ausgeführt, dabei wird als
+Rückgabewert der neue Befehlszählerstand geliefert. Dieser Wert wird vom Core in
+das Befehlszählerregister geschrieben.
 
 Falls nicht nur einzelne Befehle ausgeführt werden, ist auch zu beachten, dass
 durch die Ausführung jedes Befehls einige Callbacks an die GUI geschickt werden,
@@ -99,3 +232,27 @@ verhindert.
 \subsubsection{Memory und Register}
 
 Hier passiert viel Magie.
+
+\subsubsection{Weiterführende Dokumentation}
+
+In den vorherigen Sektionen wird ein Überblick über den Core gegeben. Weiterführende Dokumentation, Details und Beispiele können in den entsprechenden Dateien gefunden werden. Diese sind in den Ordnern, die in \autoref{fig:core-further} aufgelistet sind.
+
+\begin{figure}[H]
+	\begin{center}
+	\begin{tikzpicture}[%
+	grow via three points={one child at (0.8,-0.8) and
+		two children at (0.8,-0.8) and (0.8,-1.7)},
+	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |- (\tikzchildnode\tikzchildanchor)},
+	growth parent anchor=west,
+	parent anchor=south west]
+	\tikzstyle{every node}=[draw=black,anchor=west]
+	\node {\erasim}
+	child { node {$\{\text{tests/}, \text{include/}, \text{source/}\}$}
+		child { node {core/}}
+	};
+	\end{tikzpicture}
+	\end{center}
+
+	\caption{Relevante Dateien des Coremoduls}
+	\label{fig:core-further}
+\end{figure}
