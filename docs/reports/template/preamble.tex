@@ -183,6 +183,25 @@
 % NEW ENVIRONMENTS                                     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newenvironment{senumerate}[1]
+{
+  \vspace{#1}
+  \begin{enumerate}
+}
+{
+  \end{enumerate}
+}
+
+\newenvironment{sitemize}[1]
+{
+  \vspace{#1}
+  \begin{itemize}
+}
+{
+  \end{itemize}
+}
+
+
 \newenvironment{plot}[1][h]
 {
   \begin{figure}[#1]
