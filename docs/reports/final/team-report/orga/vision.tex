@@ -1,0 +1,40 @@
+% !TEX root = ../team-report.tex
+% ERA-Großpraktikum: Team Bericht -- Organisatorisches (Vision)
+
+\subsubsection{Die Vision}
+\label{team:orga-plan-vision}
+
+In den ersten sechs bis acht Wochen des Großpraktikumszeitraums beschäftigte
+sich die Gruppe mit der Ausarbeitung eines groben Grundrisses für die
+Architektur des Simulators, mit der Angewöhnung an die notwendigen Technologien
+für die Implementierung sowie mit der Definition einer Vision und eines
+Zeitplanes. Die Vision war primär von zwei Quellen beeinflusst. Zum einen waren
+dies unsere eigenen Erfahrungen als Studierende in der Vorlesung
+\emph{Einführung in die Rechnerarchitektur} (ERA). Da jeder von uns gerade erst
+in derselben Situation wie unsere zukünftigen Kunden gesessen hatte, konnten wir
+natürlich leicht spezifizieren, was uns und unseren Kommilitonen beim Erlernen
+der maschinennahen Programmierung und Assemblersprachen geholfen hätte. Zum
+anderen hatten wir durch den bereits existierenden und von uns in ERA genutzten
+Simulator einen Referenzpunkt für die Entwicklung von \erasim{}. Wir konnten
+analysieren, welche Aspekte von Jasmin uns geholfen hatten, konnten aber
+insbesondere auch jene Features nennen, welche uns an Jasmin nicht gefielen und
+diese als Ziele für \erasim{} festlegen. Die Überlegungen dieser ersten Phase
+verfestigten sich schließlich in den folgenden langfristigen Zielen:
+
+\begin{enumerate}
+  \item Die Funktionen von \erasim{} sollten eine Übermenge jener von Jasmin
+  sein. Das bedeutet, dass sämtliche Aufgaben aus früheren Zentralübungen,
+  Klausuren und Tutorübungen in unserem Simulator ausführbar sein sollten,
+  soweit diese in RISC-V übersetzbar sind.
+  \item Der Simulator soll zwar primär für die Lehre gedacht, jedoch nicht durch
+  diese beschränkt sein. Auch weitere Einsatzgebiete, wie die Forschung,
+  sollten, zumindest durch Erweiterungen der Grundversion, offen bleiben. Eine
+  Grundanforderung hierfür war es, echte RISC-V Programme ausführen zu können.
+  \item Als Voraussetzung für (2) sollte der Simulator nicht \emph{zeilen}-,
+  sondern \emph{address}basiert sein. Das bedeutet, dass Marken Adressen im
+  Speicher und nicht Zeilen im Text referenzieren sollten. Hierfür müssten
+  Instruktionen auch entsprechend in den Speicher assembliert werden.
+  \item Als wohl wichtigste Eigenschaft sollte \erasim{}, im Vergleich zu
+  \emph{Jasmin}, nicht nur für einen bestimmten Befehlssatz wie x86 oder ARM
+  implementiert sein, sondern für beliebige Architekturen erweiterbar bleiben.
+\end{enumerate}
