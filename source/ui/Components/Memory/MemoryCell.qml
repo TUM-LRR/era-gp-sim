@@ -65,9 +65,11 @@ Item {
       }
 
       onEditingFinished: {
-        if (!enabled || cell.text === cell.lastText) return;
+          console.log("memory changed!");
+        if (/*!enabled ||*/ cell.text === cell.lastText){console.log(cell.text + " equal "+cell.lastText); return;}
+        console.log("cell text changed");
         if (role === "address") return;
-
+console.log("memory really changed");
         lastText = cell.text;
         memoryModel.setValue(
           styleData.row,

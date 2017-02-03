@@ -39,6 +39,9 @@ MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess &access,
   projectContext->setContextProperty("memoryModel", this);
 }
 
+bool isMemoryProtected(size_t address) {
+}
+
 void MemoryComponentPresenter::onMemoryChanged(size_t address, size_t length) {
   // calculate region for (max) 64bit memory cells
   // region should not exceed real memory size
