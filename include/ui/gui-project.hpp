@@ -124,7 +124,7 @@ class GuiProject : QObject {
   void changeSystem(const std::string& base);
 
   /**
-   * parses the text
+   * Parses the text (Forced reparse).
    */
   void parse();
 
@@ -186,6 +186,20 @@ class GuiProject : QObject {
    * \param url The path of the project.
    */
   void saveProject(const QUrl& url);
+
+  /**
+   * Sets the text of the editor.
+   *
+   * \param text The new text.
+   */
+  void setText(const QString& text);
+
+  /**
+   * Load a snapshot in this project. Does not reparse the code.
+   *
+   * \param snapshot The snapshot object.
+   */
+  void loadSnapshot(const Snapshot& snapshot);
 
   /**
    * Removes a snapshot.
@@ -306,6 +320,11 @@ class GuiProject : QObject {
    * Signal for ui synchronization during execution.
    */
   void guiSync();
+
+  /**
+   * Signal that the project-name changed.
+   */
+  void projectNameChanged(const QString& name);
 
 
  private:

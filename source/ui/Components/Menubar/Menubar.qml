@@ -97,7 +97,7 @@ MenuBar {
       shortcut: "Ctrl-Alt-O"
       onTriggered: {
         main.fileDialog.onAcceptedFunction = function(path) {
-          ui.loadProject(tabView.currentProjectId(), path);
+          main.loadProject(path);
         };
         main.fileDialog.selectExisting = true;
         main.fileDialog.open();

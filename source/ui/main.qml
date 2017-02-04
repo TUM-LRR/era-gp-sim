@@ -60,6 +60,15 @@ ApplicationWindow {
   ProjectsTabView {
     id: tabView
     anchors.fill: parent
+
+    Connections {
+      target: ui
+      onProjectCreationFailed: {
+        tabView.removeTab(index);
+        main.errorDialog.text = errorMessage;
+        main.errorDialog.open();
+      }
+    }
   }
 
   // This function should be called when the tab is switched
@@ -86,6 +95,22 @@ ApplicationWindow {
     window.height = Theme.window.height * Screen.desktopAvailableHeight;
     window.x = (Screen.width - window.width) / 2
     window.y = (Screen.height - window.height) / 2
+  }
+
+  function loadProject(path) {
+    var tab;
+    // create a new tab if there is already a real project in the current tab.
+    if (!tabView.currentProjectIsReady()) {
+      tab = tabView.currentProjectItem();
+    } else {
+      tab = tabView.addTab("", tabComponent);
+      tabView.currentIndex = tabView.count - 1;
+      tab = tab.item;
+    }
+    tab.setCreationScreenInvisible();
+    tab.projectId =
+        ui.loadProject(tab, projectComponent, path, tabView.currentIndex);
+    tab.tabReady();
   }
 
   function createProject() {
@@ -132,11 +157,24 @@ ApplicationWindow {
 
       anchors.fill: parent
 
+      // Disable the project creation screen.
+      function setCreationScreenInvisible() {
+        creationScreen.visible = false;
+        creationScreen.enabled = false;
+      }
+
+      // Complete the setup of the tab.
+      function tabReady() {
+        window.expand();
+        window.showMenus();
+        projectValid = true;
+      }
+
       ProjectCreationScreen {
+        id: creationScreen
         anchors.fill: parent
         onCreateProject: {
-          enabled = false;
-          visible = false;
+          setCreationScreenInvisible();
 
           parent.parent.title = projectName;
           placeholderItem.projectId = ui.addProject(placeholderItem,
@@ -148,9 +186,7 @@ ApplicationWindow {
             projectName
           );
 
-          window.expand();
-          window.showMenus();
-          projectValid = true;
+          tabReady();
         }
       }
     }
@@ -189,6 +225,7 @@ ApplicationWindow {
           // Reparse in case a parse was blocked during execution.
           editor.parse();
         }
+        onProjectNameChanged: placeholderItem.parent.title = name;
       }
     }
   }

@@ -29,6 +29,7 @@
 #include <QString>
 #include <QStringList>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <unordered_map>
 
@@ -218,10 +219,13 @@ class Ui : public QObject {
   /**
    * Call loadProject on the specified project.
    *
-   * \param id The id of the project.
    * \param path The path of the project file.
+   * \param newTab The index of the tab that was created for this project.
    */
-  Q_INVOKABLE void loadProject(id_t id, const QUrl& path);
+  Q_INVOKABLE id_t loadProject(QQuickItem* tabItem,
+                               QQmlComponent* projectComponent,
+                               const QUrl& url,
+                               int newTab);
 
 
   /**
@@ -230,6 +234,15 @@ class Ui : public QObject {
    * \param translateable The translateable which should be translated.
    */
   static QString translate(const Translateable& translateable);
+
+ signals:
+  /**
+   * Signal to delete a tab from the tab view.
+   *
+   * \param errorMessage An error message for the ui.
+   * \param index The index of the tab where creation failed.
+   */
+  void projectCreationFailed(const QString& errorMessage, int index);
 
  private:
   /** loads the architectures and extensions from a json file. */
@@ -273,6 +286,34 @@ class Ui : public QObject {
    * \param snapshotLocation The path where snapshots can be found and stored.
    */
   void _setupSnapshots(const QString& snapshotLocation);
+
+  /**
+   * Creates a new project with an own QQmlContext and a GuiProject.
+   *
+   * \param tabItem The QQuickItem of the tab/parent of the project in qml. This
+   * is used as parent of the gui Project, therefore its lifetime is controlled
+   * by the tabItem.
+   * \param projectComponent The QQmlComponent to be used to create the qml part
+   * of the project.
+   * \param architectureFormula The architecture formula for the
+   * GuiProject/core.
+   * \param memorySize The memory size which is given to the core.
+   * \param parserName The name of the parser which is used for this project.
+   * \param projectName The name of the project.
+   */
+  id_t _createProject(QQuickItem* tabItem,
+                      QQmlComponent* projectComponent,
+                      const ArchitectureFormula& architectureFormula,
+                      size_t memorySize,
+                      const std::string& parserName,
+                      const std::string& projectName);
+
+  /**
+  * Transelates the error message and sends a signal.
+  *
+  * \param message The transelateable error message.
+  */
+  void _sendCreationFailedSignal(const Translateable& message, int index);
 
   /** This map contains the Architectures as string and a list of their
    * extensions as vector of strings. */

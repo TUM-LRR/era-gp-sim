@@ -160,7 +160,7 @@ void GuiProject::changeSystem(const std::string& base) {
 }
 
 void GuiProject::parse() {
-  _editorComponent.parse();
+  _editorComponent.parse(true);
 }
 
 void GuiProject::run() {
@@ -271,6 +271,14 @@ void GuiProject::saveProject(const QUrl& url) {
     _throwError(Translateable(QT_TRANSLATE_NOOP(
         "GUI error messages", "Could not write to project file")));
   }
+}
+
+void GuiProject::setText(const QString& text) {
+  _editorComponent.setText(text);
+}
+
+void GuiProject::loadSnapshot(const Snapshot& snapshot) {
+  _projectModule.getMemoryManager().loadSnapshot(snapshot);
 }
 
 void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {
