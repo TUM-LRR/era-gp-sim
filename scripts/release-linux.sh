@@ -7,10 +7,10 @@ while [[ $# -gt 0 ]]; do
     (--help)
       echo "This script collects all needed files for a release on linux"
       echo "Options:"
-      echo " -e, --executable | The era-sim executable"
+      echo " -e, --executable | The era-sim executable (e.g. build/bin/era-sim)"
       echo " -i, --isa        | The isa directory"
       echo " -t, --themes     | The themes directory"
-      echo " -q, --qt         | The qt installation path"
+      echo " -q, --qt         | The qt installation path (e.g. /usr/lib/qt)"
       echo " -d, --directory  | The directory, where all files should be put in."
       echo "                    Defaults to ./era-sim."
       exit 0
@@ -104,6 +104,8 @@ cp -r $QT/qml/QtQuick.2 $DIR/qml/
 echo "Copying plugins..."
 mkdir $DIR/plugins
 cp -r $QT/plugins/xcbglintegrations $DIR/plugins/
+cp -r $QT/plugins/imageformats $DIR/plugins/
+cp -r $QT/plugins/iconengines $DIR/plugins/
 
 echo "Creating era-sim.sh..."
 touch $DIR/era-sim.sh

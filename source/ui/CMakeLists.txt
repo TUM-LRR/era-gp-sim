@@ -59,5 +59,5 @@ if (ERA_SIM_BUILD_GUI)
   )
 
   target_link_libraries(era-sim era-sim-core)
-  target_link_libraries(era-sim Qt5::Widgets Qt5::Qml Qt5::Quick)
+  target_link_libraries(era-sim Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::Svg)
 endif ()
