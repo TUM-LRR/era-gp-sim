@@ -109,9 +109,11 @@ add_library(dummy-qtcreator-lib EXCLUDE_FROM_ALL ${QTCREATOR_INCLUDES})
 ########################################
 
 # Creates symlinks from the binary directory to the resource directories
-add_custom_target(symlinks ALL
-  COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_SOURCE_DIR}/isa ${ERA_SIM_BINARY_DIR}/isa
-  COMMAND ${CMAKE_COMMAND} -E create_symlink
-    ${CMAKE_SOURCE_DIR}/themes ${ERA_SIM_BINARY_DIR}/themes
-)
+if (UNIX)
+  add_custom_target(symlinks ALL
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${CMAKE_SOURCE_DIR}/isa ${ERA_SIM_BINARY_DIR}/isa
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${CMAKE_SOURCE_DIR}/themes ${ERA_SIM_BINARY_DIR}/themes
+  )
+endif(UNIX)
