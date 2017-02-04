@@ -1,6 +1,7 @@
 % ERA-Großpraktikum: Entwickleranleitung -- Module
 
 \section{Module}
+\label{dev:modules}
 
 Diese Sektion führt in den Aufbau des Simulators ein und beschreibt detailliert
 die einzelnen Funktionen der Module. Das Ziel dieses Kapitels ist es, neue
@@ -16,14 +17,14 @@ Aufgaben bei der Simulation eines Befehlssatzes übernehmen.
 
 Die \textbf{Architektur} ist für die Ausführung eines simulierten Assembler
 Programms zuständig und implementiert die verfügbaren Befehlssätze (zum Stand
-dieses Berichts \textit{RISCV}). Des Weiteren stellt das Architekturmodul die
+dieses Berichts \emph{RISCV}). Des Weiteren stellt das Architekturmodul die
 Befehlssatz-spezifischen Fehler- und Hilfetexte zur Verfügung, die dem Anwender
 im Endprodukt präsentiert werden. \\ Von der Idee geleitet, dass verschiedene
 Assembler Dialekte für den gleichen Befehlssatz existieren, ist der
 \textbf{Parser} ein eigenes Modul, der für die Übersetzung des Assembler
 Quelltextes zuständig ist. Der Parser übersetzt die möglicherweise verschiedenen
 Assembler Dialekte in ein allgemeines Format (wir sprechen dabei von einem
-\textit{Syntax Baum}), das anschließend von der Architektur verarbeitet werden
+\emph{Syntax Baum}), das anschließend von der Architektur verarbeitet werden
 kann. \\
 Die einzelnen Module werden vom \textbf{Core} verbunden. Der Core ist das
 Herzstück des Simulators und regelt die Kommunikation zwischen allen anderen

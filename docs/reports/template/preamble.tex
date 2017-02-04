@@ -133,14 +133,16 @@
 % OTHER                                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage[autostyle=true]{csquotes}
 \usepackage{caption}
-\usepackage{url}
 \usepackage{cancel}
 \usepackage{hyperref}
 \usepackage{booktabs}
 \usepackage{import}
 \usepackage{todonotes}
+\usepackage{url}
+
+\usepackage{csquotes}
+\MakeOuterQuote{"}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % HEADERS + FOOTERS                                    %
@@ -170,6 +172,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\bolditem}[1]{\item \textbf{#1}}
+\newcommand{\emphitem}[1]{\item \emph{#1}}
 \newcommand{\titleitem}[1]{\bolditem{#1} \par}
 
 \newcommand{\email}[2]{\href{mailto:#1.#2@tum.de}{#1.#2@tum.de}}
@@ -179,11 +182,46 @@
 
 \newcommand{\code}[1]{\lstinline{#1}}
 
-\newcommand{\erasim}{{\scshape ERASIM}\,}
+\newcommand{\erasim}{{\fontfamily{zi4}\selectfont ERASIM}}
+
+\newcommand{\smallurl}[1]{{\small\url{#1}}}
+\renewcommand{\texttt}[1]{{\ttfamily\small #1}}
+
+\newcommand{\cyclearrow}{
+  \hspace{-0.5cm}
+  \scalebox{0.8}{
+  \tikz[thick, yshift=-0.2cm]{
+    \node (a) at (0, -0.15) {};
+    \node (b) at (0.8, -0.15) {};
+    \draw [->] (a) .. controls (0.38, 0) and (0.42, 0) .. (b);
+    \draw [<-] (a) .. controls (0.38, -0.3) and (0.42, -0.3) .. (b);
+  }
+  }
+  \hspace{-0.4cm}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEW ENVIRONMENTS                                     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{senumerate}[1]
+{
+  \vspace{#1}
+  \begin{enumerate}
+}
+{
+  \end{enumerate}
+}
+
+\newenvironment{sitemize}[1]
+{
+  \vspace{#1}
+  \begin{itemize}
+}
+{
+  \end{itemize}
+}
+
 
 \newenvironment{plot}[1][h]
 {

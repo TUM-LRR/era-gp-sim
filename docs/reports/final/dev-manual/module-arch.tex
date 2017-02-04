@@ -4,7 +4,7 @@
 	* Architecture Description Language
 }
 
-Die Architektur (kurz: \textit{Arch}) kümmert sich um die Ausführung der
+Die Architektur (kurz: \emph{Arch}) kümmert sich um die Ausführung der
 Assembler Programme und wurde vor dem Hintergrund entworfen, einen möglichst
 Architektur-unabhängigen Simulator zu entwickeln. So stellt sie Klassen zur
 Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt
@@ -65,10 +65,10 @@ genannt) und in einen Architektur-spezifischen Teil (benannt nach der
 entsprechenden Architektur, z.B. \textbf{riscv} aufgeteilt. Die Schnittstelle
 ist so konzeptioniert, dass andere Module nichts von der konkreten Architektur
 mitbekommen, und lässt sich folgendermaßen charakterisieren: \\ Das
-\textit{Architecture} Objekt stellt allgemeine Informationen über die geladene
+\emph{Architecture} Objekt stellt allgemeine Informationen über die geladene
 Architektur zur Verfügung (wie z.B. der Name, die Byte-Reihenfolge oder die
-Wortgröße) und bietet zusätzlich Zugang zur \textit{NodeFactory}. Mit der
-NodeFactory werden die Syntax Bäume in Form von \textit{SyntaxTreeNode} Objekten
+Wortgröße) und bietet zusätzlich Zugang zur \emph{NodeFactory}. Mit der
+NodeFactory werden die Syntax Bäume in Form von \emph{SyntaxTreeNode} Objekten
 erzeugt, welche anschließend validiert und ausgeführt werden können. \\ Im
 Folgenden wird auf diese Klassen genauer eingegangen.
 
@@ -84,15 +84,15 @@ Ein \texttt{Architecture} Objekt repräsentiert eine geladene Architektur im
 Simulator. Der Grundgedanke bei der Entwicklung war das modulare Design von
 RISC-V zu unterstützen, dieses Konzept lässt sich aber leicht auf andere
 Prozessorarchitekturen übertragen. So wird angenommen, dass eine Architektur
-immer aus einem Basismodul besteht (bei RISC-V: \textit{RV32I}), welches wieder
+immer aus einem Basismodul besteht (bei RISC-V: \emph{RV32I}), welches wieder
 durch andere Module erweitert werden kann (bei RISC-V z.B.
 Multiplikation/Division, Floating Point, etc.). \\ Um also ein Architecture
-Objekt zu erzeugen, wird im ersten Schritt eine \textit{ArchitectureFormula}
+Objekt zu erzeugen, wird im ersten Schritt eine \emph{ArchitectureFormula}
 erstellt, die das Basismodul und alle Erweiterungen spezifiziert. Ein Aufruf von
-\textit{Brew()} löst die Abhängigkeiten auf und liest anschließend die
+\emph{Brew()} löst die Abhängigkeiten auf und liest anschließend die
 Informationen aus den Konfigurationsdateien ein.
 
-Intern wird das \textit{Builder Pattern} zum sukzessivem Aufbau des Objekts
+Intern wird das \emph{Builder Pattern} zum sukzessivem Aufbau des Objekts
 verwendet. Als Oberklasse dient dazu das \texttt{BuilderInterface}, von dem alle
 Komponenten abgeleitet werden. Da eine Architektur lediglich aus strukturierten
 Informationen besteht, existiert eine weitere Oberklasse
@@ -114,8 +114,8 @@ Implementation abläuft, wird im Folgenden erläutert.
 
 \subsubsection{Syntax Tree}
 
-Der Syntax Baum mit durch Vererbung implementiert und in \textit{common} und
-\textit{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
+Der Syntax Baum mit durch Vererbung implementiert und in \emph{common} und
+\emph{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
 Übersicht bietet \autoref{fig:arch-syntax-tree}
 
 \begin{figure}[H]
@@ -166,7 +166,7 @@ Die aufgeführten Klassen haben folgende Funktion:
   und definiert, welche Methoden die Unterklassen implementieren müssen. Des
   Weiteren enthält sie eine Liste an etwaige Kindknoten.
 
-  \item \textbf{ImmediateNode} repräsentiert einen \textit{Immediate}-Wert, also
+  \item \textbf{ImmediateNode} repräsentiert einen \emph{Immediate}-Wert, also
   einen Wert, der direkt im Assembler Quelltext angegeben ist. Architekturen
   stellen im Allgemeinen keine Spezialisierung eines Immediate Wertes zur
   Verfügung, weshalb diese Klasse vollständig im common Teil implementiert
@@ -218,7 +218,7 @@ Folgende Methoden werden von ihr vorgegeben:
 	Mit Diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
 	Operation, die sowohl mit Registern, als auch mit Immediate Werten arbeiten
 	kann, nur einmal implementiert werden muss. In RISC-V kann man dieses Konzept
-	beispielsweise auf \textit{add} und \textit{addi} anwenden.
+	beispielsweise auf \emph{add} und \emph{addi} anwenden.
 
 	\item \textbf{\texttt{validate(MemoryAccess\&)}}: Während der Parser lediglich
 	eine syntaktische Überprüfung des Assembler Quelltext vornimmt, validiert
@@ -245,23 +245,23 @@ Folgende Methoden werden von ihr vorgegeben:
 
 	\item \textbf{\texttt{getIdentifier()}}: Gibt den Typ eines Knotens als
 	Zeichenkette zurück. Beispielsweise geben Instruktionen ihren entsprechenden
-	Mnemonic (z.B. \textit{addi}) und Register ihren Namen (z.B. \textit{x1})
+	Mnemonic (z.B. \emph{addi}) und Register ihren Namen (z.B. \emph{x1})
 	zurück. Letzteres wird verwendet, um Schreibzugriffe auf ein Register
 	in einem Instruktionsknoten durchzuführen.
 \end{itemize}
 
 Die Aufgabe einer konkreten Architektur besteht nun darin, die eben beschriebenen
 Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In
-\autoref{sec:extension} wird darauf genauer eingegangen. \\
+\autoref{dev:extension} wird darauf genauer eingegangen. \\
 Um nun Objekte des Syntax Baums zu erzeugen, wird die Node Factory benötigt, auf
 die im Folgenden eingegangen wird.
 
 \subsubsection{Node Factory}
 \label{module-arch-node-factory}
 
-Mit der \textit{Node Factory} wird der bereits beschriebene Syntax Baum erzeugt.
+Mit der \emph{Node Factory} wird der bereits beschriebene Syntax Baum erzeugt.
 Um nach außen ein Architektur-unabhängiges Interface zu bieten, basiert die
-Node Factory dem \textit{Abstract Factory Pattern} und wird als Diagramm in
+Node Factory dem \emph{Abstract Factory Pattern} und wird als Diagramm in
 \autoref{fig:arch-node-factory} dargestellt.
 
 \begin{figure}[H]
@@ -340,10 +340,10 @@ Unterklassen verwendet werden, um zum Beispiel die Validierung der Operanden
 einer Instruktion zu vereinfachen.
 
 Die Knoten, die Instruktionen implementieren, sind ebenfalls darauf ausgelegt,
-Redundanz zu vermeiden. Beispielhaft seien hier die \textit{Integer
+Redundanz zu vermeiden. Beispielhaft seien hier die \emph{Integer
 Computational Instructions} (so der Name in der RISC-V Spezifikation)
-herangezogen (das sind Instruktionen wie \textit{add}, \textit{addi} oder
-\textit{and}). Da sich der Aufbau der Instruktionen lediglich in der
+herangezogen (das sind Instruktionen wie \emph{add}, \emph{addi} oder
+\emph{and}). Da sich der Aufbau der Instruktionen lediglich in der
 auszuführenden Operation unterscheidet, existiert eine weitere abstrakte
 Oberklasse \texttt{riscv::AbstractIntegerInstructionNode}, die all jene
 Instruktionen abdeckt. In dieser Oberklasse wird die Validierung der
@@ -381,7 +381,7 @@ Dateien, welche in \autoref{fig:arch-further} aufgelistet sind.
 	growth parent anchor=west,
 	parent anchor=south west]
 	\tikzstyle{every node}=[draw=black,anchor=west]
-	\node {\erasim}
+	\node {\erasim{}}
 	child { node {isa/}
 		child { node {riscv.isa/} }
 	}

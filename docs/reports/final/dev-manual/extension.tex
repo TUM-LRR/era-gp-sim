@@ -1,7 +1,7 @@
 % ERA-Großpraktikum: Entwickleranleitung -- Erweiterung
 
 \section{Erweiterung}
-\label{sec:extension}
+\label{dev:extension}
 
 Der folgende Abschnitt soll Anhaltspunkte zur Erweiterung des Simulators bieten.
 Eine Erweiterung kann entweder ein neues Assembler-Paket (also die Unterstützung
@@ -31,31 +31,31 @@ und -strukturen die grob dieselbe Aufgabe haben.
 	text width=3cm]
 	\tikzstyle{modulearrow} = [->, thick]
 	\tikzstyle{extension} = [dashed]
-	
-	
+
+
 	\node (core) [module] {Core};
 	\node (gui) [module, left = of core] {GUI};
 	\node (arch-common) [module, above= of core] {Arch Common};
 	\node (arch-riscv) [module, right = of arch-common] {Arch RISC-V};
 	\node (parser-common) [module, below = of core] {Parser Factory \& Parser-Common};
 	\node (parser-riscv) [module, right = of parser-common] {RISC-V Parser};
-	
+
 	\node (ext1) [above left = 0.2cm of arch-riscv]{};
 	\node (ext2) [above right = 0.2cm of arch-riscv]{};
 	\node (ext3) [below right = 0.2cm of parser-riscv]{};
 	\node (ext4) [below left = 0.2cm of parser-riscv]{};
 	\node (package) [below = of arch-riscv, above = of parser-riscv, xshift=3.6cm]{Assembler Paket};
-	
+
 	\draw[modulearrow] (core) edge node [xshift=-1.3cm, yshift=-0.3cm, text width=3cm] {Anzeige abstrahierter Informationen} (gui);
 
 	\draw[modulearrow] (arch-common) edge node [xshift=-4cm, text width=4cm]{Abstrahierte, geladene Assembler Architektur} (core);
-	
+
 	\draw[modulearrow] (arch-riscv) edge node [yshift=1.5cm, text width=6cm]{konkrete Instruktionen \& Register, Speicherausrichtung, ...} (arch-common);
-	
+
 	\draw[modulearrow] (parser-common) edge node [text width=5cm, xshift=5.5cm]{Lesen/Umwandeln von Quelltext in abstrahierte, ausführbare Form} (core);
-	
+
 	\draw[modulearrow] (parser-riscv) edge node [text width=5cm, yshift=-0.5cm]{Parser zum Übersetzen konkreter Instruktionen} (parser-common);
-	
+
 	\draw [extension] (ext1) -- (ext2) -- (ext3) -- (ext4) -- (ext1);
 	\end{tikzpicture}
 	\caption{Zusammenspiel Assembler Paket}
@@ -99,9 +99,9 @@ für den Parser zum Bau eines Syntaxbaumes.
 	\centering
 	\begin{tikzpicture}[auto, node distance=2cm]
 	\tikzstyle{files} = [draw, minimum height=4em, minimum width=3em, fill=white, double copy shadow={shadow xshift=4pt, shadow yshift=4pt, fill=white, draw}]
-	
+
 	\tikzstyle{arrow} = [thick, ->]
-	
+
 	\node (data-classes) [class, rectangle split, rectangle split parts=2, text width=5cm] {
 		Datenklassen zur Beschreibung der Architektur
 		\nodepart{second}
@@ -116,7 +116,7 @@ für den Parser zum Bau eines Syntaxbaumes.
 		unit-information.hpp\\
 		\end{tabular}
 	};
-	
+
 	\node (isa-parser) [right = of data-classes, class, rectangle split, rectangle split parts=2, text width=5cm] {
 		ISA-Parser
 		\nodepart{second}
@@ -125,13 +125,13 @@ für den Parser zum Bau eines Syntaxbaumes.
 		architecture-formula.hpp\\
 		\end{tabular}
 	};
-	
+
 	\node (line1) [below = 0.5cm of data-classes, xshift=-5cm]{};
 	\node (line2) [right = 15cm of line1]{};
 	\node [above = 0.3cm of line1] {Arch Common};
 	\node [below = 0.3cm of line1] {Assembler Paket};
 	\node (isa-file)[files, below = 3cm of isa-parser]{.isa Dateien};
-	
+
 	\draw[dashed] (line1) -- (line2);
 	\draw[arrow] (isa-parser) edge node[]{liest} (isa-file);
 	\draw[arrow] (isa-parser) edge node[]{erzeugt} (data-classes);
@@ -165,25 +165,25 @@ eine Erweiterung \texttt{arch\_fancy}:
 	growth parent anchor=west,
 	parent anchor=south west]
 	\tikzstyle{every node}=[draw=black,anchor=west]
-	\node {\erasim}
+	\node {\erasim{}}
 	child { node {isa/}
 		child { node {riscv.isa/} }
 		child {node {test.isa/} }
-		child {node {myArch.isa/} 
+		child {node {myArch.isa/}
 			child {node{arch\_base/}
 				child{node{config.json}}
-				child{node{config.yaml}}	
+				child{node{config.yaml}}
 			}
 			child [missing] {}
 			child [missing] {}
-			child {node{arch\_fancy/} 
+			child {node{arch\_fancy/}
 				child{node{config.json}}
 				child{node{config.yaml}}
 			}
 		}
 	};
 	\end{tikzpicture}
-	
+
 	\caption{Notwendiger Aufbau der .isa Struktur}
 \end{figure}
 In den ISA-Files werden folgende Eigenschaften definiert:
@@ -209,14 +209,14 @@ In den ISA-Files werden folgende Eigenschaften definiert:
 			abstract-instruction-node.hpp\\
 			\end{tabular}
 		};
-	
+
 		\node(line1) [below =0.5cm of superclasses, xshift=-10cm]{};
 		\node(line2) [right= 13cm of line1]{};
 		\node [above= 0.5cm of line1]{Arch Common};
 		\node [below= 0.5cm of line1]{Assembler Paket};
-		
+
 		\draw[dashed](line1) -- (line2);
-		
+
 		\node (extension-classes) [class, below = of superclasses, rectangle split, rectangle split parts=2, text width=6cm] {
 			Konkrete Implementierungen
 			\nodepart{second}
@@ -226,7 +226,7 @@ In den ISA-Files werden folgende Eigenschaften definiert:
 			my-sub-instruction.hpp\\
 			\end{tabular}
 		};
-	
+
 		\draw[inheritance-arrow] (extension-classes) edge node[]{erben} (superclasses);
 	\end{tikzpicture}
 	\caption{Implementierung von konkreten Instruktionen}
@@ -313,14 +313,14 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 			node-factory-collection.hpp\\
 			\end{tabular}
 		};
-		
+
 		\node(line1) [below =0.5cm of superclasses, xshift=-10cm]{};
 		\node(line2) [right= 13cm of line1]{};
 		\node [above= 0.5cm of line1]{Arch Common};
 		\node [below= 0.5cm of line1]{Assembler Paket};
-		
+
 		\draw[dashed](line1) -- (line2);
-		
+
 		\node (extension-classes) [class, below = of superclasses, rectangle split, rectangle split parts=2, text width=6cm] {
 			Konkrete Implementierungen der Fabriken
 			\nodepart{second}
@@ -331,7 +331,7 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 			...
 			\end{tabular}
 		};
-		
+
 		\draw[inheritance-arrow] (extension-classes) edge node[]{erben} (superclasses);
 	\end{tikzpicture}
 \end{figure}
@@ -473,7 +473,7 @@ arithmetische Ausdrücke umfasst, siehe die \texttt{RiscvParser}-Klasse.
 Um eine neue Parser-Direktive zu implementieren, muss eine neue Klasse erstellt
 werden, die von \texttt{Intermediate\-Directive} erbt. Um der Direktive eine
 Funktion zu geben, müssen nun die benötigten Funktionen, die beim Assemblieren
-verwendet werden (siehe \autoref{sec:dev_parser_assem_inter}), überschrieben
+verwendet werden (siehe \autoref{dev:dev_parser_assem_inter}), überschrieben
 werden.
 
 Damit eine Direktive verwendet wird, muss diese aber auch vom Parser unterstützt
@@ -536,7 +536,7 @@ Man führt also im Ordner \texttt{era-gp-sim} folgenden Befehl aus:
 \begin{lstlisting}
 python3 scripts/theme2json.py ~/.erasim/themes/my_theme.theme/theme.sass
 \end{lstlisting}
-Man beachte, dass dafür ein SASS-Compiler installiert sein muss\footnote{http://sass-lang.com/install}. 
+Man beachte, dass dafür ein SASS-Compiler installiert sein muss\footnote{http://sass-lang.com/install}.
 Im Anschluss sind auch andere Benutzer in der Lage, das Theme ohne erneutes Umwandeln zu verwenden, sofern man ihnen die JSON-Datei zukommen lässt.
 \todo[inline]{Ich habe keine Ahnung, ob das stimmt. Bitte überprüfen}
 

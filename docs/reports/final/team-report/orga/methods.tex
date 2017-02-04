@@ -1,0 +1,75 @@
+% !TEX root = ../team-report.tex
+% ERA-Großpraktikum: Team Bericht -- Organisatorisches (Method)
+
+\subsubsection{Methoden}
+\label{team:orga-workflow-methods}
+\vspace{-0.4cm}
+
+Mit unseren \emph{Methoden} sind sämtliche Aspekte der Entwicklung von \erasim{}
+gemeint, die nicht notwendigerweise von technischer oder praktischer Natur sind,
+sondern die Gruppenorganisation oder Zeiteinteilung betreffen. Hierbei haben wir
+uns von Anfang an insbesondere an den \emph{agilen Methoden} orientiert, welche
+in der Industrie allgegenwärtig sind. Ganz allgemein schreiben die agilen
+Methoden einen iterativen Entwicklungszyklus vor, wobei möglichst klein und
+kompakt gehaltene \emph{Features} eines Projekts in kurzen, mehrwöchigen
+\emph{Sprints} bearbeitet werden. Hierbei wird es vorgezogen, häufig kleine
+Features zu herauszugeben, um schnell von Endbenutzern Feedback zu erhalten,
+anstatt nur einige Male im Jahr (beispielsweise einmal pro Quartal) einen
+großen, gewichtigen Release zu veröffentlichen.
+
+Insbesondere zu Beginn des Entwicklungszeitraums, wo noch viele wichtige
+(beispielsweise infrastrukturelle) Aufgaben zu bewältigen waren, war es für uns
+enorm wichtig, einen rigorosen Sprintzyklus einzuhalten. Wir entschieden uns
+hierbei für eine Periode von zwei Wochen. Das bedeutet, dass sich jede
+Untergruppe alle zwei Wochen in Person oder via VoIP traf, um von jenen
+Features, die für den nächsten Meilenstein auf unserer Roadmap vorgesehen waren,
+eine realistische Anzahl auf jedes Mitglied zu verteilen. Die
+Allokationsstrategie war hierbei weitestgehend jeder Gruppe selbst überlassen
+--- die Projektleitung nahm nur ab und an zur Unterstützung bei
+Designentscheidungen oder zum Überprüfen des Fortschritts an den Treffen teil.
+
+Während der eigentlichen Entwicklung nutzten wir zwei weitere Elemente aus der
+Welt der agilen Entwicklung: ein Kanban Board sowie unsere \emph{Definitions
+of Done}. Ersteres ist ganz einfach eine (virtuelle) Tafel mit mehreren Spalten,
+wobei Features während der Entwicklung von einer Spalte zur nächsten wandern.
+Diese Spalten waren bei uns die folgenden vier:
+\begin{senumerate}{-0.5cm}
+  \bolditem{Open}: Das Feature steht noch offen und wird zurzeit von niemandem
+  bearbeitet,
+  \bolditem{In Progress}: Das Feature ist einem Mitglied zugeteilt und wird von
+  diesem aktiv bearbeitet,
+  \bolditem{Review}: Das Feature ist vorerst fertig bearbeitet und wird momentan
+  von Teammitgliedern reviewed,
+  \bolditem{Done}: Das Feature hat den Bearbeitung \cyclearrow Review Zyklus verlassen und liegt auf dem Master Branch.
+\end{senumerate}
+\vspace{-0.5cm}
+
+Diese vier Spalten folgen auch grob unseren Definitions of Done. Allgemein
+spezifizieren Definitions of Done bei der agilen Softwareentwicklung jene
+Schritte, die ein Feature bzw. ein Stück Code durchschreiten muss, um von A bis
+Z zu gelangen, also von der Konzeption bis zum Master Branch. Insgesamt hatten
+wir sieben solcher Schritte:
+\begin{senumerate}{-0.5cm}
+  \item Code wurde geschrieben,
+  \item \emph{Unit Tests} stehen und passen,
+  \item Der Code ist dokumentiert,
+  \item Der Code ist formatiert,
+  \item Ein \emph{Pull Request} wurde auf GitHub geöffnet,
+  \item Code-Reviewer geben ihr OK,
+  \item Merge des \emph{Feature Branch} in den \emph{Master Branch}.
+  \vspace{-0.5cm}
+\end{senumerate}
+
+Hierbei möchten wir insbesondere Punkt (2), das Schreiben von (Unit-)Tests als
+besonders wichtig hervorheben. Wir haben von der ersten Zeile Code an großen
+Wert darauf gelegt, eine robuste Test Suite für sämtliche Module zu entwickeln.
+Ausgenommen hiervon ist lediglich das GUI Modul, da keine praktikablen Werkzeuge
+zum Testen von Frontend QML Code existieren. Für \emph{Arch}, \emph{Core} und
+\emph{Parser} halfen uns die über 280 individuellen Unit Tests jedoch dabei, die
+Korrektheit unserer Interfaces und Implementierungen zu verifizieren und
+Resultate auf verschiedenen Systemen und Plattformen reproduzierbar zu machen.
+Es sei angemerkt, dass unsere Entwicklung zwar Tests ernst nahm und davon
+profitierte, jedoch nicht zwingend \emph{test-driven} war. Hiermit ist gemeint,
+dass Tests meist nach dem Code  geschrieben wurden und nicht umgekehrt, wie es
+das \emph{Test Driven Development} (TDD) vorschreibt.
+\vspace{-0.7cm}
