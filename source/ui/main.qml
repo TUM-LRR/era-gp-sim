@@ -144,7 +144,8 @@ ApplicationWindow {
             memorySize,
             architecture,
             optionName,
-            parser
+            parser,
+            projectName
           );
 
           window.expand();

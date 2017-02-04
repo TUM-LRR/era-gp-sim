@@ -92,6 +92,32 @@ MenuBar {
     }
 
     MenuItem {
+      id: openProject
+      text: "Open Project"
+      shortcut: "Ctrl-Alt-O"
+      onTriggered: {
+        main.fileDialog.onAcceptedFunction = function(path) {
+          ui.loadProject(tabView.currentProjectId(), path);
+        };
+        main.fileDialog.selectExisting = true;
+        main.fileDialog.open();
+      }
+    }
+
+    MenuItem {
+      id: saveProject
+      text: "Save Project"
+      shortcut: "Ctrl-Alt-S"
+      onTriggered: {
+        main.fileDialog.onAcceptedFunction = function(path) {
+          ui.saveProject(tabView.currentProjectId(), path);
+        };
+        main.fileDialog.selectExisting = false;
+        main.fileDialog.open();
+      }
+    }
+
+    MenuItem {
       id: openSnapshot
       text: "Open Snapshot"
       shortcut: "Ctrl+O"

@@ -60,7 +60,8 @@ Ui::id_t Ui::addProject(QQuickItem* tabItem,
                         const QVariant& memorySizeQVariant,
                         const QString& architecture,
                         const QString& optionName,
-                        const QString& parser) {
+                        const QString& parser,
+                        const QString& projectName) {
   // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
@@ -82,6 +83,7 @@ Ui::id_t Ui::addProject(QQuickItem* tabItem,
                                 architectureFormula,
                                 memorySize,
                                 parser.toStdString(),
+                                projectName.toStdString(),
                                 _snapshots,
                                 tabItem);
   _projects.emplace(_rollingProjectId++, project);
@@ -189,6 +191,19 @@ void Ui::loadSnapshot(int id, QString name) {
   assert::that(iterator != _projects.end());
   iterator->second->loadSnapshot(name);
 }
+
+void Ui::saveProject(id_t id, const QUrl& path) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->saveProject(path);
+}
+
+void Ui::loadProject(id_t id, const QUrl& path) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->loadProject(path);
+}
+
 
 QString Ui::translate(const Translateable& translateable) {
   QString translation = QObject::tr(translateable.getBaseString().c_str());

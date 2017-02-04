@@ -39,8 +39,8 @@
 #include "third-party/json/json.hpp"
 #include "ui/console-component.hpp"
 #include "ui/editor-component.hpp"
-#include "ui/input-key-model.hpp"
 #include "ui/input-click-model.hpp"
+#include "ui/input-key-model.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
 #include "ui/register-model.hpp"
@@ -72,17 +72,19 @@ class GuiProject : QObject {
   /**
    * The Constructor
    *
-   * \param context for the components to register themselvs
-   * \param formula the architectures and extensions
-   * \param memorySize the size of the memory for the memoryComponent
-   * \param parserName the name of the parser
+   * \param context QMLContext to register the components.
+   * \param formula The architectures and extensions.
+   * \param memorySize The size of the memory for the memoryComponent.
+   * \param parserName The name of the parser.
+   * \param projectName The name of the project.
    * \param snapshotComponent A shared pointer to the snapshot component.
-   * \param parent the parent, its needed for the QObject
+   * \param parent The parent of this QObject.
    */
   GuiProject(QQmlContext* context,
              const ArchitectureFormula& formula,
              std::size_t memorySize,
              const std::string& parserName,
+             const std::string& projectName,
              const std::shared_ptr<SnapshotComponent>& snapshotComponent,
              QObject* parent = 0);
 
@@ -172,11 +174,18 @@ class GuiProject : QObject {
   void loadText(const QUrl& path);
 
   /**
-   * takes a snapshot
+   * Saves a snapshot (memory and register state).
    *
-   * \param qName name of the snapshot
+   * \param qName Name of the snapshot.
    */
   void saveSnapshot(const QString& qName);
+
+  /**
+   * Saves a project file (snapshot, code and settings).
+   *
+   * \param url The path of the project.
+   */
+  void saveProject(const QUrl& url);
 
   /**
    * Removes a snapshot.
@@ -185,6 +194,13 @@ class GuiProject : QObject {
    * \param removePermanently Whether to erase the snapshot from disk.
    */
   Q_INVOKABLE void removeSnapshot(const QString& qName, bool removePermanently);
+
+  /**
+   * Loads a project file (snapshot, code and settings).
+   *
+   * \param Path of the project file.
+   */
+  Q_INVOKABLE void loadProject(const QUrl& url);
 
   /**
    * loads a snapshot
@@ -348,6 +364,12 @@ class GuiProject : QObject {
    * The architecture formula, needed to save snapshot configuration.
    */
   QString _architectureFormulaString;
+
+  /** The parser name, saved for serialization purposes. */
+  std::string _parserName;
+
+  /** The project name, saved for serialization purposes. */
+  std::string _projectName;
 
   /**
    * List of Final commands to access the documentation.

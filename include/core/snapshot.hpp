@@ -20,10 +20,12 @@
 #ifndef ERAGPSIM_CORE_SNAPSHOT_HPP
 #define ERAGPSIM_CORE_SNAPSHOT_HPP
 
+#include <string>
+
 #include "arch/common/architecture-formula.hpp"
+#include "core/memory.hpp"
 #include "third-party/json/json.hpp"
 
-class Memory;
 class RegisterSet;
 
 class Snapshot {
@@ -46,35 +48,87 @@ class Snapshot {
    *
    * \param json The json object to load.
    */
-  Snapshot(Json json);
+  explicit Snapshot(Json json);
 
   /**
-   * \returns true if the snapshot is valid, false if not.
+   * \return true if the snapshot is valid, false if not.
    * This method only checks the structure of the snapshot, the content of the
    * components could still be invalid.
    */
-  bool isValid();
+  bool isValid() const;
 
   /**
-   * \returns A json object which can be used to deserialize the memory.
+   * Checks if this snapshot object is a valid snapshot and a valid project. A
+   * valid project additionally contains text of the editor and settings.
+   * Like the `isValid()` method, this only checks the structure of the json,
+   * not the content
+   *
+   * \return True if the snapshot is a project, false otherwise.
    */
-  Json getMemoryJson();
+  bool isValidProject() const;
 
   /**
-   * \returns A json object which can be used to deserialize the
+   * \return A json object which can be used to deserialize the memory.
+   */
+  Json getMemoryJson() const;
+
+  /**
+   * \return A json object which can be used to deserialize the
    * registers.
    */
-  Json getRegisterJson();
+  Json getRegisterJson() const;
 
   /**
-   * \returns The architecture formula of this snapshot.
+   * \return The architecture formula of this snapshot.
    */
-  ArchitectureFormula getArchitectureFormula();
+  ArchitectureFormula getArchitectureFormula() const;
 
   /**
-   * \returns The underlying json object.
+   * \return The code in this snapshots. Assure that the snapshot is a valid
+   * project snapshot, first.
    */
-  Json getJson();
+  std::string getCode() const;
+
+  /**
+   * \return The Project name.
+   */
+  std::string getProjectName() const;
+
+  /**
+   * \return The Parser name.
+   */
+  std::string getParserName() const;
+
+  /**
+   * \return The memory size.
+   */
+  Memory::size_t getMemorySize() const;
+
+  /**
+   * Set the code property of this snapshot.
+   *
+   * \param code The code (text).
+   */
+  void setCode(const std::string& code);
+
+  /**
+   * Set the project-name property of this snapshot.
+   *
+   * \param projectName The project name.
+   */
+  void setProjectName(const std::string& projectName);
+
+  /**
+   * Set the parser-name property of this snapshot.
+   *
+   * \param parserName The parser name.
+   */
+  void setParserName(const std::string& parserName);
+
+  /**
+   * \return The underlying json object.
+   */
+  Json getJson() const;
 
  private:
   Json _snapshot;

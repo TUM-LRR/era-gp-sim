@@ -90,7 +90,8 @@ class Ui : public QObject {
                               const QVariant& memorySizeQVariant,
                               const QString& architecture,
                               const QString& optionName,
-                              const QString& parser);
+                              const QString& parser,
+                              const QString& projectName);
   /**
    * Returns a list of architecture names.
    *
@@ -205,6 +206,23 @@ class Ui : public QObject {
    * \param name The name of the snapshot.
    */
   Q_INVOKABLE void loadSnapshot(int id, QString name);
+
+  /**
+   * Call saveProject on the specified project.
+   *
+   * \param id The id of the project.
+   * \param path The path of the project file.
+   */
+  Q_INVOKABLE void saveProject(id_t id, const QUrl& path);
+
+  /**
+   * Call loadProject on the specified project.
+   *
+   * \param id The id of the project.
+   * \param path The path of the project file.
+   */
+  Q_INVOKABLE void loadProject(id_t id, const QUrl& path);
+
 
   /**
    * Translate a Translateable

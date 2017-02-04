@@ -19,6 +19,9 @@
 
 #include "core/snapshot.hpp"
 
+#include <string>
+#include <vector>
+
 #include "common/assert.hpp"
 #include "core/memory.hpp"
 #include "core/register-set.hpp"
@@ -36,7 +39,7 @@ Snapshot::Snapshot(const ArchitectureFormula& architectureFormula,
 Snapshot::Snapshot(Json json) : _snapshot(json) {
 }
 
-bool Snapshot::isValid() {
+bool Snapshot::isValid() const {
   if (!_snapshot.count("architecture-name")) return false;
   if (!_snapshot.count("extensions")) return false;
   if (!_snapshot.count("memory")) return false;
@@ -45,7 +48,18 @@ bool Snapshot::isValid() {
   return true;
 }
 
-ArchitectureFormula Snapshot::getArchitectureFormula() {
+bool Snapshot::isValidProject() const {
+  if (!isValid()) return false;
+  if (!_snapshot.count("project-name")) return false;
+  if (!_snapshot.count("parser-name")) return false;
+  // if (!_snapshot.count("project-settings")) return false;
+  if (!_snapshot.count("code")) return false;
+  if (!_snapshot["memory"].count("memory_byteCount")) return false;
+
+  return true;
+}
+
+ArchitectureFormula Snapshot::getArchitectureFormula() const {
   assert::that(isValid());
   std::string architectureName = _snapshot["architecture-name"];
   std::vector<std::string> extensions = _snapshot["extensions"];
@@ -56,16 +70,48 @@ ArchitectureFormula Snapshot::getArchitectureFormula() {
   return formula;
 }
 
-Snapshot::Json Snapshot::getMemoryJson() {
+Snapshot::Json Snapshot::getMemoryJson() const {
   assert::that(isValid());
   return _snapshot["memory"];
 }
 
-Snapshot::Json Snapshot::getRegisterJson() {
+Snapshot::Json Snapshot::getRegisterJson() const {
   assert::that(isValid());
   return _snapshot["registers"];
 }
 
-Snapshot::Json Snapshot::getJson() {
+std::string Snapshot::getCode() const {
+  assert::that(isValidProject());
+  return _snapshot["code"];
+}
+
+std::string Snapshot::getProjectName() const {
+  assert::that(isValidProject());
+  return _snapshot["project-name"];
+}
+
+std::string Snapshot::getParserName() const {
+  assert::that(isValidProject());
+  return _snapshot["parser-name"];
+}
+
+Memory::size_t Snapshot::getMemorySize() const {
+  assert::that(isValidProject());
+  return _snapshot["memory"].find("memory_byteCount")->get<Memory::size_t>();
+}
+
+void Snapshot::setCode(const std::string& code) {
+  _snapshot["code"] = code;
+}
+
+void Snapshot::setProjectName(const std::string& projectName) {
+  _snapshot["project-name"] = projectName;
+}
+
+void Snapshot::setParserName(const std::string& parserName) {
+  _snapshot["parser-name"] = parserName;
+}
+
+Snapshot::Json Snapshot::getJson() const {
   return _snapshot;
 }
