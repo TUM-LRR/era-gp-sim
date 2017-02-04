@@ -361,7 +361,8 @@
             "marginLeft": -10,
             "width": 90,
             "lockSymbol": "L",
-            "lockColor": "red"
+            "lockColor": "red",
+            "lockFontSize": 12
         },
         "header": {
             "background": "transparent",

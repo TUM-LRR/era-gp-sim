@@ -360,8 +360,9 @@
             "fontWeight": "normal",
             "marginLeft": -10,
             "width": 90,
-            "lockSymbol": "L",
-            "lockColor": "red"
+            "lockSymbol": "\u2612",
+            "lockColor": "red",
+            "lockFontSize": 14
         },
         "header": {
             "background": "transparent",

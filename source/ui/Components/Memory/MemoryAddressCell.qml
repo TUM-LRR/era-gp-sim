@@ -52,6 +52,7 @@ Component {
         anchors.rightMargin: 1
         anchors.topMargin: 1
         color: Theme.memory.address.lockColor
+        font.pixelSize: Theme.memory.address.lockFontSize
         // create a binding to styleData.value but discard value
         // result: text gets updated properly
         text: styleData.value.substr(0,0) + ((memoryModel.isMemoryProtected(styleData.row))? Theme.memory.address.lockSymbol : "")
