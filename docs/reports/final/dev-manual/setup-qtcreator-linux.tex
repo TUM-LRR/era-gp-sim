@@ -24,24 +24,26 @@ Fehler ("Could not find a package configuration file provided by Qt5Widgets"),
 dann ist vermutlich bei der Installation von \texttt{qtdeclarative5-dev} etwas
 schiefgegangen.\\
 
-\textbf{In QtCreator CMake-Projekt einrichten}
+\textbf{QtCreator und CMake}
 
-Im Startbildschirm "Open Project" und dann die oberste \texttt{CMakeLists.txt}
-(die in \texttt{era-gp-sim/CMakeLists.txt}) öffnen.\\ Im Reiter ''Configure
-Project'' für das Kit ''Desktop'' -> Details: Nur Debug und Release anhaken und
-die Build-Ordner anpassen\footnote{Es bietet sich an, für die IDE einen anderen
-Build-Ordner zu verwenden, als für das Bauen über die Konsole. Ein CMake-Projekt
-in QtCreator wird mit CodeBlocks erzeugt und erstellt daher leicht andere
+Im Startbildschirm \texttt{Open Project} und dann die oberste
+\texttt{CMakeLists.txt} (die in \texttt{root/CMakeLists.txt}) öffnen. Im Reiter
+\texttt{Configure Project} für das Kit \texttt{Desktop} $\rightarrow$
+\texttt{Details}: Nur \texttt{Debug und Release} anhaken und die Build-Ordner
+anpassen\footnote{Es bietet sich an, für die IDE einen anderen Build-Ordner zu
+verwenden, als für das Bauen über die Konsole. Ein CMake-Projekt in QtCreator
+wird mit CodeBlocks erzeugt und erstellt daher leicht andere
 Konfigurationsdateien als cmake über die Konsole. Damit beides parallel
 nebeneinander betrieben werden kann, sollten die Build-Ordner getrennt werden.}.
-Die Auswahl bestätigen.\\ Jetzt sollte das Edit-Tab mit dem Projekt geöffnet
-sein. Im unteren Rand unter ''General Messages'' sollte einmal cmake automatisch
-aufgerufen worden sein, links oben im ''Projects'' Fenster sollte die Struktur
-des Projekts (mit CMakeLists.txt, include, source, tests und third-party) zu
-sehen sein.\\ Im Projects-Tab (linker Rand, Schraubenschlüssel) im Reiter
-''Build \& Run'' wird jetzt der Build-Prozess konfiguriert. Bei ''Edit build
-configuration'' Debug auswählen, dann unter ''Build Steps'' folgendes
-verändern:\\
+Die Auswahl bestätigen. Jetzt sollte das Edit-Tab mit dem Projekt geöffnet sein.
+Im unteren Rand unter ''General Messages'' sollte einmal cmake automatisch
+aufgerufen worden sein, links oben im \texttt{Projects} Fenster sollte die
+Struktur des Projekts (mit CMakeLists.txt, include, source, tests und
+third-party) zu sehen sein. Im Projects-Tab (linker Rand, Schraubenschlüssel) im
+Reiter \texttt{Build \& Run} wird jetzt der Build-Prozess konfiguriert. Bei
+\texttt{Edit build configuration} Debug auswählen, dann unter \texttt{Build
+Steps} folgendes verändern:
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.5]{images/setup-qtcreator-buildrun-config.png}
@@ -57,18 +59,18 @@ ausgeführt werden. Zur Run-Konfiguration wechseln
 \includegraphics[scale=1.0]{images/setup-qtcreator-run-config} und als ''Working
 Directory'' den Build-Ordner eintragen.\\
 
-Nun zurück wechseln und bei ''Edit build configuration'' Release auswählen und
-sowohl ''Build Steps'' als auch ''Run'' wie oben verändern.\\
+Nun zurück wechseln und bei \texttt{Edit build configuration} Release auswählen und
+sowohl \texttt{Build Steps} als auch \texttt{Run} wie oben verändern.\\
 
-Ins Edit-Tab wechseln und am linken Rand unten beim Monitor von ''Release'' auf
-''Debug'' wechseln und dann mit Klick auf den Hammer das Projekt bauen.\\
+Ins Edit-Tab wechseln und am linken Rand unten beim Monitor von \texttt{Release} auf
+\texttt{Debug} wechseln und dann mit Klick auf den Hammer das Projekt bauen.\\
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.7]{images/setup-qtcreator-change-buildrun-flavor.png}
 	\caption{Verschiedene Ausführungsoptionen}
 \end{figure}
-Hier können dann auch später statt ''era-sim'' verschiedene Test-Suits lokal
-ausgeführt werden. In der ''Compile Output'' Konsole kann der Fortschritt des
+Hier können dann auch später statt \texttt{era-sim} verschiedene Test-Suits lokal
+ausgeführt werden. In der \texttt{Compile Output} Konsole kann der Fortschritt des
 Bauvorgangs überwacht werden.\\
 
 
@@ -76,24 +78,24 @@ Bauvorgangs überwacht werden.\\
 
 \begin{itemize}
 	\item File Naming:\\
-  Im Menü \texttt{Tools -> Options}, dort in der linken Auswahlliste C++ ->
-  Reiter ''File Naming'':\\ Bei Headers Suffix zu hpp ändern.
+  Im Menü \texttt{Tools $\rightarrow$ Options}, dort in der linken Auswahlliste C++ $\rightarrow$
+  Reiter \texttt{File Naming}:\\ Bei Headers Suffix zu hpp ändern.
 
 	\item Lizenz automatisch einfügen:\\
 
-  Im Menü \texttt{Tools -> Options -> C++ -> FileNaming}: Unter ''License
+  Im Menü \texttt{Tools $\rightarrow$ Options $\rightarrow$ C++ $\rightarrow$ FileNaming}: Unter ''License
   Template'' kann der Pfad zu einer Textdatei eingegeben werden, deren Inhalt
   dann als Kommentar an den Anfang jeder neu erzeugten Datei platziert wird.
 
 	\item Auto-Formatting (Plugin):\\
 
-  Muss evtl. über \texttt{Help -> About plugins} herunterladen (''Beautifier'').
-  Ist dann unter \texttt{Tools -> Options -> Beautifier} zu finden.
+  Muss evtl. über \texttt{Help $\rightarrow$ About plugins} herunterladen (\texttt{Beautifier}).
+  Ist dann unter \texttt{Tools $\rightarrow$ Options $\rightarrow$ Beautifier} zu finden.
   \end{itemize}
 \textbf{Erste Schritte}\\
 \begin{itemize}
 	\item Neue Datei erstellen:\\
-	\texttt{File -> New File or Project}
+	\texttt{File $\rightarrow$ New File or Project}
 	\item Aktuelle Datei formatieren:\\
-	\texttt{Tools -> Beautifier -> ClangFormat -> Format Current File}
+	\texttt{Tools $\rightarrow$ Beautifier $\rightarrow$ ClangFormat $\rightarrow$ Format Current File}
 \end{itemize}
