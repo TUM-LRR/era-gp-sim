@@ -33,7 +33,7 @@ Component {
       font.family: Theme.memory.address.fontFamily
       font.pixelSize: Theme.memory.address.fontSize
       horizontalAlignment: Text.AlignHCenter
-      text: styleData.value.toString().substr(0,styleData.value.toString().length - 1)
+      text: styleData.value
       verticalAlignment: Text.AlignVCenter
       visible: styleData.row % numberOfBytes == 0
       font.weight: {
@@ -43,14 +43,18 @@ Component {
           return Font.Normal;
         }
       }
+
     }
 
     Label {
+        id: locklabel
         anchors.right: parent.right
         anchors.rightMargin: 1
         anchors.topMargin: 1
         color: Theme.memory.address.lockColor
-        text: (styleData.value.toString().slice(-1) === "L")? Theme.memory.address.lockSymbol : ""
+        // create a binding to styleData.value but discard value
+        // result: text gets updated properly
+        text: styleData.value.substr(0,0) + ((memoryModel.isMemoryProtected(styleData.row))? Theme.memory.address.lockSymbol : "")
     }
   }
 }

@@ -39,9 +39,6 @@ MemoryComponentPresenter::MemoryComponentPresenter(const MemoryAccess &access,
   projectContext->setContextProperty("memoryModel", this);
 }
 
-bool isMemoryProtected(size_t address) {
-}
-
 void MemoryComponentPresenter::onMemoryChanged(size_t address, size_t length) {
   // calculate region for (max) 64bit memory cells
   // region should not exceed real memory size
@@ -101,6 +98,9 @@ void MemoryComponentPresenter::setValue(int address,
   }
 }
 
+bool MemoryComponentPresenter::isMemoryProtected(size_t address) {
+  return _memoryAccess.isMemoryProtectedAt(address).get();
+}
 
 void MemoryComponentPresenter::setContextInformation(int addressStart,
                                                      int length,
@@ -129,13 +129,7 @@ MemoryComponentPresenter::data(const QModelIndex &index, int role) const {
 
 QVariant
 MemoryComponentPresenter::dataAdress(const QModelIndex &index, int role) const {
-  const char lock = 'L';
-  if (_memoryAccess.isMemoryProtectedAt(index.row()).get()) {
-    return QString("0x%1")
-        .arg(index.row(), 4, 16, QLatin1Char('0'))
-        .append(lock);
-  }
-  return QString("0x%1").arg(index.row(), 4, 16, QLatin1Char('0')).append(' ');
+  return QString("0x%1").arg(index.row(), 4, 16, QLatin1Char('0'));
 }
 
 QVariant
