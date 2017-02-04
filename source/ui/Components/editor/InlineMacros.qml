@@ -99,7 +99,8 @@ Item {
                                                                 "y": yPos,
                                                                 "expandedHeight": textRegion.cursorRectangle.height*Number(macros[macroIndex]["lineCount"]),
                                                                 "text": macro["code"]});
-            subeditor.fontPointSize = textRegion.font.pointSize;
+            subeditor.fontPixelSize = textRegion.font.pixelSize;
+            subeditor.fontFamily = textRegion.font.family
             macroDisplayObject["subeditor"] = subeditor;
             // Add triangle-button to display object
             var triangleButton = triangleButtonComponent.createObject(sidebar._macroBar);
