@@ -80,7 +80,24 @@ std::string toUpper(const std::string& string) {
 }
 
 std::string rootPath() {
-  return QCoreApplication::applicationDirPath().toStdString();
+  if (QCoreApplication::instance() != nullptr) {
+    // This happens, if the gui is running
+    return QCoreApplication::applicationDirPath().toStdString();
+  }
+
+  // Hacky way for tests
+  static const std::string query("era-gp-sim");
+  static std::string root;
+
+  if (root.empty()) {
+    // Hope it exists
+    root = __FILE__;
+
+    auto index = root.rfind(query) + query.length();
+    root.erase(index);
+  }
+
+  return root;
 }
 
 std::string joinPaths(const std::string& single) {
