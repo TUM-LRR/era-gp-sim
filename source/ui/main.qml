@@ -173,19 +173,6 @@ ApplicationWindow {
           height: Theme.splitview.handleHeight
           color: Theme.splitview.handleColor
         }
-
-        Connections {
-          target: guiProject
-          onSaveTextAs: menubar.actionSaveAs();
-          onError: {
-            window.errorDialog.text = errorMessage;
-            window.errorDialog.open();
-          }
-          onExecutionStopped: {
-            editor.parse();
-            placeholderItem.running = false;
-          }
-        }
       }
 
       Connections {
