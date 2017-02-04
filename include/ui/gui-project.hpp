@@ -210,13 +210,6 @@ class GuiProject : QObject {
   Q_INVOKABLE void removeSnapshot(const QString& qName, bool removePermanently);
 
   /**
-   * Loads a project file (snapshot, code and settings).
-   *
-   * \param Path of the project file.
-   */
-  Q_INVOKABLE void loadProject(const QUrl& url);
-
-  /**
    * loads a snapshot
    * \param qName The name of the snapshot which should be loaded.
    */

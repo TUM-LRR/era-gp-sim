@@ -286,36 +286,6 @@ void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {
       _architectureFormulaString, qName, removePermanently);
 }
 
-void GuiProject::loadProject(const QUrl& url) {
-  auto path = url.toLocalFile();
-  QFile file(path);
-  if (!file.open(QIODevice::ReadOnly)) {
-    _throwError(Translateable(QT_TRANSLATE_NOOP(
-        "GUI error messages", "Could not load project file!")));
-  }
-
-  auto contents = file.readAll();
-
-  if (contents.isEmpty()) {
-    _throwError(Translateable(
-        QT_TRANSLATE_NOOP("GUI error messages", "Project file is empty!")));
-  }
-
-  auto json = Json::parse(contents.toStdString());
-  Snapshot projectSnapshot(json);
-  _projectModule.getMemoryManager().loadSnapshot(projectSnapshot);
-
-  if (projectSnapshot.isValidProject()) {
-    _editorComponent.setText(QString::fromStdString(projectSnapshot.getCode()));
-    // TODO load settings.
-  } else {
-    _throwError(Translateable(QT_TRANSLATE_NOOP(
-        "GUI error messages", "This snapshot is not a project file!")));
-  }
-
-  _editorComponent.parse(true);
-}
-
 void GuiProject::loadSnapshot(const QString& qName) {
   try {
     auto path =
