@@ -323,6 +323,16 @@ anstelle des eingegebenen Wertes an die Speicherstelle geschrieben. Dazu zählt
 auch die Eingabe zu großer Zahlen. Die Ersetzung erfolgt sofort.
 \end{warningblock}
 
+Eine Speicherzelle kann außerdem als read-only markiert sein. 
+Dies kann passieren, wenn die Speicherzelle einen Teil des ausführbaren 
+Programmcodes enthält. 
+Das Betriebssystem markiert bestimmte Bereiche des Speichers als 
+schreibgeschützt, um selbstmodifizierenden Code zu verhindern.
+Dieser Schutz ist sehr wichtig um Schadprogramme zu verhindern.
+Auch der Simulator markiert die Speicherzellen, den den assemblierten Code
+enthält, als schreibgeschützt. Ein kleines Symbol in der rechten oberen Ecke
+der Adresse zeigt dies an.
+
 
 \subsection{Interaktion mit laufenden Programmen}
 %\todo[inline]{Hier sollte (für alle Komponenten ja gleich) die Einstellungsmöglichkeiten (Zahnrad-knopf) und welches Symbol welche Komponente bedeutet}
