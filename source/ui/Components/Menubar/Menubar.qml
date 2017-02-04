@@ -94,7 +94,7 @@ MenuBar {
     MenuItem {
       id: openProject
       text: "Open Project"
-      shortcut: "Ctrl-Alt-O"
+      shortcut: "Ctrl+Alt+O"
       onTriggered: {
         main.fileDialog.onAcceptedFunction = function(path) {
           main.loadProject(path);
@@ -107,7 +107,7 @@ MenuBar {
     MenuItem {
       id: saveProject
       text: "Save Project"
-      shortcut: "Ctrl-Alt-S"
+      shortcut: "Ctrl+Alt+S"
       onTriggered: {
         main.fileDialog.onAcceptedFunction = function(path) {
           ui.saveProject(tabView.currentProjectId(), path);
@@ -145,6 +145,7 @@ MenuBar {
     }
 
     function enable(yes) {
+      saveProject.enabled = yes;
       openSnapshot.enabled = yes;
       saveSnapshot.enabled = yes;
     }

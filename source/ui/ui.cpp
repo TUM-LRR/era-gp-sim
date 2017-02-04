@@ -19,6 +19,7 @@
 
 #include "ui/ui.hpp"
 
+#include <QByteArray>
 #include <QUrl>
 #include <string>
 
