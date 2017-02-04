@@ -3,8 +3,8 @@
 <!-- What is this package -->
     <DisplayName>ERASIM Assembly Simulator</DisplayName>
     <Description>Installs the ERASIM simulator on this pc</Description>
-    <Version>0.9.0</Version>
-    <ReleaseDate>2017-01-28</ReleaseDate>
+    <Version>1.0.0</Version>
+    <ReleaseDate>2017-02-06</ReleaseDate>
     <Name>erasim.base</Name>
     <Default>true</Default>
     <ForcedInstallation>true</ForcedInstallation>
@@ -19,5 +19,5 @@
     <SortingPriority>100</SortingPriority><!-- Highest prio sorts to the top-->
 
 <!-- Install -->
-    <!-- No script needed, extracting the zip at the location is enough -->
+    <!-- No script needed, extracting the zip at the location is sufficient -->
 </Package>

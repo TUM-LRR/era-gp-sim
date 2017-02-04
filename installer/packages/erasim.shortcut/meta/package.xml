@@ -3,8 +3,8 @@
 <!-- What is this package -->
     <DisplayName>Create Shortcut</DisplayName>
     <Description>Windows:&lt;br&gt;Creates Startmenu shortcut&lt;br&gt;Unix:&lt;br&gt;Creates desktop shortcut</Description>
-    <Version>0.9.0</Version>
-    <ReleaseDate>2017-01-28</ReleaseDate>
+    <Version>1.0.0</Version>
+    <ReleaseDate>2017-02-06</ReleaseDate>
     <Name>erasim.shortcut</Name>
     <Default>true</Default>
 
