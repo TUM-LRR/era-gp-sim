@@ -53,7 +53,6 @@ Item {
       onActiveFocusChanged: cell.borderOpacity = (activeFocus) ? 1 : 0;
       text: enabled ? styleData.value : ""
 
-      property string lastText
       property double borderOpacity: 0
 
       // FadeIn effect
@@ -65,18 +64,14 @@ Item {
       }
 
       onEditingFinished: {
-          console.log("memory changed!");
-        if (/*!enabled ||*/ cell.text === cell.lastText){console.log(cell.text + " equal "+cell.lastText); return;}
-        console.log("cell text changed");
-        if (role === "address") return;
-console.log("memory really changed");
-        lastText = cell.text;
-        memoryModel.setValue(
-          styleData.row,
-          cell.text,
-          numberOfBits,
-          role
-        );
+        if (enabled){
+            memoryModel.setValue(
+              styleData.row,
+              cell.text,
+              numberOfBits,
+              role
+            );
+        }
       }
 
       style: TextFieldStyle {
