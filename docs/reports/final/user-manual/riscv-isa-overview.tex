@@ -824,17 +824,24 @@ Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
 
 \subsection{Übersetzungsfehler}
 \label{user-manual-riscv-errors}
+Hier werden einige Übersetzungsfehler aufgelistet und erklärt, die für einen Anfänger vielleicht nicht ganz zu verstehen und dann zu beheben sind.
 
 \begin{tabular}{|p{5cm}|p{5cm}|p{5cm}|}
 	\hline
 	Fehlermeldung & häufiger Grund & Mögliche Lösung\\
 	\hline
-	Immediate operand must be 12 bit or less & Eine zu große Konstante als Operand übergeben & Die erwartete Konstante muss inklusive Vorzeichenbit in 12 Bit darstellbar sein.\\
+	Immediate operand must be 12(20) bit or less & Eine zu große Konstante als Operand übergeben & Die erwartete Konstante muss inklusive Vorzeichenbit in 12(20) Bit darstellbar sein.\\
 	\hline
 	The given offset \textit{x} will result in an invalid jump adress (pc+\textit{y}) &
 	Die errechnete Adresse des Sprungs wird einen Laufzeitfehler generieren, da sie keinen Befehl anspringt oder zwischen zwei Befehle springt. Meist ist die Offset-Konstante ungerade oder zu groß/klein. & Alle Instruktionen des Programms liegen hintereinander im Speicher, die Anfangsadresse kann durch Speicherreservierungen davor nach unten verschoben werden. Die Instruktionen sind stets auf 4 Byte angeordnet.\\
 	\hline
-	Branch offset would invalidate program counter to \textit{x} & Die errechnete Sprungadresse ist ungültig. Es wird entweder außerhalb des Textsegments gesprungen oder zwischen zwei Befehle &
+	Jump(Branch) offset would invalidate program counter to \textit{x} & Die errechnete Sprungadresse ist ungültig. Es wird entweder außerhalb des Textsegments gesprungen oder zwischen zwei Befehle &
 	Der Wert des Basisregisters ist möglicherweise falsch.\\
+	\hline
+	The immediate-register instructions must have 2 registers and 1 immediate as operands & Der Befehl erwartet erst 2 Register und dann eine Konstante. & Möglicherweise wird statt z.B. \texttt{addi} der Register-Register Befehl \texttt{add} genutzt\\
+	\hline
+	The register-register instructions must have 3 registers as operands & Der Befehl erwartet 3 Register als Operanden& Möglicherweise wird hier ein Immediate-Register-Befehl, z.B. \texttt{addi} verwendet. Für 3 Register muss jedoch die Register-Register Variante \texttt{add} verwendet werden.\\
+	\hline
+	The memory area you are trying to access is protected (area: [\textit{a},\textit{b}]) & Ein Speicherzugriff greift auf eine ungültige Speicheradresse zu. Entweder der angesprochene Speicherbereich beginnt/endet außerhalb des Speichers oder es wird ein schreibender Zugriff auf Teile des assemblierten Programms durchgeführt. & Die Grenzen \textit{a} und \textit{b} (beide inklusive) geben einen Anhaltspunkt, wo eine fehlerhafte Berechnung der Adresse erfolgt sein könnte. Die aus Basisregister und Offset berechnete Adresse einer Load-/Store-Instruktion gibt immer die Anfangsadresse des Speicherbereichs an. Die Länge ist implizit durch den Befehl (\texttt{lb}: 1 Byte, \texttt{lw}: 4 Byte, ...) gegeben\\
 	\hline
 \end{tabular}
