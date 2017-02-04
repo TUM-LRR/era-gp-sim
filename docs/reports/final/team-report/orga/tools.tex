@@ -12,7 +12,7 @@ Workflows unterstützten. Hierbei lassen sich unsere Hilfsmittel grob in zwei
 Gruppen teilen: technische Hilfsmittel und organisatorische Hilfsmittel.
 
 Technische Hilfsmittel halfen uns insbesondere bei der Bewältigung der
-Feature-Vielfalt und Komplexizität der C++-Sprache. In Retrospektive war der
+Feature-Vielfalt und Komplexität der C++-Sprache. In Retrospektive war der
 Einsatz der weiter unten erläuterten technischen Hilfsmittel ein enorm wichtiger
 Teil unserer Entwicklung. Ebenso wird auch in der Industrie die Meinung sehr
 stark vertreten, dass die Verfügbarkeit korrekter und effektiver Tools oft
@@ -23,9 +23,7 @@ die C++ Entwicklern, beispielsweise durch statische Analyse, helfen. Unter den
 von uns genutzten technischen Tools möchten wir drei insbesondere hervorheben:
 \texttt{clang-format}, \texttt{cpplint} und Travis CI. Diese lassen sich
 detaillierter wie folgt beschreiben:
-
-\begin{itemize}
-
+\begin{sitemize}{-0.3cm}
   \item \texttt{clang-format} ist ein Hilfsmittel aus der Familie von
   \texttt{clang} Tools, das zur Einhaltung eines Style Guides\footnote{Als
   \emph{Style Guide} bezeichnen wir ein Dokument, dass im Falle mehrerer
@@ -45,7 +43,6 @@ detaillierter wie folgt beschreiben:
   zum einen die Standardisierung von Formatierungsregeln, entnimmt dem
   Programmierer aber ebenso das manuelle Einrücken von Code oder ähnliche
   mühsame Aufgaben.
-
   \item \texttt{cpplint} ist ein \emph{Linter}\footnote{Mit einem \emph{Linter}
   ist ein Programm gemeint, dass Code statisch untersucht und Hinweise auf
   mögliche Defekte liefert.}, der von Google Inc. zur Einhaltung des Google C++
@@ -55,7 +52,6 @@ detaillierter wie folgt beschreiben:
   nehmen, mit \texttt{explicit} zu markieren, so wird man von \texttt{cpplint}
   darauf aufmerksam gemacht. Dies verhindert implizite Konvertierungen, die
   unter Umständen zu ungeahnten Problemen führen können.
-
   \item \emph{Travis CI} (kurz \emph{Travis}) ist ein Online-Test-Server,
   welcher Unit Tests in isolierten Umgebungen auf Linux Maschinen ausführt. Wir
   haben Travis hierbei so konfiguriert, dass nach jedem Commit auf das GitHub
@@ -64,9 +60,9 @@ detaillierter wie folgt beschreiben:
   Kompilierens und unserer Tests auf einer ``unabhängigen'' Platform laufend zu
   verifizieren. So kann stets von jedem die Gesundheit des Projekts überprüft
   werden, ohne selbst den Simulator kompilieren und ausführen zu müssen.
+\end{sitemize}
 
-\end{itemize}
-
+\pagebreak
 Neben den obigen technischen Werkzeugen haben wir bei der Entwicklung von
 \erasim{} auch von einer Reihe von Hilfsmitteln Gebrauch gemacht, die uns bei
 organisatorischen Aspekten halfen. Zum einen möchten wir hier
