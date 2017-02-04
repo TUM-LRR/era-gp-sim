@@ -22,10 +22,10 @@
     Windows: C:\Programs
     Linux: /opt/
     -->
-    <TargetDir>@ApplicationsDir@/ERASIM/</TargetDir>
+    <TargetDir>@ApplicationsDir@/era-sim/</TargetDir>
 
 <!-- After installation, we offer to launch ERASIM -->
-    <RunProgram>@TargetDir@/era-sim</RunProgram>
+    <RunProgram>@TargetDir@/era-sim.sh</RunProgram>
     <RunProgramDescription>Launch ERASIM now</RunProgramDescription>
 
 <!-- Config for unistaller/updater -->

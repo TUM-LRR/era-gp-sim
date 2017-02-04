@@ -8,23 +8,19 @@ while [[ $# -gt 0 ]]; do
       echo "This script collects all needed files for a release on linux"
       echo "Options:"
       echo " -e, --executable | The era-sim executable (e.g. build/bin/era-sim)"
-      echo " -i, --isa        | The isa directory"
-      echo " -t, --themes     | The themes directory"
+      echo " -r, --resources  | The resource directory (most likely the project root)"
       echo " -q, --qt         | The qt installation path (e.g. /usr/lib/qt)"
       echo " -d, --directory  | The directory, where all files should be put in."
       echo "                    Defaults to ./era-sim."
+      echo " -7, --7zip       | Use 7zip instead of tar.gz as archive"
       exit 0
       ;;
     (-e|--executable)
       EXEC="$2"
       shift
       ;;
-    (-i|--isa)
-      ISA="$2"
-      shift
-      ;;
-    (-t|--themes)
-      THEMES="$2"
+    (-r|--resources)
+      RESOURCES="$2"
       shift
       ;;
     (-d|--directory)
@@ -34,6 +30,9 @@ while [[ $# -gt 0 ]]; do
     (-q|--qt)
       QT="$2"
       shift
+      ;;
+    (-7|--7zip)
+      SEVEN_ZIP=true
       ;;
     (*)
       echo "Unknown option $key"
@@ -48,13 +47,8 @@ if [[ ! -x $EXEC ]]; then
   exit 1
 fi
 
-if [[ ! -d $ISA ]]; then
-  echo "Isa folder needed. See --help"
-  exit 1
-fi
-
-if [[ ! -d $THEMES ]]; then
-  echo "Themes folder needed. See --help"
+if [[ ! -d $RESOURCES ]]; then
+  echo "Resource folder needed. See --help"
   exit 1
 fi
 
@@ -72,10 +66,13 @@ echo "Copying executable..."
 cp $EXEC $DIR
 
 echo "Copying isa dir..."
-cp -r $ISA $DIR
+cp -r $RESOURCES/isa $DIR
 
 echo "Copying themes dir..."
-cp -r $THEMES $DIR
+cp -r $RESOURCES/themes $DIR
+
+echo "Copying icon..."
+cp $RESOURCES/icons/erasim-icon_64.png $DIR/icon.png
 
 echo "Populating libs..."
 mkdir $DIR/libs
@@ -112,8 +109,15 @@ touch $DIR/era-sim.sh
 cat <<EOM > $DIR/era-sim.sh
 #!/bin/sh
 
+# Change working directory to script location
+D1=\$(readlink -f "\$0")
+D2=\$(dirname "\${D1}")
+cd "\${D2}"
+
+# Add libs to library path
 export LD_LIBRARY_PATH="./libs:\$LD_LIBRARY_PATH"
 
+# Start application
 ./era-sim
 EOM
 chmod 755 $DIR/era-sim.sh
@@ -125,7 +129,12 @@ cat <<EOM > $DIR/qt.conf
 Plugins = plugins
 EOM
 
-echo "Creating era-sim.tar.gz..."
-tar czf era-sim.tar.gz $DIR
+if [[ "$SEVEN_ZIP" == true ]]; then
+  echo "Creating base.7z..."
+  7z a base.7z $DIR/*
+else
+  echo "Creating era-sim.tar.gz..."
+  tar czf era-sim.tar.gz $DIR
+fi
 
 echo -e "\nFinished"
