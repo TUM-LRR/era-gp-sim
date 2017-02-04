@@ -56,6 +56,8 @@ if (ERA_SIM_BUILD_GUI)
     ${UI_SOURCES}
     ${UI_RESOURCES}
     ${UI_HEADERS_WRAPPED}
+	# The icon resource for windows
+	${WIN_RES_FILE}
   )
 
   target_link_libraries(era-sim era-sim-core)

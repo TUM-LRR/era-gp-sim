@@ -62,6 +62,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 ########################################
+# RESOURCES
+########################################
+
+set(WIN_RES_FILE ${CMAKE_CURRENT_SOURCE_DIR}/erasim-res.rc)
+
+########################################
 # BINARIES
 ########################################
 
@@ -108,7 +114,7 @@ add_library(dummy-qtcreator-lib EXCLUDE_FROM_ALL ${QTCREATOR_INCLUDES})
 # CUSTOM TARGETS
 ########################################
 
-# Creates symlinks from the binary directory to the resource directories
+ Creates symlinks from the binary directory to the resource directories
 add_custom_target(symlinks ALL
   COMMAND ${CMAKE_COMMAND} -E create_symlink
     ${CMAKE_SOURCE_DIR}/isa ${ERA_SIM_BINARY_DIR}/isa

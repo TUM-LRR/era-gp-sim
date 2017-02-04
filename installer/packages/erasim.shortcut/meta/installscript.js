@@ -6,7 +6,9 @@ Component.prototype.createOperations = function()
 
     if (systemInfo.productType === "windows") {
         component.addOperation("CreateShortcut", "@TargetDir@/era-sim.exe", "@StartMenuDir@/era-sim.lnk",
-            "workingDirectory=@TargetDir@", "iconPath=icon.ico");
+            "workingDirectory=@TargetDir@", "description=Launch ERASIM");
+		component.addOperation("CreateShortcut", "@TargetDir@/erasim-maintenance.exe", "@StartMenuDir@/era-sim-uninstall.lnk",
+            "workingDirectory=@TargetDir@", "description=Uninstall ERASIM");
     }
     if (installer.value("os") === "x11")
     {
