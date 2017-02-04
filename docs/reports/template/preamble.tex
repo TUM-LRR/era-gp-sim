@@ -128,7 +128,6 @@
 % OTHER                                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage[autostyle=true]{csquotes}
 \usepackage{caption}
 \usepackage{cancel}
 \usepackage{hyperref}
@@ -136,6 +135,9 @@
 \usepackage{import}
 \usepackage{todonotes}
 \usepackage{url}
+
+\usepackage{csquotes}
+\MakeOuterQuote{"}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % HEADERS + FOOTERS                                    %
@@ -177,7 +179,21 @@
 
 \newcommand{\erasim}{{\fontfamily{zi4}\selectfont ERASIM}}
 
-\newcommand{\link}[1]{{\small\url{#1}}}
+\newcommand{\smallurl}[1]{{\small\url{#1}}}
+\renewcommand{\texttt}[1]{{\ttfamily\small #1}}
+
+\newcommand{\cyclearrow}{
+  \hspace{-0.5cm}
+  \scalebox{0.8}{
+  \tikz[thick, yshift=-0.2cm]{
+    \node (a) at (0, -0.15) {};
+    \node (b) at (0.8, -0.15) {};
+    \draw [->] (a) .. controls (0.38, 0) and (0.42, 0) .. (b);
+    \draw [<-] (a) .. controls (0.38, -0.3) and (0.42, -0.3) .. (b);
+  }
+  }
+  \hspace{-0.4cm}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEW ENVIRONMENTS                                     %

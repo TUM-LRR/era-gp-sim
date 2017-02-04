@@ -6,11 +6,11 @@
 
 Wie bei vielen großen Softwareprojekten üblich, haben wir für die Entwicklung
 von \erasim{} eine Programmiersprache als Hauptwerkzeug genutzt, gegebenenfalls
-aber nach dem Prinzip ``Use the Right Tool for the Job'' auch in anderen
+aber nach dem Prinzip "Use the Right Tool for the Job" auch in anderen
 Sprachen entwickelt. Unser Hauptwerkzeug war hierbei \emph{C++}\footnote{Wir
 haben insbesondere darauf Wert gelegt, die neuen C++11 und C++14 Standards zu
-nutzen.}, womit das gesamte ``Backend'' sowie auch bestimmte Teile des
-``Frontends'', beispielsweise Datenmodelle, implementiert sind. Für die
+nutzen.}, womit das gesamte "Backend" sowie auch bestimmte Teile des
+"Frontends", beispielsweise Datenmodelle, implementiert sind. Für die
 Entwicklung der GUI wurde das \emph{Qt}\footnote{\url{https://www.qt.io}} C++
 Framework verwendet, wobei wir die \emph{QML} und \emph{Javascript}
 Skriptingsprachen zur Definition der Benutzeroberfläche nutzten. Zu den anderen
@@ -19,12 +19,11 @@ Produktivitätssteigerung sowie ein $\text{SASS} \rightarrow \text{JSON}$
 Konvertierer als Teil unserer UI-Theming Implementierung geschrieben wurden,
 \LaTeX{} zur Ausarbeitung von Spezifikationen sowie
 \emph{SASS}\footnote{\url{http://sass-lang.com}} zur Definition von UI Themes.
-Insgesamt wurden in diesen Sprachen ca. 35,000 Zeilen Code geschrieben. \autoref{fig:lang} zeigt hierzu den prozentuellen Anteil jeder Sprache an dieser
+Insgesamt wurden in diesen Sprachen ca. 40,000 Zeilen Code geschrieben. \autoref{fig:lang} zeigt hierzu den prozentuellen Anteil jeder Sprache an dieser
 Zahl, wobei \autoref{tbl:lang} eine genauere Aufschlüsselung präsentiert.
 
-\begin{figure}[h!]
+\begin{figure}[t!]
   \centering
-  \vspace{-0.2cm}
   \begin{tikzpicture}
     \newlength{\height}\setlength{\height}{0.4cm}\relax
 
@@ -62,9 +61,7 @@ Zahl, wobei \autoref{tbl:lang} eine genauere Aufschlüsselung präsentiert.
   \label{fig:lang}
 \end{figure}
 
-\pagebreak
-
-\begin{table}
+\begin{table}[h!]
   \centering
   \begin{tabular}{lrrr}
     \textbf{Programmiersprache} & \textbf{Kommentarzeilen} & \textbf{Codezeilen} & \textbf{Gesamt} \\
@@ -76,39 +73,47 @@ Zahl, wobei \autoref{tbl:lang} eine genauere Aufschlüsselung präsentiert.
     SASS & 11 & 666 & 677 \\
     Python & 242 & 543 & 785 \\
     CMake & 118 & 313 & 431 \\
-    Bourne Shell & 27 & 153 & 180 \\
+    Bash & 27 & 153 & 180 \\
     JavaScript & 27 & 71 & 98 \\
     make & 1 & 4 & 5 \\
     DOS Batch & 0 & 2 & 2 \\
     \bottomrule
     Alle & 21199 & 40217 & 61416
   \end{tabular}
-  \caption{Eine Aufschlüsselung der für die Entwicklung von \erasim{} geschriebenen Codezeilen in den von uns genutzten Programmiersprachen. Die erste Spalte nennt die Programmiersprache, die zweite Spalte listet die Anzahl an Kommentaren und die dritte Spalte die Anzahl an \emph{echten} Codezeilen in dieser Sprache.}
+  \caption{Eine Aufschlüsselung der für die Entwicklung von \erasim{} geschriebenen Codezeilen in den von uns genutzten Programmiersprachen. Die erste Spalte nennt die Programmiersprache, die zweite Spalte listet die Anzahl an Kommentaren und die dritte Spalte die Anzahl an echten Codezeilen in dieser Sprache.}
   \label{tbl:lang}
+  \vspace{0.5cm}
 \end{table}
+
+\pagebreak
 
 \textbf{Lernphase}
 
 Eine besondere Herausforderung bei der Entwicklung von \erasim{} war, dass nur
 zwei der (anfangs) zwölf Mitglieder zur effektiven Entwicklung ausreichendes
 Wissen in C++ besaßen. Natürlich waren alle in der Programmierung bereits
-erfahren, jedoch in anderen Sprachen wie Java oder C\#. Somit musste
-der Großteil der Teammitglieder zu Beginn des Projekts darin investieren, C++ zu
-erlernen. Da C++ für seine steile Lernkurve berüchtigt ist, war dies keine
+erfahren, jedoch in anderen Sprachen wie Java oder C\#. Somit musste der
+Großteil der Teammitglieder zu Beginn des Projekts Zeit darin investieren, C++
+zu erlernen. Da C++ für seine steile Lernkurve berüchtigt ist, war dies keine
 kleine Aufgabe. Dennoch fanden alle Entwickler erfreulich schnell den Einstieg
 in die Sprache und konnten bald darin produktiv werden. Hilfreich hierfür waren
 unter anderem die Lektüre bestimmter Bücher wie \emph{C++
 Primer}\footnote{\emph{C++ Primer}; Lipmann, Lajoie \& Moo (2012)} oder \emph{A
 Tour of C++}\footnote{\emph{A Tour of C++}; Bjarne Stroustrup (2013)}, ein
-eigener Kanal für C++-bezogene Fragen in Slack, gründliche Code Reviews
-von Kameraden mit mehr C++ Erfahrung sowie auch die Einhaltung eines
-strikten Style Guides, der die Feature-Vielfalt von C++ etwas reduziert.
+eigener Kanal für C++-bezogene Fragen in Slack, gründliche Code Reviews von
+Kameraden mit mehr C++ Erfahrung sowie auch die Einhaltung eines strikten Style
+Guides, der die Feature-Vielfalt von C++ etwas reduziert.
 
 \textbf{Evaluation}
 
-In Retrospektive können wir als Team folgenden Schluss zur Wahl von C++ als hauptsächliche Programmiersprache für \erasim{} ziehen: C++ ist \emph{schwer}, aber \emph{effektiv}. Wir können einige Nachteile der Sprache identifizieren, können aber insbesondere auch ihre vielen Vorteile wertschätzen. Folgende Eigenschaften von C++ würden wir als positiv für die Effektivität und Effizienz unserer Entwicklung einschätzen:
-\begin{sitemize}{-0.2cm}
-  \item C++ ist umfangreich und bereitet viele Möglichkeiten, zum Beispiel im
+In Retrospektive können wir als Team folgenden Schluss zur Wahl von C++ als
+wichtigste Programmiersprache für \erasim{} ziehen: C++ ist \emph{schwer},
+aber \emph{effektiv}. Wir können einige Nachteile der Sprache identifizieren,
+können aber insbesondere auch ihre vielen Vorteile wertschätzen. Folgende
+Eigenschaften von C++ würden wir als positiv für die Effektivität und Effizienz
+unserer Entwicklung einschätzen:
+\begin{sitemize}{-0.45cm}
+  \item C++ ist umfangreich und bietet viele Möglichkeiten, zum Beispiel im
   Bereich Threading, generischem Programmieren via Templates und Operator
   Überladungen,
   \item Die Hardwarenähe und Speicherverwaltungsmöglichkeiten der Sprache können
@@ -117,13 +122,14 @@ In Retrospektive können wir als Team folgenden Schluss zur Wahl von C++ als hau
   \item Gleichzeitig schützt das Prinzip von \emph{Resource Acquisition Is
   Initialization} (RAII) und Standardklassen wie \texttt{shared\_ptr} vor Memory
   Leaks und anderen Gefahren,
-  \item Tools wie \texttt{clang-format}, \texttt{clang-tidy} oder
+  \item Tools wie {\ttfamily\small clang-format}, \texttt{clang-tidy} oder
   \texttt{cpplint} beschleunigen die (fehlerfreie) Entwicklung.
+  \vspace{-0.35cm}
 \end{sitemize}
 
 Gleichzeitig sind uns folgende Aspekte negativ aufgefallen:
-\begin{sitemize}{-0.3cm}
-  \item C++ ist umfangreich und bereitet viele Möglichkeiten, zum Beispiel im
+\begin{sitemize}{-0.4cm}
+  \item C++ ist umfangreich und bietet viele Möglichkeiten, zum Beispiel im
   Bereich Threading, generischem Programmieren via Templates und Operator
   Überladungen,
   \item Fehlermeldungen können sehr komplex sein und deren Behebung oftmals mehr
@@ -133,6 +139,7 @@ Gleichzeitig sind uns folgende Aspekte negativ aufgefallen:
   was zu erhöhter Komplexität und erhöhtem Aufwand führen kann (im Vergleich
   zu JVM-basierten Sprachen),
   \item Das Fehlen eines Modulsystems (und die damit verbundene Notwendigkeit
-  von \emph{Forward-Deklarationen}) kann bei fehlender Vorsicht schnell zu
-  Problemen, wie \texttt{\#include}-Zyklen, führen.
+  von \emph{Forward-Deklarationen}) schnell zu Problemen, wie
+  \texttt{\#include}-Zyklen, führen.
+  \vspace{0.3cm}
 \end{sitemize}

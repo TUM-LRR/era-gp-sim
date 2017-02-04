@@ -3,30 +3,30 @@
 
 \subsubsection{Hilfsmittel}
 \label{team:orga-workflow-tools}
+\vspace{-0.3cm}
 
 Neben den von uns genutzten Programmiersprachen und Entwicklungsmethoden war
 unser Workflow auch stark von unseren \emph{Hilfsmitteln} bzw. \emph{Tools}
 geprägt. Als \emph{Hilfsmittel} bezeichnen wir jene Programme oder Services, die
-offline oder online unsere Entwicklung bzw. die übrigen Aspekte unseres
+offline oder online unsere Entwicklung sowie die übrigen Aspekte unseres
 Workflows unterstützten. Hierbei lassen sich unsere Hilfsmittel grob in zwei
 Gruppen teilen: technische Hilfsmittel und organisatorische Hilfsmittel.
 
-Technische Hilfsmittel halfen uns insbesondere bei der Bewältigung der
-Feature-Vielfalt und Komplexität der C++-Sprache. In Retrospektive war der
-Einsatz der weiter unten erläuterten technischen Hilfsmittel ein enorm wichtiger
-Teil unserer Entwicklung. Ebenso wird auch in der Industrie die Meinung sehr
-stark vertreten, dass die Verfügbarkeit korrekter und effektiver Tools oft
-ebenso wichtig ist, wie die Funktionalität der Sprache selbst. So ist es
-insbesondere erfreulich, dass in den letzten Jahren eine Vielzahl von
-Hilfsmitteln aus dem LLVM/\texttt{clang} Compiler-Projekt hervorgetreten sind,
-die C++ Entwicklern, beispielsweise durch statische Analyse, helfen. Unter den
-von uns genutzten technischen Tools möchten wir drei insbesondere hervorheben:
-\texttt{clang-format}, \texttt{cpplint} und Travis CI. Diese lassen sich
-detaillierter wie folgt beschreiben:
-\begin{sitemize}{-0.3cm}
+In Retrospektive war der Einsatz der weiter unten erläuterten technischen
+Hilfsmittel ein enorm wichtiger Teil unserer Entwicklung. Insbesondere halfen
+uns diese Hilfsmittel bei der Bewältigung der Feature-Vielfalt und Komplexität
+der C++-Sprache. Auch in der Industrie wird die Meinung sehr stark vertreten,
+dass die Verfügbarkeit korrekter und effektiver Tools oft ebenso wichtig ist,
+wie die Funktionalität der Sprache selbst. So ist es insbesondere erfreulich,
+dass in den letzten Jahren eine Vielzahl von Tools aus dem LLVM/Clang
+Compiler-Projekt hervorgetreten sind, die C++ Entwicklern, beispielsweise durch
+statische Analyse, helfen. Unter den von uns genutzten Tools möchten wir drei
+insbesondere hervorheben: \texttt{clang-format}, \texttt{cpplint} und Travis CI.
+Diese lassen sich detaillierter wie folgt beschreiben:
+\begin{sitemize}{-0.6cm}
   \item \texttt{clang-format} ist ein Hilfsmittel aus der Familie von
   \texttt{clang} Tools, das zur Einhaltung eines Style Guides\footnote{Als
-  \emph{Style Guide} bezeichnen wir ein Dokument, dass im Falle mehrerer
+  \emph{Style Guide} bezeichnen wir ein Dokument, das im Falle mehrerer
   Möglichkeiten für die Formatierung oder Implementierung von Code eine dieser
   Möglichkeiten bevorzugt und diese Bevorzugung schriftlich festlegt.} dient.
   Wir betrachten die Instandhaltung eines rigorosen Style Guides als einen
@@ -43,31 +43,31 @@ detaillierter wie folgt beschreiben:
   zum einen die Standardisierung von Formatierungsregeln, entnimmt dem
   Programmierer aber ebenso das manuelle Einrücken von Code oder ähnliche
   mühsame Aufgaben.
+  \vspace{0.3cm}
+
   \item \texttt{cpplint} ist ein \emph{Linter}\footnote{Mit einem \emph{Linter}
   ist ein Programm gemeint, dass Code statisch untersucht und Hinweise auf
-  mögliche Defekte liefert.}, der von Google Inc. zur Einhaltung des Google C++
+  mögliche Defekte liefert.}, der von Google, Inc. zur Einhaltung des Google C++
   Style Guide entwickelt wurde. Im Unterschied zu \texttt{clang-format} warnt
   \texttt{cpplint} nicht nur vor syntaktischen, sondern auch vor semantischen
   Fehlern. Vergisst man beispielsweise, Konstruktiven, die nur einen Parameter
   nehmen, mit \texttt{explicit} zu markieren, so wird man von \texttt{cpplint}
   darauf aufmerksam gemacht. Dies verhindert implizite Konvertierungen, die
-  unter Umständen zu ungeahnten Problemen führen können.
+  unter Umständen zu Problemen führen können.
+
   \item \emph{Travis CI} (kurz \emph{Travis}) ist ein Online-Test-Server,
   welcher Unit Tests in isolierten Umgebungen auf Linux Maschinen ausführt. Wir
-  haben Travis hierbei so konfiguriert, dass nach jedem Commit auf das GitHub
-  Repository die Kompilierung unseres Codes und Ausführung der Tests gestartet
-  werden. Travis hat uns insbesondere dabei geholfen, den Erfolg des
-  Kompilierens und unserer Tests auf einer ``unabhängigen'' Platform laufend zu
-  verifizieren. So kann stets von jedem die Gesundheit des Projekts überprüft
-  werden, ohne selbst den Simulator kompilieren und ausführen zu müssen.
+  haben Travis hierbei so konfiguriert, dass nach jedem Commit auf unser GitHub
+  Repository die Kompilierung unseres Codes und die Ausführung von Tests
+  gestartet werden. Travis hat uns insbesondere dabei geholfen, den Erfolg
+  unserer Tests auf einer "unabhängigen" Platform laufend zu verifizieren. So
+  kann stets von jedem die Gesundheit des Projekts überprüft werden, ohne selbst
+  den Simulator kompilieren und ausführen zu müssen.
+
 \end{sitemize}
 
-\pagebreak
 Neben den obigen technischen Werkzeugen haben wir bei der Entwicklung von
 \erasim{} auch von einer Reihe von Hilfsmitteln Gebrauch gemacht, die uns bei
-organisatorischen Aspekten halfen. Zum einen möchten wir hier
+organisatorischen Aspekten halfen. Als Beispiel möchten wir hier
 \emph{Waffle}\footnote{\url{http://waffle.io}} nennen, welches wir als Online
-Kanban Board nutzten. Zum anderen war wohl das wichtigste Hilfsmittel während
-der gesamten Entwicklung von \erasim{} unser Kommunikationstool
-\emph{Slack}\footnote{\url{http://slack.com/}}, welches uns erlaubt hat, rund um
-die Uhr miteinander die Realisierung des Simulators zu koordinieren.
+Kanban Board verwendet haben.
