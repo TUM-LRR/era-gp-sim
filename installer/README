@@ -29,6 +29,7 @@ Windows release (using mingw 32bit)
 * run <path_to_qt_mingw>\bin\windeployqt.exe --relase era-sim.exe
 * Copy additional libraries from <qt_mingw>\bin into temporary folder: libgcc_s_dw2-1.dll, libstdc++-6.dll, libwinpthread-1.dll
 * Copy qml Dependencies from <qt_mingw>\qml\ into temporary folder: Qt, QtGraphicalEffects, QtQml, QtQuick, QtQuick.2
+* Copy isa and themes folder into temporary folder
 * Zip the contents of the temporary folder into packages\erasim.base\data\base.7z
 * goto installer\
 * run <path_to_framework>\bin\binarycreator.exe -c config\config.xml -p packages <name of installer>
