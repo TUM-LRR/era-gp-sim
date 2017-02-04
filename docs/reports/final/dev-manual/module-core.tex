@@ -13,6 +13,49 @@ Befehlsknoten aufzurufen und das Ergebnis in den Speicher zu schreiben. Der Core
 steuert auch die Ausführung, indem die Befehlsknoten nacheinander ausgeführt
 werden.
 
+\begin{figure}[H]
+    \begin{center}
+        \begin{tikzpicture}[thick]
+            \tikzset{block/.style={%
+            draw,%
+            rectangle,%
+            rounded corners,%
+            text width=2cm,%
+            text height=0.45cm}%
+            };
+            \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
+
+            % gui
+            \path (0, 0) coordinate [block] (gui) node {GUI};
+
+            % Core
+            \node (core) [below = 1.3 of gui] {\textbf{Core}};
+            \draw [<->] (gui) -- ($(core.north)+(0.0, 0.5)$);
+            % core outline
+            \path (core.west |- core.north)+(-1.0,0.5) node (a1) {};
+            \path (core.east |- core.south)+(1.0,-3.8) node (a2) {};
+            \path[rounded corners, draw=black] (a1) rectangle (a2);
+
+            % Memory
+            \node (memory) [block, below = 0.5 of core, align=center] {Speicher};
+
+            %Register
+            \node (register) [block, below = of memory, align=center] {Register};
+
+            %arch
+            \path ($(core.west)+(-3.5, -1.5)$) coordinate [block] (arch) node {Architektur};
+            \node (leftConnection) at (-1.4, -3.5) {};
+            \draw [<->] (arch) -- ($(core.west)+(-1.0, -1.5)$);
+
+            %parser
+            \path ($(core.east)+(3.5, -1.5)$) coordinate [block] (parser) node {Parser};
+            \draw [<->] (parser) -- ($(core.east)+(1.0, -1.5)$);
+        \end{tikzpicture}
+    \end{center}
+    \caption{Grundlegende Funktionen des Cores}
+    \label{fig:core-overview}
+\end{figure}
+
 \subsubsection{Aufbau}
 
 Der Core ist zwar das zentrale Modul des Simulators, seine Instanzen werden
@@ -20,12 +63,12 @@ jedoch von der GUI verwaltet. Dabei erstellt die GUI für jedes neue Projekt, wa
 in der Benutzeroberfläche einem Tab entspricht, eine neue Instanz des Cores über
 das \texttt{ProjectModule}. Dieses verwaltet (indirekt) die Komponenten eines
 Projektes, also Speicher, Register, Architekturdefinition und Parser, und
-ermöglicht der GUI über Interface-Klassen sicheren Zugriff auf die anderen
-Komponenten des Simulators. Eine zentrale Anforderung an den Simulator war, dass
-die Ausführung der Befehle nicht die Ansprechbarkeit der GUI beeinflusst. Daher
-ist es notwendig den GUI-Thread, in dem ein Event-Loop der Qt-Engine läuft, von
-der Ausführung unabhängig zu machen. Daher werden pro Core-Instanz weitere
-Threads erstellt.
+ermöglicht der GUI über Interface-Klassen, die in \autoref{fig:core-interface}
+dargestellt sind, sicheren Zugriff auf die anderen Komponenten des Simulators.
+Eine zentrale Anforderung an den Simulator war, dass die Ausführung der Befehle
+nicht die Ansprechbarkeit der GUI beeinflusst. Daher ist es notwendig den
+GUI-Thread, in dem ein Event-Loop der Qt-Engine läuft, von der Ausführung
+unabhängig zu machen. Daher werden pro Core-Instanz weitere Threads erstellt.
 
 \begin{figure}[H]
     \begin{center}
@@ -55,7 +98,7 @@ Threads erstellt.
         \end{tikzpicture}
     \end{center}
     \caption{Core Modul von außen}
-    \label{fig:core-structure}
+    \label{fig:core-interface}
 \end{figure}
 
 \subsubsection{Threading}
@@ -72,15 +115,14 @@ dieses Objektes nur in diesem Thread laufen. Dazu wird pro \textit{Servant} ein
 Objektes in einer Warteschlange verwaltet und nacheinander ausführt. Dieser
 verwaltet auch den Thread des Servants. Der Zugriff von außen auf dieses
 \textit{Active Object} darf nur über sogenannte \textit{Proxy}-Objekte erfolgen,
-die Methodenaufrufe in die Warteschlange des Schedulers einreihen. Die Rückgabe
+die Methodenaufrufe in die Warteschlange des Schedulers einreihen. Dieses
+Konzept wird in \autoref{fig:active-object-pattern} dargestellt. Die Rückgabe
 von Werten erfolgt dabei über \texttt{futures} oder Callbacks. Es wurden dabei
 auch sichere Callbacks implementiert, die jeweils im aufrufenden Thread
 ausgeführt werden. Diese können jedoch nur verwendet werden, wenn der Aufrufer
 auch ein Active Object ist. Diese Art der Callbacks fand daher bis jetzt keine
 Verwendung. Bei normalen Callbacks muss darauf geachtet werden, dass diese immer
-noch im jeweiligen Active-Object-Thread ausgeführt werden. Im Bereich der GUI
-werden die Callbacks daher über Qt-Signals in den GUI-Thread übertragen (siehe
-\ref{Dev-Kapitel: gui-kommunikation}).
+noch im jeweiligen Active-Object-Thread ausgeführt werden.
 
 Wenn in einem \textit{Active Object} gerade kein Befehl ausgeführt wird, schläft
 der Scheduler (also der Active-Object-Thread) so lange, bis er durch das
@@ -136,32 +178,53 @@ Weiterführende Informationen zum Threading-Konzept mit Beispielen können in de
             \node (parserInterface) [class, below = of commandInterface] {ParserInterface};
             \node (parsingLabel) [below = 0.5cm of parserInterface] {\textbf{ParsingAndExecutionUnit Proxy}};
 
+            % Interfaces
             \begin{pgfonlayer}{background}
                 \path (memoryAccess.west |- memoryAccess.north)+(-1.0, 0.5) node (a1) {};
                 \path (architectureAccess.east |- architectureAccess.south)+(1.0, -1.5) node (a2) {};
                 \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
             \end{pgfonlayer}{background}
 
-
             \begin{pgfonlayer}{background}
-                \path (commandInterface.west |- commandInterface.north)+(-2.5, 1.0) node (a1) {};
-                \path (parserInterface.east |- parserInterface.south)+(2.5, -1.5) node (a2) {};
+                \path (commandInterface.west |- commandInterface.north)+(-2.0, 1.0) node (a1) {};
+                \path (parserInterface.east |- parserInterface.south)+(2.0, -1.5) node (a2) {};
                 \path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
             \end{pgfonlayer}{background}
 
-            \node (project) [class, right = 5cm of memoryManager] {Project};
-            \node (parsingUnit) [class, right = 5cm of {$(commandInterface)!0.5!(parserInterface)$}] {ParsingAndExecutionUnit};
+            % Project
+            \node (project) [right = 6.5cm of $(memoryManager)!0.5!(memoryAccess)$] {\textbf{Project}};
+            \node (memory) [class, below = 0.2 of project] {Memory};
+            \node (register) [class, below = 0.2 of memory] {RegisterSet};
+            \node (arch) [class, below = 0.2 of register] {Architecture};
 
-            \draw[dashed-arrow] (memoryAccess) -- (project);
-            \draw[dashed-arrow] (memoryManager) -- (project);
-            \draw[dashed-arrow] (architectureAccess) -- (project);
-            \draw[dashed-arrow] (commandInterface) -- (parsingUnit);
-            \draw[dashed-arrow] (parserInterface) -- (parsingUnit);
+            \begin{pgfonlayer}{background}
+                \path (project.west |- project.north)+(-1.5, 0.5) node (a1) {};
+                \path (project.east |- project.south)+(1.5, -3.0) node (a2) {};
+                \path[rounded corners, draw=black, fill=white, drop shadow] (a1) rectangle (a2);
+            \end{pgfonlayer}{background}
+
+            % ParsingAndExecutionUnit
+            \node (parsingUnit) [right = 4cm of commandInterface] {\textbf{ParsingAndExecutionUnit}};
+            \node (Parser) [class, below = 0.5 of parsingUnit] {Parser};
+
+            \begin{pgfonlayer}{background}
+                \path (parsingUnit.west |- parsingUnit.north)+(-0.5, 0.5) node (a1) {};
+                \path (parsingUnit.east |- parsingUnit.south)+(0.5, -1.7) node (a2) {};
+                \path[rounded corners, draw=black, fill=white, drop shadow] (a1) rectangle (a2);
+            \end{pgfonlayer}{background}
+
+            % arrows
+            \draw[dashed-arrow] (memoryAccess) -- ($(project.west)+(-1.5, -0.4)$);
+            \draw[dashed-arrow] (memoryManager) -- ($(project.west)+(-1.5, -1.2)$);
+            \draw[dashed-arrow] (architectureAccess) -- ($(project.west)+(-1.5, -2.0)$);
+            \draw[dashed-arrow] (commandInterface) -- ($(parsingUnit.west)+(-0.5, -0.3)$);
+            \draw[dashed-arrow] (parserInterface) -- ($(parsingUnit.west)+(-0.5, -1.0)$);
 
         \end{tikzpicture}
 
     \end{center}
-
+    \caption{Aufteilung des Interfaces auf verschiedene Core-Komponenten}
+    \label{fig:core-proxies}
 \end{figure}
 
 Die Kommunikation des Cores mit der GUI teilt sich auf zwei Richtungen auf:
@@ -180,7 +243,9 @@ Speichern und Register verwaltet werden können, und der
 zugegriffen werden kann. Die Interfaces der \texttt{ParsingAndExecutionUnit}
 sind das \texttt{CommandInterface}, das beispielsweise die Übermittlung von
 Ausführungsbefehlen erlaubt, und das \texttt{ParserInterface}, über das auf
-Informationen des Parsers zugegriffen werden kann.
+Informationen des Parsers zugegriffen werden kann. In \autoref{fig:core-proxies}
+wird die Aufteilung der Interface Klassen auf die verschiedenen Core Module
+dargestellt.
 
 Des weiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
 Cores geändert hat und die Ansichten aktualisiert werden sollen. Dafür werden
