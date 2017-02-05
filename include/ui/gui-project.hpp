@@ -181,11 +181,17 @@ class GuiProject : QObject {
   void saveSnapshot(const QString& qName);
 
   /**
-   * Saves a project file (snapshot, code and settings).
+   * Saves a project file (snapshot, code and settings) to the default path.
+   * If the default path is empty, the user is asked for a path.
+   */
+  void saveProject();
+
+  /**
+   * Saves a project file (snapshot, code and settings) to a specific path.
    *
    * \param url The path of the project.
    */
-  void saveProject(const QUrl& url);
+  void saveProjectAs(const QUrl& url);
 
   /**
    * Sets the text of the editor.
@@ -274,6 +280,10 @@ class GuiProject : QObject {
    * text save.
    */
   void saveTextAs();
+
+
+  /** Ask the user to specify a path to save a project. */
+  void saveProjectAsSignal();
 
   /**
    * Display an error in the ui.
@@ -366,6 +376,9 @@ class GuiProject : QObject {
    * The default path to save the text of this project to.
    */
   QUrl _defaultTextFileSavePath;
+
+  /** The default path to save this project. */
+  QUrl _defaultProjectSavePath;
 
   /**
    * A shared pointer to the snapshot component.

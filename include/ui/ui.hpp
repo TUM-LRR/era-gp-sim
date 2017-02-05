@@ -104,77 +104,77 @@ class Ui : public QObject {
    *
    * \param architectureName The name of the architecture.
    */
-  Q_INVOKABLE QStringList getOptionNames(QString architectureName) const;
+  Q_INVOKABLE QStringList getOptionNames(const QString& architectureName) const;
 
   /**
    * Returns a list of parser names of an architecture.
    *
    * \param architectureName The name of the architecture.
    */
-  Q_INVOKABLE QStringList getParsers(QString architectureName) const;
+  Q_INVOKABLE QStringList getParsers(const QString& architectureName) const;
 
   /**
    * Removes a Project from the _projects map. Does not delete it.
    *
    * \param id The id of the project to remove.
    */
-  Q_INVOKABLE void removeProject(int id);
+  Q_INVOKABLE void removeProject(id_t id);
 
   /**
    * Calls changeSystem on the specified project.
    *
    * \param base The name of the numerical system.
    */
-  Q_INVOKABLE void changeSystem(int id, QString base);
+  Q_INVOKABLE void changeSystem(id_t id, const QString& base);
 
   /**
    * Calls parse on the specified project.
    *
    * \param id The id of the project.
    */
-  Q_INVOKABLE void parse(int id);
+  Q_INVOKABLE void parse(id_t id);
 
   /**
    * Call run on the specified project.
    *
    * \param id The id of the project.
    */
-  Q_INVOKABLE void run(int id);
+  Q_INVOKABLE void run(id_t id);
 
   /**
    * Call runLine on the specified project.
    *
    * \param id The id of the project.
    */
-  Q_INVOKABLE void runLine(int id);
+  Q_INVOKABLE void runLine(id_t id);
 
   /**
    * Call runBreakpoint on the specified project.
    *
    * \param id The id of the project.
    */
-  Q_INVOKABLE void runBreakpoint(int id);
+  Q_INVOKABLE void runBreakpoint(id_t id);
 
   /**
    * Call stop on the specified project.
    *
    * \param id The id of the project.
    */
-  Q_INVOKABLE void stop(int id);
+  Q_INVOKABLE void stop(id_t id);
 
   /**
    * Call stop on the specified project.
    *
    * \param id The id of the project.
    */
-  Q_INVOKABLE void reset(int id);
+  Q_INVOKABLE void reset(id_t id);
 
   /**
    * Call saveText on the specified project.
    *
    * \param id The id of the project.
    */
-  Q_INVOKABLE void saveText(int id);
+  Q_INVOKABLE void saveText(id_t id);
 
   /**
    * Call saveTextAs on the specified project.
@@ -182,7 +182,7 @@ class Ui : public QObject {
    * \param id The id of the project.
    * \param name The name/path of the save.
    */
-  Q_INVOKABLE void saveTextAs(int id, QUrl path);
+  Q_INVOKABLE void saveTextAs(id_t id, const QUrl& path);
 
   /**
    * Call loadText on the specified project.
@@ -190,7 +190,7 @@ class Ui : public QObject {
    * \param id The id of the project.
    * \param name The name/path of the save.
    */
-  Q_INVOKABLE void loadText(int id, QUrl path);
+  Q_INVOKABLE void loadText(id_t id, const QUrl& path);
 
   /**
    * Call saveSnapshot on the specified project.
@@ -198,7 +198,7 @@ class Ui : public QObject {
    * \param id The id of the project.
    * \param name The name of the snapshot.
    */
-  Q_INVOKABLE void saveSnapshot(int id, QString name);
+  Q_INVOKABLE void saveSnapshot(id_t id, const QString& name);
 
   /**
    * Call loadSnapshot on the specified project.
@@ -206,15 +206,22 @@ class Ui : public QObject {
    * \param id The id of the project.
    * \param name The name of the snapshot.
    */
-  Q_INVOKABLE void loadSnapshot(int id, QString name);
+  Q_INVOKABLE void loadSnapshot(id_t id, const QString& name);
 
   /**
    * Call saveProject on the specified project.
    *
    * \param id The id of the project.
+   */
+  Q_INVOKABLE void saveProject(id_t id);
+
+  /**
+   * Call saveProjectAs on the specified project.
+   *
+   * \param id The id of the project.
    * \param path The path of the project file.
    */
-  Q_INVOKABLE void saveProject(id_t id, const QUrl& path);
+  Q_INVOKABLE void saveProjectAs(id_t id, const QUrl& path);
 
   /**
    * Call loadProject on the specified project.

@@ -208,6 +208,7 @@ ApplicationWindow {
       Connections {
         target: guiProject
         onSaveTextAs: menubar.actionSaveAs();
+        onSaveProjectAsSignal: menubar.actionSaveProjectAs();
         onError: {
           window.errorDialog.text = errorMessage;
           window.errorDialog.open();

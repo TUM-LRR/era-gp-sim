@@ -71,6 +71,7 @@ GuiProject::GuiProject(
                _projectModule.getMemoryManager(),
                context)
 , _defaultTextFileSavePath()
+, _defaultProjectSavePath()
 , _snapshotComponent(snapshotComponent)
 , _architectureFormulaString(SnapshotComponent::architectureToString(formula))
 , _parserName(parserName)
@@ -251,7 +252,16 @@ void GuiProject::saveSnapshot(const QString& qName) {
   }
 }
 
-void GuiProject::saveProject(const QUrl& url) {
+void GuiProject::saveProject() {
+  if (_defaultProjectSavePath.isEmpty()) {
+    emit saveProjectAsSignal();
+  } else {
+    saveProjectAs(_defaultProjectSavePath);
+  }
+}
+
+void GuiProject::saveProjectAs(const QUrl& url) {
+  _defaultProjectSavePath = url;
   auto path = url.toLocalFile();
   auto snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
 

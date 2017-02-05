@@ -86,97 +86,103 @@ QStringList Ui::getArchitectures() const {
   return _architectureMap.keys();
 }
 
-QStringList Ui::getOptionNames(QString architectureName) const {
+QStringList Ui::getOptionNames(const QString& architectureName) const {
   auto formulaMap =
       std::get<0>(_architectureMap.find(architectureName).value());
   return formulaMap.keys();
 }
 
-QStringList Ui::getParsers(QString architectureName) const {
+QStringList Ui::getParsers(const QString& architectureName) const {
   return std::get<1>(_architectureMap.find(architectureName).value());
 }
 
-void Ui::removeProject(int id) {
+void Ui::removeProject(id_t id) {
   _projects.erase(id);
 }
 
-void Ui::changeSystem(int id, QString base) {
+void Ui::changeSystem(id_t id, const QString& base) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->changeSystem(base.toStdString());
 }
 
-void Ui::parse(int id) {
+void Ui::parse(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->parse();
 }
 
-void Ui::run(int id) {
+void Ui::run(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->run();
 }
 
-void Ui::runLine(int id) {
+void Ui::runLine(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->runLine();
 }
 
-void Ui::runBreakpoint(int id) {
+void Ui::runBreakpoint(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->runBreakpoint();
 }
 
-void Ui::stop(int id) {
+void Ui::stop(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->stop();
 }
 
-void Ui::reset(int id) {
+void Ui::reset(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->reset();
 }
 
 
-void Ui::saveText(int id) {
+void Ui::saveText(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->saveText();
 }
 
-void Ui::saveTextAs(int id, QUrl path) {
+void Ui::saveTextAs(id_t id, const QUrl& path) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->saveTextAs(path);
 }
 
-void Ui::loadText(int id, QUrl path) {
+void Ui::loadText(id_t id, const QUrl& path) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->loadText(path);
 }
 
-void Ui::saveSnapshot(int id, QString name) {
+void Ui::saveSnapshot(id_t id, const QString& name) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->saveSnapshot(name);
 }
 
-void Ui::loadSnapshot(int id, QString name) {
+void Ui::loadSnapshot(id_t id, const QString& name) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->loadSnapshot(name);
 }
 
-void Ui::saveProject(id_t id, const QUrl& path) {
+void Ui::saveProject(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
-  iterator->second->saveProject(path);
+  iterator->second->saveProject();
+}
+
+void Ui::saveProjectAs(id_t id, const QUrl& path) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->saveProjectAs(path);
 }
 
 Ui::id_t Ui::loadProject(QQuickItem* tabItem,

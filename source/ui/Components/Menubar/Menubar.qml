@@ -108,13 +108,14 @@ MenuBar {
       id: saveProject
       text: "Save Project"
       shortcut: "Ctrl+Alt+S"
-      onTriggered: {
-        main.fileDialog.onAcceptedFunction = function(path) {
-          ui.saveProject(tabView.currentProjectId(), path);
-        };
-        main.fileDialog.selectExisting = false;
-        main.fileDialog.open();
-      }
+      onTriggered: ui.saveProject(tabView.currentProjectId());
+    }
+
+    MenuItem {
+      id: saveProjectAs
+      text: "Save Project As"
+      shortcut: "Ctrl+Shift+Alt+S"
+      onTriggered: actionSaveProjectAs();
     }
 
     MenuItem {
@@ -146,6 +147,7 @@ MenuBar {
 
     function enable(yes) {
       saveProject.enabled = yes;
+      saveProjectAs.enabled = yes;
       openSnapshot.enabled = yes;
       saveSnapshot.enabled = yes;
     }
@@ -158,6 +160,15 @@ MenuBar {
   function actionSaveAs() {
     main.fileDialog.onAcceptedFunction = function(filePath) {
       ui.saveTextAs(tabView.currentProjectId(), filePath);
+    };
+
+    main.fileDialog.selectExisting = false;
+    main.fileDialog.open();
+  }
+
+  function actionSaveProjectAs() {
+    main.fileDialog.onAcceptedFunction = function(path) {
+      ui.saveProjectAs(tabView.currentProjectId(), path);
     };
 
     main.fileDialog.selectExisting = false;
