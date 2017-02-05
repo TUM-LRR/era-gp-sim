@@ -89,8 +89,9 @@ class SyntaxInformation {
 
    public:
 #if _MSC_VER == 1910
-	// Workaround for TODO in <future>
-    TokenIterable() {}
+    // Workaround for TODO in <future>
+    TokenIterable() {
+    }
 #endif
 
     TokenIterator begin() const;

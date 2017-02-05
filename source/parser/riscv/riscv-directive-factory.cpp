@@ -54,11 +54,12 @@ const ExpressionCompiler<T>
 
 namespace {
 template <typename T>
-std::size_t _processMemoryDefinitionValuesLambda(const PositionedStringVector &values,
-                                                 const SymbolReplacer &replacer,
-                                                 std::size_t cellSize,
-                                                 CompileErrorList &errors,
-                                                 const std::function<void(T, std::size_t)> &handler) {
+std::size_t _processMemoryDefinitionValuesLambda(
+    const PositionedStringVector &values,
+    const SymbolReplacer &replacer,
+    std::size_t cellSize,
+    CompileErrorList &errors,
+    const std::function<void(T, std::size_t)> &handler) {
   std::size_t currentPosition = 0;
 
   const auto &compiler = _expressionCompiler<T>;
