@@ -302,7 +302,7 @@ Auswertung von Infix-Operatoren (vgl. Punkt vor Strich: Wenn wir von links nach
 rechts durch unseren Ausdruck gehen und ein Plus und danach eine Zahl einlesen,
 können wir nicht sofort auswerten, denn das nächste Zeichen könnte auch der
 Multiplikationspunkt sein), indem die Anwendung dieser weitestmöglich
-hinausgezögert wird – bis eben klar ist, ob noch höherwertige Operatoren kommen.
+hinausgezögert wird -- bis eben klar ist, ob noch höherwertige Operatoren kommen.
 
 Dafür halten wir uns einen Stack mit allen momentan vorhandenen Operatoren und
 öffnenden Klammern, sowie einen Stack für die Ausgabe. Lesen wir eine Zahl, so
@@ -375,7 +375,7 @@ neuen, eckigen Klammern hingegen könnten dann einen Parser-eigenen
 Speicherzugriffsknoten über den Syntaxbaum positionieren. Aber generell ist
 dieses Problem eher gering, da die Speicherzugriffsklammer immer auf oberster
 Ebene ist und sich somit als einfachen Spezifallfall handhaben lässt. Wenn wir
-zum Vergleich die AT&T-Syntax betrachten, so wäre auch die oben beschriebene
+zum Vergleich die AT\&T-Syntax betrachten, so wäre auch die oben beschriebene
 Variante mit verschiedenen unterstützten Klammern nicht mehr möglich, dies
 müsste dann auf oberster Ebene auch wieder manuell gelesen werden.
 
@@ -484,7 +484,7 @@ unterstützen, da so einige Ausdrücke (z.B. RISC-V: Pseudo-Instruktion für Lad
 eines 32-Bit-Immediates) schöner geschrieben werden können. \item
 \emph{Segment-Darstellung}: Zwar werden momentan Daten- und Codesegment
 unterschieden – aber eben nicht mehr. Möglich wäre noch, beispielsweise
-\texttt{bss}- und \textt{stack}-Segment (momentan muss der Stack „reingehackt“
+\texttt{bss-} und \texttt{stack}-Segment (momentan muss der Stack „reingehackt“
 werden, indem einfach auf eine hohe Speicheradresse zugegriffen wird), wenn
 nicht mehr, einzuführen. Die neuen Segmente sollten einfach bei der
 \texttt{MemorySectionDefinition} jeder Architektur angegeben werden, wo sie sich
@@ -510,8 +510,8 @@ Weiterführende Dokumentation findet sich in den für den Parser relevanten
 Dateien, welche in \autoref{fig:parser-further} aufgelistet sind.
 
 \begin{figure}[H]
-	\begin{center} \begin{tikzpicture}[% grow via three points={one child at
-	(0.8,-0.8) and
+	\begin{center} \begin{tikzpicture}[% 
+	grow via three points={one child at (0.8,-0.8) and
 		two children at (0.8,-0.8) and (0.8,-1.7)},
 	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |-
 	(\tikzchildnode\tikzchildanchor)}, growth parent anchor=west, parent
