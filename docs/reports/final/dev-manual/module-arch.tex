@@ -3,7 +3,7 @@
 
 \subsection{Architektur}
 
-Das Architekturmodule (kurz: \emph{Arch}) kümmert sich um die Ausführung der
+Das Architekturmodul kümmert sich um die Ausführung der
 Assembler Programme und wurde vor dem Hintergrund entworfen, einen möglichst
 Architektur-unabhängigen Simulator zu entwickeln. So stellt sie Klassen zur
 Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt werden
@@ -58,7 +58,7 @@ denen im Quellcode überein, es geht hier nur um das Prinzip).
 	\label{fig:arch-overview}
 \end{figure}
 
-Die Architektur ist in einen allgemeinen Teil (im Folgenden \emph{common})
+Die Architektur ist in einen allgemeinen Teil (im Folgenden \emph{common}
 genannt) und in einen Architektur-spezifischen Teil (benannt nach der
 entsprechenden Architektur, z.B. \emph{riscv} aufgeteilt. Die Schnittstelle ist
 so konzipiert, dass andere Module nichts von der konkreten Architektur
@@ -211,7 +211,7 @@ Folgende Methoden werden von ihr vorgegeben:
 	abgespeicherte Konstante zurück. Als Parameter wird eine Zugriffsmöglichkeit auf den
 	Speicher übergeben, mit dem die Instruktion z.B. das Resultat der Operation
 	abspeichern kann.
-	Mit Diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
+	Mit diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
 	Operation, die sowohl mit Registern, als auch mit Immediate Werten arbeiten
 	kann, nur einmal implementiert werden muss. In RISC-V kann man dieses Konzept
 	beispielsweise auf \emph{add} und \emph{addi} anwenden.

@@ -95,11 +95,6 @@ Anfangsadresse des reservierten Speicherblocks an.\\
 \end{centering}
 
 \begin{warningblock}
-	\texttt{anz} muss eine positive Ganzzahl sein.\\
-	Ist \texttt{an z$\leq$ 0} wird kein Speicher reserviert und ein Übersetzungsfehler angezeigt
-\end{warningblock}
-
-\begin{warningblock}
 	Speicherreservierungen sollten sich nur in der Datensektion befinden!
 \end{warningblock}
 
@@ -116,7 +111,7 @@ Anfangsadresse des reservierten Speicherblocks an.\\
 	\begin{riscv}
 	memory: .resw 1
 	\end{riscv}
-	Die obigen Befehle sind gleichwertig, es empfiehlt sich jedoch eine Variante zu wählen, die der Verwendung am nächsten kommt, um die Lesbarkeit zu erhöhen. Wird beispielsweise Byte für Byte gearbeitet, ist auch eine Byte-weise Reservierung des Speichers anschaulich.x
+	Die obigen Befehle sind gleichwertig, es empfiehlt sich jedoch eine Variante zu wählen, die der Verwendung am nächsten kommt, um die Lesbarkeit zu erhöhen. Wird beispielsweise Byte für Byte gearbeitet, ist auch eine Byte-weise Reservierung des Speichers anschaulich.
 \end{exampleblock}
 
 \subsubsection{Speicherdefinition}

@@ -191,7 +191,7 @@ eine Erweiterung \texttt{arch\_fancy}:
 In den ISA-Files werden folgende Eigenschaften definiert:
 
 \begin{itemize}
-	\item Name, Wortgröße, Endiannes des Pakets
+	\item Name, Wortgröße, Endianness des Pakets
 	\item Name, Größe, Funktion (Programmzähler, Flag, etc.) und Startwert der Register
 	\item Name, Format der Assemblierung, Opcode jeder Instruktion
 	\item (Optional) Definition von Makros (sofern Makros vom Parser unterstützt werden), die der Benutzer verwenden kann
@@ -265,8 +265,8 @@ Die Bestimmung der Methoden eines Kindes von \texttt{AbstractSyntaxTree} sind be
   Als Rückgabewert erwartet die Ausführungseinheit die Adresse des als nächstes
   auszuführenden Befehls. Da die Ausführungseinheit nicht weiß, welches Register
   den Programmzähler repräsentiert, muss dieses Register zusätzlich aktualisiert
-  werden. \\ Beispielsweise könnte in Pseudocode eine Additionsinstruktion
-  \texttt{add rd, rs1, rs2} wie folgt implementiert werden:
+  werden. \\ Beispielsweise könnte eine Additionsinstruktion
+  \texttt{add rd, rs1, rs2} mit folgendem Konzept implementiert werden:
 
 \begin{lstlisting}{style=c++}
 MemoryValue getValue(MemoryAccess memoryAccess) {
