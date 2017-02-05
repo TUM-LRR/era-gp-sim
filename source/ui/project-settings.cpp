@@ -33,7 +33,7 @@ void ProjectSettings::loadSettings(const Json& json) {
   // Convert to a QJsonDocument, as this makes it easy to convert the values to
   // QVariants. Snapshots should probably be refactored to use QJsonDocument at
   // some point.
-  auto data = QByteArray::fromStdString(json.dump(4));
+  auto data = QByteArray(json.dump(4).c_str());
   auto qJson = QJsonDocument::fromJson(data).object();
 
   // insert all entries into the map

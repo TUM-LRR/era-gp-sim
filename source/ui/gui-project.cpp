@@ -271,7 +271,7 @@ void GuiProject::saveProjectAs(const QUrl& url) {
   snapshot.setProjectName(_projectName);
   snapshot.setProjectSettings(_projectSettings.toJson());
 
-  auto snapshotString = QByteArray::fromStdString(snapshot.getJson().dump(4));
+  auto snapshotString = QByteArray(snapshot.getJson().dump(4).c_str());
 
   QFile file(path);
 
