@@ -75,7 +75,7 @@ class Translateable {
 
   Translateable();
 
-  Translateable(Translateable& copy) = default;
+  Translateable(Translateable&& copy) = default;
 
   Translateable(const Translateable& copy) = default;
 
