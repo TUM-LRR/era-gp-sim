@@ -19,6 +19,7 @@
 #ifndef ERAGPSIM_PARSER_RISCV_RISCV_DIRECTIVE_FACTORY_HPP
 #define ERAGPSIM_PARSER_RISCV_RISCV_DIRECTIVE_FACTORY_HPP
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
