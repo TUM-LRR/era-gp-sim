@@ -88,6 +88,11 @@ class SyntaxInformation {
     friend class SyntaxInformation;
 
    public:
+#if _MSC_VER == 1910
+	// Workaround for TODO in <future>
+    TokenIterable() {}
+#endif
+
     TokenIterator begin() const;
     TokenIterator end() const;
 
@@ -98,7 +103,7 @@ class SyntaxInformation {
     }
 
     VectorIterator _begin, _end;
-    const Token _token;
+    Token _token;
   };
 
   /**
