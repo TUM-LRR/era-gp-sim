@@ -68,14 +68,14 @@ Nach der Auswahl des Assembler-Pakets durch den Benutzer in der
 Benutzeroberfläche werden ausgewählter Architekturname, gewählte Extensions und
 der gewählte Parser an den Core übergeben. Dieser lädt über Arch-Common Daten
 des Pakets und seinen Extensions, anschließend wird der passende Parser über die
-Parser-Factory erzeugt. Die Daten von Arch-Common enthalten zum Einen
+Parser-Factory erzeugt. Die Daten von Arch-Common enthalten zum einen
 standardisierte, abstrahierte Informationen zum geladenen Paket (z.B. Länge,
 Anzahl, Funktion und Name von Registern, Speicher-Ausrichtung, Endianness, ...)
-und zum Anderen Zugriff auf Factories zur Erzeugung von Instruktionsknoten. Soll
+und zum anderen Zugriff auf Factories zur Erzeugung von Instruktionsknoten. Soll
 jetzt ein Quelltext eingelesen und ausgeführt werden, bekommt der Core den Text
 und gibt diesen an die geladene Parser-Implementierung weiter. Diese
 Implementierung wandelt das Programm in eine paket-unabhängige Darstellung
-mithilfe eines Syntaxbaumes um. Die Knoten des Syntaxbaums kann der Parser dabei
+in Form eines Syntaxbaumes um. Die Knoten des Syntaxbaums kann der Parser dabei
 über die NodeFactories der geladenen Architektur beziehen. Die paket-unabhängige
 Darstellung wird daraufhin von der Ausführungseinheit des Core-Moduls
 ausgeführt. Alle Effekte auf Register und Speicher passieren in einer
@@ -150,7 +150,7 @@ erstellt werden. Die Datei wird in YAML geschrieben, dann per Script nach JSON
 übersetzt und in Ordner mit \texttt{isa}-Suffix abgelegt. Dort wird dann
 bei Programmstart und entsprechender Auswahl die JSON Datei eingelesen und
 bereits vorhandene Datenklassen mit Werten befüllt. Speicherort und Name der
-ISA-Dateien wird so erwartet: Innerhalb des ISA Ordners liegt ein Ordner mit
+ISA-Dateien werden wie folgt erwartet: Innerhalb des ISA Ordners liegt ein Ordner mit
 Namen der Architektur. Innerhalb dieses Ordners liegen Ordner mit Namen der
 Extensions (auch die Basis bzw. Grundversion ist eine Extension), in denen
 wiederum befindet sich die JSON Datei \texttt{config.json} (und der
@@ -282,7 +282,7 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 	}
 \end{lstlisting}
 
-	Durch die allgemein gehaltenen Operanden, kann der selbe Code auch für
+	Durch die allgemein gehaltenen Operanden, kann der gleiche Code auch für
 	\texttt{add rd, rs1, immediate}, für \texttt{add rd, rs1, [rs2]} oder
 	\texttt{add rd, rs1, [k*rs2+d]} verwendet werden\footnote{Der []-Operator
 	deutet einen Speicherzugriff änhlich zur Intel 386 Syntax an}.
@@ -338,8 +338,7 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 	\end{tikzpicture}
 \end{figure}
 
-Der Parser baut beim Übersetzen aus jedem Befehl einen Syntaxbaum. Der Parser
-kennt aber die genauen Signaturen und damit die Implementierungen der
+Der Parser baut beim Übersetzen aus jedem Befehl einen Syntaxbaum. Dabei kennt er jedoch die genauen Signaturen und damit die Implementierungen der
 Syntaxbaumknoten nicht. Um zur Laufzeit trotzdem die richtige
 Knotenimplementierung zu erzeugen, verwenden wir hier das
 AbstractFactory Design Pattern\footnote{\url{https://de.wikipedia.org/wiki/Fabrikmethode}}. Da
@@ -347,7 +346,7 @@ der Parser nur die syntaktische Bedeutung eines Symbols kennt, nicht aber seine
 Semantik (also das Verhalten, die Implementierung), ruft der Parser die passende
 Fabrik auf, die dann eine semantisch passende Implementierung instanziiert und
 zurückgibt. Der Parser kann aufgrund z.B. der Position des Symbols auf seine
-syntaktische Rolle schließen. Der erste Ausdruck, das keine Direktive oder Marke
+syntaktische Rolle schließen. Der erste Ausdruck, der keine Direktive oder Marke
 ist, muss der mnemotechnische Befehl sein; der Ausdruck danach muss der erste
 Operand sein, usw. \\
 Welche Arten von Knoten-Fabriken es gibt wurde bereits in
@@ -420,7 +419,7 @@ Argumente in Textform zu Syntaxknoten der Architektur umwandelt. Hier muss
 entschieden werden, ob ein Argument zum Beispiel zu einem Register-Knoten oder
 einem Immediate-Knoten werden soll.
 
-Im folgenden ein vereinfachtes Beispiel, bei dem alle Argumente nur
+Im Folgenden ein vereinfachtes Beispiel, bei dem alle Argumente nur
 Registernamen sind:
 
 \begin{lstlisting}{style=c++}
@@ -440,8 +439,8 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
 
 \item Objekte vom Type \texttt{Architecture} und
 \texttt{Node\-Factory\-Collection}. Das Architekturobjekt sollte meistens beim
-Initialisieren des Parsers übergeben worden sein, in dem Fall kann mithilfe der
-Funtkion \texttt{Node\-Factory\-Collection\-Maker::\allowbreak{}Create\-For} das
+Initialisieren des Parsers übergeben worden sein. In diesem Fall kann mithilfe der
+Funktion \texttt{Node\-Factory\-Collection\-Maker::\allowbreak{}Create\-For} das
 entsprechende andere Objekt erstellt werden.
 
 \item Eine Funktion, die ein Programm in die Intermediate-Darstellung einliest.
@@ -595,7 +594,7 @@ entsprechender Präprozessor verwendet werden, um für die weitere Integration m
 dem Simulator die SASS-Dateien in reines CSS zu überführen. Ein solcher
 Präprozessor kann von der offiziellen Website des SASS Projekts heruntergeladen.
 
-Da der Simulator jedoch nicht in der Lage ist, CSS direkt zu verstehen, muss
+Zumal der Simulator jedoch nicht in der Lage ist, CSS direkt zu verstehen, muss
 nach Konvertierung von SASS in CSS noch eine weitere Transformation von CSS in
 reines JSON geschehen. Hierfür kann unser selbstentwickelter CSS $\rightarrow$
 JSON Konvertierer, \texttt{theme2json.py}, genutzt werden. Dieser befindet sich
