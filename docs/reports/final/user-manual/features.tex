@@ -124,7 +124,7 @@ wurde, kann nicht in einem Projekt mit RISC-V 64Bit Version geladen werden.
 
 Im Editor wird der Assemblercode verfasst, der vom Simulator assembliert und
 ausgeführt werden kann. Durch Syntax-Highlighting werden bestimmte
-Code-Fragmente, wie Kommentare, Instruktionen, Register oder Immediate-Werte,
+Code-Fragmente, wie Kommentare, Instruktionen, Registernamen oder Immediate-Werte,
 farblich gekennzeichnet.
 
 Während des Schreibens erscheint unterhalb der aktuellen Zeile, in der sich der
@@ -185,7 +185,7 @@ gescrollt.
 %\todo[inline]{Was wird angezeigt, zu welchem Befehl (Zeile!), wann (nach dem Parsen)}
 
 Die Hilfetextkomponente zeigt die Befehlsdokumentation des Befehls der aktuellen
-Zeile an und ergänzt damit das Hilfefenster, da bei Bedarf direkt im Editor
+Zeile an und ergänzt damit das Hilfefenster, das bei Bedarf direkt im Editor
 angezeigt werden kann (siehe \ref{sec:Editor} ``Editor''). Die
 Hilfetextkomponente bezieht sich immer auf den Befehl der Zeile, in der sich der
 Cursor befindet. Gegebenenfalls ist die Anzeige eines Hilfetextes leicht
@@ -224,7 +224,7 @@ klickt. Durch erneutes Klicken auf den Breakpoint wird dieser wieder entfernt.
 \todo[inline]{Ggf. Bild von Breakpoint}
 
 Drückt man nach beendeter oder unterbrochener Ausführung auf den Reset-Button (erster
-Button von rechts), so wird der Zeiger für die zunächst auszuführende Zeile wieder
+Button von rechts), so wird der Zeiger für die nächste auszuführende Zeile wieder
 an den Anfang des Programms gesetzt und die Register- und Speicherinhalte zurückgesetzt.
 
 
@@ -252,7 +252,7 @@ Um den Wert eines Registers manuell zu ändern, wird der Text im Textfeld
 bearbeitet und die Eingabe mit Enter bestätigt. Auf die Einhaltung der
 Formatierung muss nicht geachtet werden. Nach Bestätigung der Eingabe wird der
 Registerwert automatisch der aktuellen Einstellung entsprechend formatiert. Ist
-zudem ein eingegebener Wert zu lang um im Register gegebener Größe gespeichert
+zudem ein eingegebener Wert zu lang um in der im Register gegebenen Größe gespeichert
 werden zu können, werden die höherwertigen überschüssigen Zeichen entfernt.
 Gleichermaßen wird der Registerinhalt durch höherwertige Nullen auf seine
 Maximalgröße aufgefüllt. Ungültige Zeichen werden automatisch entfernt.
@@ -268,7 +268,7 @@ deshalb weder über eine Assemblerinstruktion noch manuell geändert werden. Die
 Textfelder dieser Register sind deaktiviert.
 
 Führt man eine einzelne Zeile aus, die den Wert eines Registers ändert, so wird
-dieses farblich hinterlegt, damit die Änderung schnell nachvollzogen werden
+dieses farblich hinterlegt, damit die Änderung schneller nachvollzogen werden
 kann.
 
 
@@ -298,8 +298,7 @@ stattdessen mehrere Speicherzellen pro Zeile dargestellt. Deshalb ändert sich
 die angezeigte Adressierung entsprechend.\\ Des Weiteren stehen mehrere
 Anzeigeformate für den Inhalt zur Verfügung, welche jeweils oberhalb einer
 angezeigten Spalte ausgewählt werden können. Dabei stehen standardmäßig
-``Binär'', ``Hexadezimal'', ``Dezimal'' und ``Dezimal
-(vorzeichenbehaftet/signed)'' zur Verfügung. Letzteres kann den Speicherinhalt
+\textit{Binär}, \textit{Hexadezimal}, \textit{Dezimal (nicht vorzeichenbehaftet/unsigned))} und \textit{Dezimal (vorzeichenbehaftet/signed)} zur Verfügung. Letzteres kann den Speicherinhalt
 auch als negative Zahl interpretieren bzw. auch negative Eingaben entgegen
 nehmen. \\
 
@@ -356,10 +355,10 @@ geschrieben werden. Analog gibt es auch für Ausgabekomponenten eine
 \textit{Memory Source Address}, die angibt, von welcher Stelle im Speicher an
 Daten von der Ausgabekomponente ausgelesen und graphisch interpretiert werden.
 Da auch Ausgabekomponenten oftmals Benutzereingaben zulassen, werden gleichfalls
-Daten in den Speicher geschrieben, natürlich an die selbe \textit{Memory Source
+Daten in den Speicher geschrieben, natürlich an die gleiche \textit{Memory Source
 Address}, die auch zum Einlesen verwendet wird.
 
-Die \textit{Memory Source Address} sowie gegebenenfalls weitere Optionen können
+Die \textit{Memory Source Address}, sowie gegebenenfalls weitere Optionen, können
 über das Einstellungsmenü jeder Ein- und Ausgabekomponente einzeln festgelegt
 werden. Man erreicht das Menü über den Komponenten-Header, der am Kopf einer
 Komponente eingeblendet wird, wenn man den Mauszeiger darüberbewegt. Ein Klick
@@ -490,7 +489,7 @@ Farbwahldialog, wo die Leuchtfarbe des Segments gewählt werden kann.
 
 \subsubsection{Ausgabe -- 7-Segmentanzeige}
 Die sogenannte 7-Segment Anzeige ist eine einfache alphanumerische Ausgabe, wie
-sie häufig bei kleinen digitalen Geräten zum Einsatz kommt. Anzeige besteht, wie
+sie häufig bei kleinen digitalen Geräten zum Einsatz kommt. Die Anzeige besteht, wie
 der Name schon sagt, aus 7 Strichen, die unabhängig voneinander zum Leuchten
 gebracht werden können.
 
@@ -502,7 +501,7 @@ gebracht werden können.
 \end{figure}
 
 Jedes dieser Segmente wird durch ein einzelnes Bit angesteuert. Dabei bedeutet $1$, dass das Segment leuchten soll und $0$ entsprechend, dass es nicht leuchten soll.
-Pro Zeichen wird somit 8 Byte zum Ansteuern benötigt, wobei das höchstwertige Bit in der Regel ignoriert wird.
+Pro Zeichen wird somit ein Byte zum Ansteuern benötigt, wobei das höchstwertige Bit in der Regel ignoriert wird.
 
 Wenn man die Maus im Simulator über ein Zeichen bewegt, erscheint dort die Reihenfolge, in der die Bits den einzelnen Segmenten zugeordnet sind.
 
@@ -551,13 +550,13 @@ Für die Anzeige gibt es zwei Einstellungen, die man über das Zahnrad rechts un
 \subsubsection{Konsole}
 \todo[inline]{Nach review von feature/theme-input Bild der Konsole einfügen. }
 Die Konsole erlaubt es, Text aus dem Speicher auszulesen und byteweise zu
-Zeichen umgewandelt anzuzeigen. Außerdem kann Text eingegeben werden, an der
+Zeichen umgewandelt anzuzeigen. Außerdem kann Text eingegeben werden, der
 daraufhin in den Speicher geschrieben wird. Dabei verfügt die Konsole über zwei
 Modi: Im Array-Mode wird in der Konsole angezeigt, was ab der Startaddresse bis
 zum ersten Null-Byte im Speicher steht. Falls der Nutzer etwas eingibt und
 Return drückt, wird der eingegebene Text im Speicher an den vorhandenen Text
 angehängt. Alle Änderungen im relevanten Speicherbereich werden auf den
-vorhanden Text der Konsole angewandt. Im Pipe-Mode der Konsole wird neuer Text
+vorhanden Text der Konsole angewendet. Im Pipe-Mode der Konsole wird neuer Text
 immer an die gleiche Speicheradresse geschrieben, jedoch in der Konsolenansicht
 an den alten Text angehängt. Dabei wird der komplette vorherige Text der
 Konsole, der im Speicher war, aus diesem gelöscht. Es wird immer dann neuer Text
@@ -572,7 +571,7 @@ Speicherbereichs der Konsole sowie die Adresse des simulierten Interrupts
 einstellbar.
 \begin{warningblock}
 Bei einem Clear Aufruf über das Kontextmenü wird auch der Speicherbereich
-zurückgesetzt, in dem Text der Konsole steht.
+zurückgesetzt, in dem der Text der Konsole steht.
 \end{warningblock}
 
 %\subsection{Sonstige Features}

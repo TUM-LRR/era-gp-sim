@@ -6,7 +6,7 @@
 
 Die Menge an verwendbaren Befehlen für den Simulator lässt sich grob in zwei
 Teile aufteilen. Die erste Menge an Befehlen sind die sogenannten
-Parser-Direktiven. Das sind diejenigen Befehle bzw. Direktiven, die schon zum
+Parser-Direktiven. Das sind diejenigen Befehle bzw. Direktiven, die schon 
 Zeitpunkt der Übersetzung (also Assemblierung) aufgelöst und verarbeitet werden.
 Direktiven tauchen also nicht direkt im assemblierten Code auf, dennoch nehmen
 sie u.a. durch Anordnung des Speichers (Sektionen, Speicherreservierungen) oder
@@ -77,8 +77,8 @@ definiert den Beginn einer solchen Sektion:
 
 \subsubsection{Speicherreservierung}
 Speicherreservierungen sind eine Möglichkeit, eine oder mehrere Speicherzellen
-(hier: byte) im Speicher freizuhalten. Freihalten bedeutet in dem Fall, dass der
-Assemblierer keine assemblierten Instruktionen an diese Speicherzelle schreibt.
+(hier: Byte) im Speicher freizuhalten. Freihalten bedeutet in diesem Fall, dass der
+Assemblierer keine assemblierten Instruktionen in diese Speicherzelle schreibt.
 So kann man sicherstellen, dass man bei Verwendung dieser Speicherzelle(n) nicht
 den gerade auszuführenden Code korrumpiert. Da die Adresse der Speicherzelle(n)
 vom Assemblierer abhängt, sollte man die Adresse mit einem vorgeschobenen Label
@@ -96,7 +96,7 @@ Anfangsadresse des reservierten Speicherblocks an.\\
 
 \begin{warningblock}
 	\texttt{anz} muss eine positive Ganzzahl sein.\\
-	Ist \texttt{anz<=0} wird kein Speicher reserviert und ein Übersetzungsfehler angezeigt
+	Ist \texttt{an z$\leq$ 0} wird kein Speicher reserviert und ein Übersetzungsfehler angezeigt
 \end{warningblock}
 
 \begin{warningblock}
@@ -116,7 +116,7 @@ Anfangsadresse des reservierten Speicherblocks an.\\
 	\begin{riscv}
 	memory: .resw 1
 	\end{riscv}
-	Die obigen Befehle sind gleichwertig, es empfiehlt sich jedoch eine Variante zu wählen, die der Verwendung am nächsten kommt, um die Lesbarkeit zu erhöhen. Wird beispielsweise byte für byte gearbeitet, ist auch eine byte-weise Reservierung des Speichers anschaulich.x
+	Die obigen Befehle sind gleichwertig, es empfiehlt sich jedoch eine Variante zu wählen, die der Verwendung am nächsten kommt, um die Lesbarkeit zu erhöhen. Wird beispielsweise Byte für Byte gearbeitet, ist auch eine Byte-weise Reservierung des Speichers anschaulich.x
 \end{exampleblock}
 
 \subsubsection{Speicherdefinition}
@@ -138,7 +138,7 @@ Verwendung ein Label vorangestellt werden.\\
 	\end{tabular}
 \end{centering}
 
-\texttt{data} kann hier eine oder mehrere Zahlen sein (durch Kommas getrennt), die dann hintereinander als bytes, Halbwörter, usw. abgelegt werden.
+\texttt{data} kann hier eine oder mehrere Zahlen sein (durch Kommas getrennt), die dann hintereinander als Bytes, Halbwörter, usw. abgelegt werden.
 
 \begin{exampleblock}{Beispiel Speicherdefinition}
 	Es soll die Abfolge \texttt{0x12, 0x34, 0x56, 0x78} in den Speicher unter dem Label \texttt{sequence} abgelegt werden:
@@ -166,7 +166,7 @@ existieren folgende Direktiven:
 
 \begin{itemize}
 	\item \textbf{.macro <name> [, <parameter>]} beginnt die Definition eines
-	Makros mit dem Namen \texttt{name}. Optional kann eine kommagetrennte Liste
+	Makros mit dem Namen \texttt{name}. Optional kann eine durch Kommata getrennte Liste
 	von Parametern angegeben werden.
 	\item \textbf{.endm} schließt die Definition eines Makros ab.
 \end{itemize}
@@ -235,7 +235,7 @@ Die RISC-V Instruktionen sind in verschiedene Module aufgeteilt. Durch eine Modu
 	\item \textbf{RV64I} Das ''Basispaket'' mit 64 Bit Arithmetik-, Sprung- und Verzweigungsinstruktionen
 	\item \textbf{RV64M} Fügt dem Basispaket Befehle zur Multiplikation und Division für 64 Bit hinzu
 \end{itemize}
-Es kann generell für ein Projekt im Simulator entweder 32 oder 64 Bit als Registerlänge gewählt werden. Dementsprechend können nur Module mit der selben Länge verwendet werden. Die 64 Bit Erweiterungen enthalten alle Instruktionen ihrer 32 Bit Gegenstücke, allerdings funktionieren diese auf den gesamten 64 Bit.\\
+Es kann generell für ein Projekt im Simulator entweder 32 oder 64 Bit als Registerlänge gewählt werden. Dementsprechend können nur Module mit der gleichen Länge verwendet werden. Die 64 Bit Erweiterungen enthalten alle Instruktionen ihrer 32 Bit Gegenstücke, allerdings funktionieren diese auf den gesamten 64 Bit.\\
 Im Folgenden wird jeder unterstützte Befehl kurz erläutert. Eine detailliertere Beschreibung ist den Hilfetextanzeigen (\autoref{help-component}) im Simulator zu entnehmen.\\
 
 Alle regulären Instruktionen verwenden in der einen oder anderen Art Register
@@ -256,7 +256,7 @@ Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
 in Dezimaldarstellung.
 
 \begin{infoblock}{Arithmetische Ausdrücke zur Übersetzungszeit}
-	Der Simulator unterstützt zudem arithmetische Ausdrücke für Konstanten. So ist \texttt{andi x1,x1, 2*3} gleichwertig zu \texttt{andi x1, x1, 6}. Das ist besonders hilfreich, da auch mit Labels und \texttt{.equ} definierte Konstanten gerechnet werden kann.\\
+	Der Simulator unterstützt zudem arithmetische Ausdrücke für Konstanten. So ist \texttt{andi x1,x1, 2*3} gleichwertig zu \texttt{andi x1, x1, 6}. Das ist besonders hilfreich, da auch mit Labels und \texttt{.equ} definierten Konstanten gerechnet werden kann.\\
 	\begin{riscv}
 		.equ mem_loc, 0xbeef+2
 		.equ addr, mem_loc + offset
@@ -264,7 +264,7 @@ in Dezimaldarstellung.
 		...
 		lb x1, x0, addr
 	\end{riscv}
-	Die Definition von Konstanten und Labels kann auch unterhalb der Verwendung im arithmetischen Ausdruck oder in einem anderen Segment sein, solange sich keine zyklische Abhängigkeit ergibt. Es sind allerdings nur Ausdrücke erlaubt, die zur Übersetzungszeit in eine Zahl auflösbar sind. \texttt{addi x1, x0, 2*x4} ist nicht erlaubt, da der Wert des Registers 4 zur Übersetzungszeit noch nicht feststeht\\
+	Die Definition von Konstanten und Labels kann auch unterhalb der Verwendung im arithmetischen Ausdruck oder in einem anderen Segment sein, solange sich keine zyklische Abhängigkeit ergibt. Es sind allerdings nur Ausdrücke erlaubt, die zur Übersetzungszeit in eine Zahl aufgelöst werden können. \texttt{addi x1, x0, 2*x4} ist nicht erlaubt, da der Wert des Registers 4 zur Übersetzungszeit noch nicht feststeht.\\
 	Die Operatoren für die Ausdrücke sind an Operatoren aus C angelehnt:\\
 		\begin{tabular}{|c|c|}
 			+ & Addition \\
@@ -344,7 +344,7 @@ abgelegt. Die Operandenregister bleiben also u.U. unverändert.\\
 \end{tabular}
 
 \begin{warningblock}
-Alle Shiftinstruktionen der Variante Register-Immediate erlauben eine
+Alle Shift-Instruktionen der Variante Register-Immediate erlauben eine
 Konstante im Wertebereich zwischen 5 und 12 Bit. Obwohl nur die unteren 5 Bit
 verwendet werden, führt eine Zahl, die größer als 5 Bit ist, nicht zu einem
 Übersetzungsfehler.
@@ -354,7 +354,7 @@ Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befeh
 hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf
 64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix
 ''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten
-Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64bit
+Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64 Bit
 erweitert wird.\\
 
 \begin{tabular}{|c|p{8cm}|p{4cm}|}
@@ -379,8 +379,8 @@ erweitert wird.\\
 
 \subsubsection{LUI, AUIPC, SLT}
 
-\textbf{lui} und \textbf{auipc} sind spezielle Instruktionen, um 32-Bit große
-Konstanten in ein Register zu bringen. Da die Instruktionslänge bei RISC-V nur
+Die Befehle \textbf{lui} und \textbf{auipc} sind spezielle Instruktionen, um 32-Bit große
+Konstanten in ein Register zu übertragen. Da die Instruktionslänge bei RISC-V nur
 32 Bit beträgt, kann also keine 32 Bit große Konstante und der Ladebefehl
 gleichzeitig in einer Instruktion zusammengefasst werden. Somit muss das Laden
 der Konstante in mehreren Instruktionen erfolgen.\\
@@ -441,7 +441,7 @@ Die folgenden Instruktionen springen an die gegebenen Adressen, sobald sie ausge
 \textbf{jal} \texttt{<rd>, <marke>} springt zu \texttt{marke} und legt die Rücksprungadresse in \texttt{rd} ab.\\
 \textbf{jalr} \texttt{<rd>, <basis>, <offset>} springt zur Adresse \texttt{<basis> + <offset>} und legt die Rücksprungadresse in \texttt{rd} ab.\\
 
-Im Gegensatz zu Intel-386 besitzt RISC-V keine Instruktionen zur Verwaltung des Stacks. Benötigt man einen Stack (z.B. für rekursive Aufrufe), muss entsprechende push, pop, call und ret Funktionalitäten selbst schreiben.
+Im Gegensatz zu Intel-386 besitzt RISC-V keine Instruktionen zur Verwaltung des Stacks. Benötigt man einen Stack (z.B. für rekursive Aufrufe), muss man entsprechende push, pop, call und ret Funktionalitäten selbst schreiben.
 
 \begin{exampleblock}{Sprünge}
 Das folgende Programm springt zu sub\_routine und kehrt wieder zurück:
@@ -454,7 +454,7 @@ sub_routine:
   ; ... Ausführung Unterprogramm
   jalr x0, x4, 0
 \end{riscv}
-Der \texttt{jal}-Ausdruck speichert die Adresse des nachfolgenden Befehls (durch Kommentar angedeutet) in Register x4 und spring das Unterprogramm an. Der \texttt{jalr}-Ausdruck springt daraufhin am Ende des Unterprogramms zur Adresse in Register 4. Die Adresse dessen nachfolgenden Befehls wird verworfen (also in x0 gespeichert)
+Der \texttt{jal}-Ausdruck speichert die Adresse des nachfolgenden Befehls (durch Kommentar angedeutet) in Register x4 und spring das Unterprogramm an. Der \texttt{jalr}-Ausdruck springt daraufhin am Ende des Unterprogramms zur Adresse in Register 4. Die Adresse des nachfolgenden Befehls wird verworfen (also in x0 gespeichert)
 \end{exampleblock}
 
 \textbf{Bedingte Sprünge}\\
@@ -564,7 +564,7 @@ Für RV64 kommt eine weitere Instruktion dazu:\\
 \end{tabular}
 
 \begin{warningblock}
-	Ein schreibender Speicherzugriff in den Text-Bereich, wo die assemblierten Instruktionen des Programms liegen, führt zu einem Laufzeitfehler. Ein lesender Zugriff ist jedoch erlaubt.
+	Ein schreibender Speicherzugriff in den Text-Bereich, in dem assemblierten Instruktionen des Programms liegen, führt zu einem Laufzeitfehler. Ein lesender Zugriff ist jedoch erlaubt.
 \end{warningblock}
 
 \begin{infoblock}{Reihenfolge der Load-Operanden}
@@ -591,8 +591,8 @@ Programmiersprachen.\\ \todo[inline]{Evtl. Bild des Dialogs der angzeigt wird}
 ganzzahlige Konstante, die die Zeit in Millisekunden repräsentiert. Wird der
 Befehl ausgeführt, wird die Ausführung der folgenden Instruktion um
 mindestens\footnote{Aufgrund spezieller Umstände kann das Betriebssystem die
-Wartezeit auch verlängern. In den allermeisten Fällen handelt es sich dabei aber
-um einen nicht spürbare Verzögerung.} \texttt{ms} Millisekunden verzögert.
+Wartezeit auch verlängern. In den meisten Fällen handelt es sich dabei aber
+um eine nicht spürbare Verzögerung.} \texttt{ms} Millisekunden verzögert.
 
 
 \subsection{Pseudoinstruktionen}
@@ -753,11 +753,11 @@ umgewandelt}
 
 \hline
 
-	\textbf{jr} \texttt{<reg>} & \textbullet \texttt{reg}Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und verwirft die Rücksprungadresse\\
+	\textbf{jr} \texttt{<reg>} & \textbullet \texttt{reg}: Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und verwirft die Rücksprungadresse\\
 
 \hline
 
-	\textbf{jalr} \texttt{<reg>} & \textbullet \texttt{reg}Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und speichert die Rücksprungadresse in Register x1\\
+	\textbf{jalr} \texttt{<reg>} & \textbullet \texttt{reg}: Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und speichert die Rücksprungadresse in Register x1\\
 
 \hline
 \end{tabular}
@@ -782,7 +782,7 @@ umgewandelt}
 \hline
 \end{tabular}
 
-\footnotetext{\label{user-manual-riscv-overview-foot2}Anders als in 386 arbeiten die \texttt{call} bzw. \texttt{ret} Instruktionen nicht mit einem Callstack. \texttt{ret} kehrt also nur zum letzten Aufruf von \texttt{call} zurück, da x1 überschrieben wird.}
+\footnotetext{\label{user-manual-riscv-overview-foot2}Im Gegensatz zu 386 arbeiten die \texttt{call} bzw. \texttt{ret} Instruktionen nicht mit einem Callstack. \texttt{ret} kehrt also nur zum letzten Aufruf von \texttt{call} zurück, da x1 überschrieben wird.}
 
 Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
 
