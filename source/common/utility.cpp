@@ -18,6 +18,7 @@
 */
 
 #include <algorithm>
+#include <cctype>
 #include <string>
 
 #include "common/utility.hpp"

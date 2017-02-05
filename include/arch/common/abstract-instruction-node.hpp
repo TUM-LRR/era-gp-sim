@@ -20,6 +20,7 @@
 #include "arch/common/abstract-syntax-tree-node.hpp"
 #include "arch/common/instruction-information.hpp"
 #include "common/translateable.hpp"
+#include "core/memory-value.hpp"
 
 class AbstractInstructionNode : public AbstractSyntaxTreeNode {
  public:

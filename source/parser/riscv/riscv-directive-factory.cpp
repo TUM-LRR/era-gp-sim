@@ -51,15 +51,15 @@ template <typename T>
 const ExpressionCompiler<T>
     _expressionCompiler = CLikeExpressionCompilers::createCLikeCompiler<T>();
 
-// Function for `createMemoryDefinitionDirective`
+
+namespace {
 template <typename T>
-const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
-    _processMemoryDefinitionValues =
-        [](const PositionedStringVector &values,
-           const SymbolReplacer &replacer,
-           std::size_t cellSize,
-           CompileErrorList &errors,
-           const std::function<void(T, std::size_t)> &handler) -> std::size_t {
+std::size_t _processMemoryDefinitionValuesLambda(
+    const PositionedStringVector &values,
+    const SymbolReplacer &replacer,
+    std::size_t cellSize,
+    CompileErrorList &errors,
+    const std::function<void(T, std::size_t)> &handler) {
   std::size_t currentPosition = 0;
 
   const auto &compiler = _expressionCompiler<T>;
@@ -92,7 +92,13 @@ const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
 
   // We return our size estimate.
   return currentPosition;
-};
+}
+}
+
+// Function for `createMemoryDefinitionDirective`
+template <typename T>
+const typename MemoryDefinitionDirective<T>::ProcessValuesFunction
+    _processMemoryDefinitionValues = _processMemoryDefinitionValuesLambda<T>;
 
 template <typename T>
 DirectivePtr

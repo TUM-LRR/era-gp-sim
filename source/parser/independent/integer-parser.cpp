@@ -60,3 +60,9 @@ unsigned long long IntegerParser<unsigned long long>::parseInternal(
     const std::string &str, size_t start, int base, size_t &count) {
   return std::stoull(std::string{str, start}, &count, base);
 }
+
+template class IntegerParser<int>;
+template class IntegerParser<long>;
+template class IntegerParser<long long>;
+template class IntegerParser<unsigned long>;
+template class IntegerParser<unsigned long long>;
