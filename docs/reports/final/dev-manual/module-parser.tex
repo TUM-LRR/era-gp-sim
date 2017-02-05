@@ -1,7 +1,7 @@
 \subsection{Parser}
 
-Das \textit{Parser}-Modul übernimmt die Übersetzung des eingegebenen Textes in
-die für das \textit{Architektur}-Modul lesbaren Syntaxbäume. Damit entspricht
+Das \emph{Parser}-Modul übernimmt die Übersetzung des eingegebenen Textes in
+die für das \emph{Architektur}-Modul lesbaren Syntaxbäume. Damit entspricht
 dieses Modul größtenteils dem eigentlichen Assemblierer.
 
 \subsubsection{Submodule}
@@ -28,7 +28,7 @@ eingebunden werden können.
 
 \end{itemize}
 
-Im Folgenden sind diese Submodule nochmal genauer ausgeführt:
+Im Folgenden werden diese Submodule genauer erläutert:
 
 \paragraph{Common-Submodul}
 
@@ -87,7 +87,7 @@ Randpunkte liegen noch im Intervall).
 Ein \texttt{CompileError} kapselt eine Fehlermeldung (bzw. eine Warnung oder
 einen Hinweis). Dabei wird die Position und die Schwere der Meldung (Fehler,
 Warnung, Hinweis, vgl. \texttt{Compile\-Error\-Severity}) festgehalten. Der
-Begriff „Error“ ist deswegen etwas überladen. Die Meldung selber wird als
+Begriff „Error“ ist deswegen etwas überladen. Die Meldung selbst wird als
 \texttt{Translateable} gespeichert, sodass diese später in verschiedene Sprachen
 übersetzt werden könnte. Dabei werden Argumente separat vom eigentlichen Text
 kodiert.
@@ -100,7 +100,7 @@ Meldungen müssen dabei ein C-String sein (\texttt{const char*}). Ebenso lassen
 sich über die \texttt{CompileErrorList} einfache Abfragen stellen, ob jeweils
 Fehler, Warnungen oder Hinweise vorhanden sind und wenn ja, wie viele.
 
-\paragraph{Factory-Submodul}
+\textbf{Factory-Submodul}
 
 Kommen wir zum Factory-Submodul: Dieses besteht lediglich aus einer einzigen
 Klasse, der \texttt{ParserFactory}. Bei jener werden alle
@@ -117,7 +117,7 @@ den angegebenen Voraussetzungen generiert werden. Die Map
 
 Kommen wir nun zum wohl größten Submodul des Parsers, dem
 \emph{Independent}-Modul, welches eine Sammlung von Hilfsklassen darstellt,
-welche von verschiedenen Assemblern verwendet werden können sollen. Dieses Modul
+die von verschiedenen Assemblern verwendet werden können sollen. Dieses Modul
 kann und soll gerne erweitert, dabei aber unabhängig von jeglichem spezifischen
 Assemblierer gehalten werden.
 
@@ -136,7 +136,7 @@ Assembler-Programms dienen. Eine Übersicht der wichtigsten Klassen bietet
 		below = of super] {IntermediateInstruction}; \node (macro) [class, right
 		= of instr] {IntermediateMacroInstruction}; \node (dir) [class, left =
 		of instr] {IntermediateDirective}; \node (sub) [below = of dir, yshift =
-		3mm, xshift = 1cm] {\textit{Diverse implementierte Direktiven}};
+		3mm, xshift = 1cm] {\emph{Diverse implementierte Direktiven}};
 
 		\draw[inheritance-arrow] (dir.north) -- ++(0,0.5cm) -| (super);
 		\draw[inheritance-arrow] (macro.north) -- ++(0,0.5cm) -| (super);
@@ -165,7 +165,7 @@ Operationen und stellt eine Methode bereit, um diese Operationen in eine
 \texttt{FinalRepresentation} umzuwandeln.
 
 \subparagraph{Assemblierung der Intermediate-Darstellung}
-\label{sec:dev_parser_assem_inter} Um die Operationen aus der
+\label{dev:dev_parser_assem_inter} Um die Operationen aus der
 Intermediate-Darstellung in ein Objekt der Klasse \texttt{FinalRepresentation}
 umzuwandeln, kann die Funktion
 \texttt{IntermediateRepresentator::\allowbreak{}transform} aufgerufen werden.
@@ -210,43 +210,43 @@ Namen oder Wert steht.
 
 Zum Generieren eines \texttt{SymbolReplacer}s zum Ersetzen von Symbolen
 konstruiert man einen \texttt{SymbolGraph} mit allen einzufügenden Symbolen
-(Klasse \texttt{Symbol}). Der \texttt{SymbolGraph} selber besteht dann aus den
+(Klasse \texttt{Symbol}). Der \texttt{SymbolGraph} selbst besteht dann aus den
 einzelnen Symbole als Knoten und Abhängigkeiten zwischen ihnen als Kanten. Ein
 Symbol A ist dabei abhängig von einem Symbol B, wenn B in dem Ersetzungstext von
 A vorkommt. Im Symbolgraph würde hier dann eine Kante von B nach A geleitet
 werden. Anschließend können wir unseren \texttt{SymbolGraph} evaluieren. Dabei
 werden folgende Dinge überprüft: \begin {itemize} \item Sind die Namen
-(orientiert an C, d.h. Buchstabe oder _ als erstes Zeichen, danach beliebig
+(orientiert an C, d.h. Buchstabe oder \_ als erstes Zeichen, danach beliebig
 viele davon incl. von Zahlen) gültig? \item Existiert einer/mehrere Namen
 doppelt? \item Existiert eine zyklische Abhängigkeit unter den Symbolen (bzw. im
 Symbolgraph)? \end {itemize}
 
 Während erste und zweite Eigenschaft leicht per Iterieren über die Symbole bzw.
 Einteilen in Äquivalenzklassen dieser (z.B. mittels einer Map) gelöst werden
-kann, ist es für die dritte Eigenschaft nötig, den Symbolgraphen zu betrachten
+können, ist es für die dritte Eigenschaft nötig, den Symbolgraphen zu betrachten
 (bzw. sie ist überhaupt der Grund, dass wir uns so einen Graphen generiert
 haben): Wir überprüfen hierzu, ob unser nicht zwingend zusammenhängende Digraph
 (gerichteter Graph) kreisfrei ist. Dazu lassen wir über jede
-Zusammenhangskomponente eine Tiefensuche laufen und merken uns den PFad zu
-unserem Startknoten. Wenn wir nun auf einen Knoten suchen, der in unserem Pfad
-bereits ist, so haben wir einen Kreis und geben das so weiter. Kommen wir ohne
+Zusammenhangskomponente eine Tiefensuche laufen und merken uns den Pfad zu
+unserem Startknoten. Wenn wir nun auf einen Knoten stoßen, der in unserem Pfad
+bereits vorhanden ist, so haben wir einen Kreis entdeckt und geben das so weiter. Kommen wir ohne
 Kreise durch, so geben wir noch die topologische Sortierung unserer Knoten
 zurück (diese entspricht der umgedrehten Reihenfolge, in der wir die Knoten
 abgeschlossen haben). Die topologische Sortierung ist in unserem Fall genau eine
-Anordnung der Symbole, sodass das Symbol an Position $$i$$ nur von allen
-Symbolen im Bereich $$\{0,...,i-1\}$$ abhängt. Damit können wir nun unsere
+Anordnung der Symbole, sodass das Symbol an Position $i$ nur von allen
+Symbolen im Bereich $\{0,...,i-1\}$ abhängt. Damit können wir nun unsere
 Symbole insgesamt vereinfachen: Wir iterieren vorwärts über alle Symbole und
-setzen in Symbol $$s_i$$ alle Symbole ein, von denen $$s_i$$ abhängt. Wir wissen
+setzen in Symbol $s_i$ alle Symbole ein, von denen $s_i$ abhängt. Wir wissen
 dabei, wegen der topologischen Sortierung, dass $$s_i$$ nur von
-$$s_0,...,s_{i-1}$$ abhängt und diese Symbole haben wir schon soweit wie möglich
+$s_0,...,s_{i-1}$ abhängt und diese Symbole haben wir schon so weit wie möglich
 ersetzt. Damit erhalten wir am Ende eine Darstellung, in der die Symbole
-weitestmöglich ersetzt sind. Diese können wir dan weitergeben an das
+weitestmöglich ersetzt sind. Diese können wir dann weitergeben an das
 Ersetzungssystem. Wir unterscheiden dabei noch zwischen statischen und
 dynamischen Symbolen: Statische Symbole haben dabei einen unveränderlichen Wert
 und werden daher wie geplant ersetzt. Für dynamische Symbole ist der Wert jedoch
-erst beim Ersetzen des Symbols im Programm bekannt, nicht bereits, wenn der
+erst beim Ersetzen des Symbols im Programm bekannt, nicht, wenn der
 Symbolgraph ausgewertet wird. Daher werden diese Symbole \emph{nicht ersetzt}
-(sehrwohl aber auf wohlgeformte Namen und Duplikate geprüft), sondern verbleiben
+(sehr wohl aber auf wohlgeformte Namen und Duplikate geprüft), sondern verbleiben
 mit ihrem Namen in den weitestmöglich ersetzten Symbolen. Ein Einsatzzweck für
 solche dynamischen Symbole sind zum Beispiel relative Adressen: Da beim
 Generieren des Graphen nicht bekannt ist, bei welchen Befehlen das Symbol zum
@@ -254,15 +254,15 @@ Einsatz kommt, kann es nicht ersetzt werden. All dies erfolgt, wenn man
 \texttt{evaluate} beim Symbolgraphen aufruft. Würden wir nun parametrisierte
 Symbole zulassen, so hätten wir das Problem, dass wir hier selbst bei statischen
 Symbolen nicht feststellen können, ob ein Ersetzungsvorgang irgendwann beendet
-ist (vgl. Halteproblem, sowas ist sogar \emph{beweisbar} nicht möglich), also
-müssten wir ab irgendeiner Ersetzungstiefe abbrechen. Dennoch stünde es für
-zukünftige Generationen frei, dies zu implementieren.
+ist (vgl. Halteproblem, das ist sogar \emph{beweisbar} nicht möglich), also
+müssten wir ab irgendeiner Ersetzungstiefe abbrechen. Dennoch stünde es
+zukünftigen Projekten frei, dies zu implementieren.
 
-Laufzeiten (Worst-Case, sei $$n$$ die Anzahl an Symbolen): \begin{itemize} \item
-Namen überprüfen: $$\mathcal{O}(n)$$ \item Duplikate finden:
-$$\mathcal{O}(n*f(n))$$ (mit $$f(m)$$ als maximale Zeit, um in die Map mit $$m$$
+Laufzeiten (Worst-Case, sei $n$ die Anzahl an Symbolen): \begin{itemize} \item
+Namen überprüfen: $\mathcal{O}(n)$ \item Duplikate finden:
+$\mathcal{O}(n*f(n))$ (mit $f(m)$ als maximale Zeit, um in die Map mit $m$
 Elementen einzufügen) \item Zyklenfreiheit überprüfen und topologische
-Sortierung ermitteln: $$\mathcal{O}(n^2)$$ (dennoch, sehr unwahrscheinlich im
+Sortierung ermitteln: $\mathcal{O}(n^2)$ (dennoch, sehr unwahrscheinlich im
 normalen Gebrauch; Worst-Case wäre die transitive Hülle eines zusammenhängenden
 Symbolgraphen) \end{itemize}
 
@@ -288,14 +288,14 @@ Zum Tokenizen (in \texttt{ExpressionTokenizer}) verwenden wir einen Regulären
 Ausdruck für alle möglichen Tokens (Operatoren, Literale usw.), somit entspricht
 unser Vorgehen dem Einsatz eines NFA bzw. DFA (nichtdeterministischer endlicher
 Automat bzw. deterministischer endlicher Automat). Immer wenn wir einen
-akzeptierenden Zustand erreichen, sehen wir ein Token als abgeschlossen und
+akzeptierenden Zustand erreichen, sehen wir ein Token als abgeschlossen an und
 starten den Automaten neu. Landen wir in einem Fehlerzustand, so geben wir einen
 \texttt{CompileError} zurück. Dabei ist es natürlich der Fall, dass bei
-Sequenzen $$s_0$$ und $$s_0s_1$$ stets $$s_0s_1$$ präferiert wird (d.h. im
-regulären Ausdruck wird $$s_0s_1$$ zuerst erwähnt).
+Sequenzen $s_0$ und $s_0s_1$ stets $s_0s_1$ präferiert wird (d.h. im
+regulären Ausdruck wird $s_0s_1$ zuerst erwähnt).
 
 Das eigenliche Parsen des Token-Streams erfolgt mithilfe des
-Shunting-Yard-Algorithmus (http://wcipeg.com/wiki/Shunting_yard_algorithm) in
+Shunting-Yard-Algorithmus \footnote{\url{http://wcipeg.com/wiki/Shunting_yard_algorithm}} in
 der Klasse \texttt{ExpressionParser}, welcher in linearer Zeit über der Eingabe
 arbeitet (und linear viel Speicher verbraucht). Dieser löst das Problem der
 Auswertung von Infix-Operatoren (vgl. Punkt vor Strich: Wenn wir von links nach
@@ -506,7 +506,7 @@ Funktionen in eine Bibliothek auszulagern.
 
 \subsubsection{Weiterführende Dokumentation}
 
-Weiterführende Dokumentation findet sich in denen für den Parser relevanten
+Weiterführende Dokumentation findet sich in den für den Parser relevanten
 Dateien, welche in \autoref{fig:parser-further} aufgelistet sind.
 
 \begin{figure}[H]
@@ -516,7 +516,7 @@ Dateien, welche in \autoref{fig:parser-further} aufgelistet sind.
 	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |-
 	(\tikzchildnode\tikzchildanchor)}, growth parent anchor=west, parent
 	anchor=south west] \tikzstyle{every node}=[draw=black,anchor=west] \node
-	{\erasim} child { node {$\{\text{tests/}, \text{include/},
+	{\erasim{}} child { node {$\{\text{tests/}, \text{include/},
 	\text{source/}\}$}
 		child { node {parser/}
 			child { node {common/} } child { node {factory/} } child { node

@@ -1,38 +1,49 @@
+% !TEX root = dev-manual.tex
 % ERA-Großpraktikum: Entwickleranleitung -- Allgemeines
 
 \section{Allgemeines}
+\label{dev:general}
 
-Diese Sektion ist eine Einführung in die von uns genutzten Entwicklungswerkzeuge,
-welche für die Entwicklung des Simulators benötigt werden. Das Ziel dieser Sektion
-ist es, dass Leser am Ende in der Lage sind, eigenständig einen Build des Projekts
-durchzuführen und somit am Projekt arbeiten können. \\
-Des Weiteren wird erläutert, welche Philosophie hinter der Auswahl an Werkzeugen
-steckt, von der wir uns erhoffen, dass zukünftige Entwickler diese fortsetzen.
+Diese Sektion ist eine Einführung in die von uns genutzten Werkzeuge, welche für
+die Entwicklung des Simulators benötigt werden. Das Ziel dieser Sektion ist es,
+dass Leser am Ende in der Lage sind, eigenständig einen Build des Projekts
+durchzuführen und somit am Projekt arbeiten können. Auch wird erläutert, welche
+Beweggründe hinter der Auswahl an Werkzeugen steckt, von der wir uns erhoffen,
+dass zukünftige Entwickler diese fortsetzen.
 
 \subsection{Git}
-Bei der Entwicklung von Software im Team ist es zwingend notwendig, viele verschiedene Versionen
-derselben Software zu verwalten. Deshalb haben wir uns für
-\textit{Git}\footnote{\url{https://git-scm.com/}} als Versionskontrollsystem entschieden. \\
-Das allein beschreibt allerdings noch nicht, \textit{wie} wir Git verwenden. Daher haben wir uns für
-die folgenden Systeme entschieden:
 
-\subsubsection{Gitflow}
+Bei der Entwicklung von Software in einem Team ist es zwingend notwendig, viele
+verschiedene Versionen derselben Software zu verwalten. Deshalb haben wir uns
+für \emph{Git}\footnote{\url{https://git-scm.com/}} als Versionskontrollsystem
+entschieden. Git erlaubt es uns, in isolierten \emph{Branches} parallel an
+Features des Simulators zu arbeiten und im Falle eines Problems Veränderungen
+auch rückgängig machen zu können. Ein weiterer Pluspunkt von Git ist die
+komfortable Integration mit \emph{GitHub}, welches viele weitere Vorteile für
+die verteilte Entwicklung eines großen Softwareprojekts, wie \erasim{}, bietet.
 
-\textit{Gitflow}\footnote{\url{https://www.atlassian.com/git/tutorials/comparing-workflows/}} ist
-ein beliebtes Modell der Git-Nutzung, welches vor allem bei der Verwaltung von großen Projekten
-zum Einsatz kommt. Die von uns genutzte Variante lässt sich wie folgt beschreiben:
+Da Git ein sehr mächtiges Werkzeug mit vielen möglichen Anwendungsweisen ist,
+erfordert es zur effektiven Nutzung eine strukturierte Methodik. Diese Methodik
+findet sich in der Industrie oftmals in Form von \emph{Git Flow}, welches
+insbesondere ein Modell für die Verwendung von Branches vorschreibt.
+\autoref{dev:git-flow} erläutert dieses Modell sowie das allgemeine Konzept von
+Git Flow in mehr Detail.
 
-\todo[inline]{Ich bin hier schon mal einen Schritt weiter gegangen und hab noch eine Unterscheidung
-zwischen dev und master Branch eingefügt. So wollten wir das ja ursprünglich machen, aber aus
-Bequemlichkeit nutzen wir nur den master. Falls nach der Abgabe noch Änderungen vorgenommen werden,
-sollten wir das dann nach dem "richtigen" Modell machen.}
+\subsubsection{Git Flow}
+\label{dev:git-flow}
+
+\emph{Git
+Flow}\footnote{\url{https://www.atlassian.com/git/tutorials/comparing-workflows/}}
+ist ein beliebtes Modell der Git-Nutzung, welches vor allem bei der Verwaltung
+von großen Projekten zum Einsatz kommt. Die von uns genutzte Variante lässt sich
+wie folgt beschreiben:
 
 \begin{itemize}
-	\item Es gibt einen \textit{Master}-Branch, der immer die aktuellste, stabile Version enthält.
-	\item Es gibt einen \textit{Development}-Branch, der den aktuellen Stand bei der Entwicklung
+	\item Es gibt einen \emph{Master}-Branch, der immer die aktuellste, stabile Version enthält.
+	\item Es gibt einen \emph{Development}-Branch, der den aktuellen Stand bei der Entwicklung
 	einer neuen Version enthält. Der Code ist ebenfalls stabil, wenn auch manche Funktionen noch
 	nicht vollständig sein können.
-	\item Die einzelnen Aufgaben werden isoliert in einer \textit{Feature}-Branch bearbeitet.
+	\item Die einzelnen Aufgaben werden isoliert in einem \emph{Feature}-Branch bearbeitet.
 	\item Ist eine Aufgabe fertig, so wird der entsprechende Feature Branch in den Development
 	Branch gemerged.
 	\item Ist eine neue Version auf dem Development Branch fertiggestellt, so wird die Development
@@ -41,105 +52,109 @@ sollten wir das dann nach dem "richtigen" Modell machen.}
 
 \subsubsection{Github}
 
-\todo[inline]{Das hier geht schon in Richtung Projektleiterbericht, ich denke es ist aber trzdm sinnvoll,
-hier ein paar Worte zu verlieren, da es schließlich zur Entwicklung dazugehört}
-
-Wir nutzen \textit{Github}\footnote{\url{https://github.com/}} as Filehoster des Simulators. Neben
-Gründen wie der großen Bekanntheit von Github und der auch für Einsteiger geeigneten grafischen
-Oberfläche, sind vor allem folgenden Funktionen hilfreich bei der Entwicklung:
+Wir nutzen \emph{Github}\footnote{\url{https://github.com/}} als Hosting-Dienst
+für den Simulator. Neben der einsteigerfreundlichen grafischen Oberfläche von
+Github sind vor allem folgenden Funktionen hilfreich bei der Entwicklung:
 
 \begin{itemize}
-	\item \textit{Issues}: Die im vorherigen Kapitel genannten Aufgaben werden mit einem Issue
-	verwaltet. Über die Nummer eines Issues lässt sich der Status der Entwicklung verfolgen.
-	\item \textit{Pull Requests}: Nach der Fertigstellung einer Feature Branch wird ein Pull Request
-	erstellt, sodass andere Entwickler ein Code Review anfertigen können.
-	\item Integration von Tools wie \textit{Waffle}\footnote{\url{https://waffle.io/}} und
-	\textit{Travis CI}\footnote{\url{https://travis-ci.org/}}
+  \item \emph{Issues}: Die im vorherigen Kapitel genannten Aufgaben werden mit
+  einem Issue verwaltet. Über die Nummer eines Issues lässt sich der Status der
+  Entwicklung verfolgen.
+  \item \emph{Pull Requests}: Nach der Fertigstellung eines Feature Branch wird
+  ein Pull Request erstellt, sodass andere Entwickler den Code überprüfen und
+  besprechen können.
+	\item Integration von Tools wie
+	\emph{Waffle}\footnote{\url{https://waffle.io/}} und \emph{Travis
+	CI}\footnote{\url{https://travis-ci.org/}}
 \end{itemize}
 
 \subsection{C++}
 
-Der Simulator ist zum Großteil in C++ geschrieben. Unser Augenmerk liegt dabei auf Portabilität
-zwischen verschiedenen Compilern, weshalb wir uns auf den \textbf{C++14} Standard geeinigt haben,
-sowie möglichst wenige externe Bibliotheken verwenden.
-
-\subsubsection{Compiler}
-
-Wir arbeiten mit folgenden Compilern:
-
-\begin{itemize}
-	\item \textit{g++ $\geq$ 5}
-	\item \textit{clang++ $\geq$ 3.7}
-\end{itemize}
+Der Simulator ist zum Großteil in C++ geschrieben. Um von modernen Features und
+Entwicklungen der C++ Sprache, beispielsweise Lambdas, Move-Semantik oder
+Typinferenz mit \texttt{auto}, Gebrauch machen zu können, haben wir insbesondere
+Wert darauf gelegt, die C++11 und C++14 Standards zu verwenden. Da diese
+Features neuere Compiler benötigen, mussten wir eine untere Schranke für die
+Versionen der von uns genutzten Compiler, \emph{gcc} und \emph{clang},
+festlegen. Bei gcc (bzw. g++) liegt diese Schranke derzeit bei Version 5.0, bei
+clang bei Version 3.7. Andere Compiler sind eventuell möglich, sofern sie C++14
+unterstützen, wurden aber nicht getestet.
 
 \subsubsection{Bibliotheken}
 
-Die einzige, für das Endprodukt benötigte Abhängigkeit ist \textit{Qt}\footnote{\url{https://www.qt.io/}}
-$\geq$ 5.6 in Kombination mit QtQuick $\geq$ 2.6. Wir verwenden Qt zur Erstellung der grafischen Oberfläche,
-haben aber grundsätzlich eine strikte Trennung zwischen Code der GUI und dem Rest des Simulators.
-Durch diese Trennung wäre es möglich, den Simulator auch ohne Qt zur Verfügung zu stellen, z.B.
-mit einer anderen Grafikbibliothek oder als Kommandozeilenprogramm. \\
-Eine Ausnahme zu dieser Trennung bildet die Internationalisierung des Simulators. Der Simulator ist
-in der aktuellen Version ausschließlich in Englisch verfügbar, uns war es aber ein großes Anliegen,
-auch andere Sprachen unterstützen zu können. Somit verwenden wir die von Qt zur Verfügung gestellten
-Mittel, Nutzer sichtbare Nachrichten übersetzbar zu machen, auch in allen anderen Modulen außerhalb
-der GUI. So können z.B. Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
+Die einzige, für das Endprodukt benötigte Abhängigkeit ist
+\emph{Qt}\footnote{\url{https://www.qt.io/}} $\geq$ 5.6 in Kombination mit
+QtQuick $\geq$ 2.6. Wir verwenden Qt zur Erstellung der grafischen Oberfläche,
+haben aber grundsätzlich eine strikte Trennung zwischen Code der GUI und dem
+Rest des Simulators. Durch diese Trennung wäre es möglich, den Simulator auch
+ohne Qt zur Verfügung zu stellen, z.B. mit einer anderen Grafikbibliothek oder
+als Kommandozeilenprogramm. \\ Eine Ausnahme zu dieser Trennung bildet die
+Internationalisierung des Simulators. Der Simulator ist in der aktuellen Version
+ausschließlich in Englisch verfügbar, uns war es aber ein großes Anliegen, auch
+andere Sprachen unterstützen zu können. Somit verwenden wir die von Qt zur
+Verfügung gestellten Mittel, für den Nutzer sichtbare Nachrichten übersetzbar zu machen,
+auch in allen anderen Modulen außerhalb der GUI. So können z.B.
+Prozessorarchitektur-spezifische Fehlermeldungen übersetzt werden.
 
 \subsubsection{Code Style}
 
 Da der Code nicht nur funktionieren, sondern auch gewissen Standards folgen
-sollte, haben wir uns entschieden, den \textit{Google C++ Style Guide}
+sollte, haben wir uns entschieden, den \emph{Google C++ Style Guide}
 \footnote{\url{https://google.github.io/styleguide/cppguide.html}} als Grundlage
 für unseren Code Style zu nutzen. Folgende Ausnahmen haben wir dabei festgelegt:
 
 \begin{itemize}
-	\item Präfix \texttt{\_}, anstatt Suffix \texttt{\_} für private Klassenattribute,
-	\item \texttt{.hpp} und \texttt{.cpp} als Dateiendungen für C++ Header/Klassen,
-	\item \texttt{camelCase} für Funktionsnamen und
-	\item Parameter Namen werden immer angegeben, egal ob benötigt oder nicht.
+  \item Präfix \texttt{\_}, anstatt Suffix \texttt{\_} für private Klassenattribute,
+  \item \texttt{.hpp} und \texttt{.cpp} als Dateiendungen für C++
+  Header/Klassen,
+  \item Parameternamen werden im Header immer angegeben.
 \end{itemize}
 
-Um dies automatisiert zu gewährleisten, nutzen wir das Tool \textit{ClangFormat}
-\footnote{\url{http://clang.llvm.org/docs/ClangFormat.html}}. Damit werden
-z.B. Einrückungen automatisch angeordnet. \\
-Die Konfiguration von ClangFormat befindet sich in der Datei \texttt{.clang-format}
+Um die Formatierung unseres Codes anhand dieser Regeln zu automatisieren
+verwenden wir \texttt{clang-format}
+\footnote{\url{http://clang.llvm.org/docs/ClangFormat.html}}. Dieses Werkzeug
+entnimmt dem Programmier beispielsweise die Mühe, Parameternamen in langen
+Funktionsaufrufen selbst einrücken zu müssen. Die Konfiguration von
+\texttt{clang-format} liegt im YAML-Format in der Datei \texttt{.clang-format},
+welche in der Wurzel des Projekts liegt.
 
 \subsubsection{Dokumentation}
 
 Neben diesem Bericht ist der gesamte Quellcode des Simulators in Form von
-\textit{Doxygen}\footnote{\url{http://www.stack.nl/~dimitri/doxygen/}} Kommentaren
-dokumentiert. Diese Dokumentation ist weitaus ausführlicher als dieser Bericht und
-ist essentiell für die Weiterentwicklung des Simulators. Neben der einfachsten
-Möglichkeit, die Kommentare im Quellcode zu lesen, ist es mit Doxygen ebenfalls möglich,
-eine HTML bzw. \LaTeX Version zu generieren. Dazu wechselt man in das \texttt{docs/}
-Verzeichnis und führt den Befehl \texttt{doxygen} aus, welcher anschließend die
-Dokumentation generiert.
+\emph{Doxygen}\footnote{\url{http://www.stack.nl/~dimitri/doxygen/}} Kommentaren
+dokumentiert. Diese Dokumentation ist weitaus ausführlicher als dieser Bericht
+und ist essentiell für die Weiterentwicklung des Simulators. Neben der
+Möglichkeit, die Kommentare im Quellcode zu lesen, ist es mit Doxygen ebenfalls
+möglich, eine HTML bzw. \LaTeX -Version der Dokumentation zu generieren. Dazu
+wechselt man in das \texttt{docs/} Verzeichnis und führt den Befehl
+\texttt{doxygen} aus, welcher anschließend die Dokumentation generiert.
 
-\subsection{Build Umgebung}
+\subsection{Build-Umgebung}
 
-Möchte man den Simulator selbst kompilieren, so wird eine Build Umgebung vorausgesetzt.
-Wie bereits genannt, liegt unser Augenmerk auf Portabilität zwischen Betriebssystemen,
-deshalb wird in dieser Sektion gezeigt, wie man eine solche Umgebung unter den gängigen
-Betriebssystemen (Linux, macOS, Windows) einrichten kann.
+Möchte man den Simulator selbst kompilieren, so wird eine \emph{Build-Umgebung}
+vorausgesetzt. Da unser besonders Augenmerk auf Portabilität zwischen
+Betriebssystemen liegt, wird in den folgenden Absätzen gezeigt, wie man eine
+solche Umgebung unter den gängigen Betriebssystemen (Linux, macOS und Windows)
+einrichten kann.
 
 \subsubsection{Linux}
 
-Da wir eine relativ neu Versionen von Qt verwenden, ist eine reine Installation der
-Abhängigkeiten über die Paketverwaltung nur unter solchen Linux Distributionen möglich,
-die auch die entsprechenden Versionen in den Paketquellen beinhalten. Während dies unter
-Rolling Release Systemen (wie z.B. Arch Linux) ein geringeres Problem ist, haben Anwender von
-z.B. Debian basierter Betriebssysteme häufiger mit älterer Software zu kämpfen.
-Unter Debian selbst sind die benötigten Versionen erst ab Debian Stretch (Debian 9)
-verfügbar, unter Ubuntu erst ab Ubuntu 16.10.
+Da wir mit Qt 5.6 bzw. Qt 5.7 relativ neue Versionen von Qt verwenden, ist eine
+reine Installation der Abhängigkeiten über die Paketverwaltung nur unter solchen
+Linux Distributionen möglich, die auch die entsprechenden Versionen in den
+Paketquellen beinhalten. Während dies unter Rolling Release Systemen (z.B. Arch
+Linux) ein geringeres Problem ist, haben Anwender von Debian-basierten
+Betriebssysteme häufiger mit älterer Software zu kämpfen. Unter Debian selbst
+sind die benötigten Versionen erst ab Debian Stretch (Debian 9) verfügbar, unter
+Ubuntu erst ab Version 16.10.
 
 \begin{itemize}
-	\item \textbf{Debian basierte Betriebssysteme:} \\
-	\todo[inline]{Funktioniert nicht in Ubuntu 16.*}
+	\item Debian basierte Betriebssysteme: 
 	\begin{lstlisting}
 apt install build-essential cmake git qtdeclarative5-dev
 	\end{lstlisting}
 
-	\item \textbf{Arch Linux:} \\
+	\item Arch Linux: 
 	\begin{lstlisting}
 pacman -S base-devel cmake git qt5-declarative \
  qt5-graphicaleffects qt5-quickcontrols
@@ -154,8 +169,8 @@ Installationsort erfragt. Dieser muss später beim Bauen des Projekts angegeben 
 \input{setup-qtcreator-linux.tex}
 
 \subsubsection{macOS}
-
-\textbf{Qt installieren}
+Im folgenden wird Beschrieben, welche Schritte auf dem Betriebssystem macOS erfolgen sollten.
+\paragraph{Qt installieren}
 
 Um Qt auf ein Mac-Computer zu installieren, bietet es sich an, den Installer zu
 verwenden, den man über die offizielle Website herunterladen kann
@@ -164,15 +179,15 @@ aktuellsten auch ältere Versionen des Framework heruntergeladen werden. Nach
 der Installation befindet sich am angegebenen Installationspfad ein Ordner "Qt",
 in dem sich auch der QtCreator-IDE befindet.
 
-\textbf{CMake aktualisieren}
+\paragraph{CMake aktualisieren}
 
 Zum Bauen des Projekts wird CMake benötigt, das in der Regel über einen
 Paketmanager installiert oder alternativ von der offiziellen Website
 heruntergeladen werden kann.
 
-\textbf{In QtCreator CMake-Projekt einrichten}
+\paragraph{In QtCreator CMake-Projekt einrichten}
 
-Um ein CMake-Projekt in QtCreator einzurichten, können die selben Schritte, wie
+Um ein CMake-Projekt in QtCreator einzurichten, können die gleichen Schritte, wie
 im Kapitel für Linux beschrieben, durchgeführt werden.
 
 \subsubsection{Windows}
@@ -185,7 +200,7 @@ dies automatisch zu installieren. Schließlich wird noch CMake benötigt, was ma
 sich von der offiziellen Website herunterlädt. \\
 Mit QtCreator ist der Einrichtungsaufwand am geringsten, da etwaige Pfade zu
 Bibliotheken automatisch eingerichtet werden. Die Einrichtung entspricht den
-selben Schritten, wie im Kapitel für Linux.
+gleichen Schritten, wie im Kapitel für Linux.
 
 Unter Windows gibt es zugegebenermaßen die meisten Probleme, da viele kleine
 Faktoren mitspielen. Bei Problemen sollte die Suchmaschine der Wahl, oder gleich
@@ -194,14 +209,14 @@ eine virtuelle Maschine mit einem Linux für die Entwicklung verwendet werden.
 \subsection{CMake / Make}
 \label{dev-report-cmake-build}
 Um auch den Build Prozess unabhängig vom Betriebssystem durchzuführen, haben wir uns für
-\textit{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake generiert die benötigten
+\emph{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake generiert die benötigten
 \texttt{Makefiles} für jedes Betriebssystem bzw. jeden Compiler neu, welche anschließend
-von \textit{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt werden können.
+von \emph{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt werden können.
 
-Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende Build Umgebung
+Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende Build-Umgebung
 aufgesetzt werden. Anschließend kann man mit den Folgenden Befehlen einen Clean Build erzeugen:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=bash, keywords={}]
 # Projekt herunterladen
 git clone https://github.com/TUM-LRR/era-gp-sim
 
@@ -228,7 +243,7 @@ make -j 4
 Hat man Qt manuell installiert, ist es ggf. notwendig, den Installationspfad bei der
 Ausführung von CMake zu spezifizieren.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=bash, keywords={}]
 # Wurde z.B. der Ordner ~/Qt5.7.0 bei der manuellen
 # Installation von Qt angegeben, so muss man CMake mit
 # dem folgenden Argument aufrufen:
@@ -236,7 +251,7 @@ cmake -D CMAKE_PREFIX_PATH=~/Qt5.7.0/5.7/gcc_64 ..
 \end{lstlisting}
 
 Alternativ ist es auch möglich, mit der von Qt mitgelieferten Entwicklungsumgebung
-\textit{QtCreator}\footnote{\url{https://wiki.qt.io/Qt_Creator}} zu arbeiten.
+\emph{QtCreator}\footnote{\url{https://wiki.qt.io/Qt_Creator}} zu arbeiten.
 Dabei öffnet man die \texttt{CMakeLists.txt} als Projekt, und hat so eine grafische
 Oberfläche für die Entwicklung am Simulator. Auch CMake/Make muss so nicht mehr
 manuell über die Kommandozeile bedient werden, ein Build kann über die grafische
@@ -244,14 +259,14 @@ Oberfläche von QtCreator erzeugt werden.
 
 \subsection{Tests}
 
-Wir nutzten das \textit{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
+Wir nutzten das \emph{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
 zur Automatisierung unserer Tests. Die Tests befinden sich im \texttt{tests/} Verzeichnis, gruppiert
 nach ihren Modulen. Da Tests der grafischen Oberfläche zu komplex wären, haben wir uns auf die übrigen
 Module des Simulators beschränkt, deren korrekte Funktionalität in jeweils separaten Unit Tests
 überprüft wird.
 
 Um ein einheitliches Ergebnis bei den Tests zu erzielen, nutzen wir das Continuous Integration Tool
-\textit{Travis CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hoch geladenen
+\emph{Travis CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hoch geladenen
 Commit ein Clean Build angefertigt, der alle verfügbaren Tests durchführt. Das Ergebnis dieses Tests
 wird auf Github veröffentlicht und ist bindend. Die Tests werden sowohl mit g++, als auch mit clang
 durchgeführt. \\
@@ -267,10 +282,9 @@ der Jobs zu erhöhen.
 In diesem Kapitel wird die Funktion jedes Ordners beschrieben.
 
 \begin{itemize}
-	\item \textbf{\texttt{docs/}} enthält die Dokumentation von \erasim, also
+	\item \textbf{\texttt{docs/}} enthält die Dokumentation von \erasim{}, also
 	die Berichte und die Konfiguration von Doxygen.
 	\item \textbf{\texttt{examples/}} enthält Beispielprogramme für RISC-V.
-	\item \textbf{\texttt{installer/}} enthält die Konfigurationsdateien für den Installer
 	\item \textbf{\texttt{include/}} enthält alle C++ Header Dateien, gruppiert
 	nach ihrem Modul. Wir haben uns um die strikte Trennung zwischen Header- und
 	Source Dateien bemüht.
@@ -306,28 +320,28 @@ Das Qt Installer Framework\footnote{\url{https://wiki.qt.io/Qt-Installer-Framewo
 		child { node {installer/}
 			child { node {config/}
 				child {node {config.xml} } 
-				}
+			}
 			child [missing]{}
 			child { node {packages/} 
 				child {node {erasim.base/} 
 					child {node {meta/} 
 						child {node{ package.xml} }
-						}
+					}
 					child [missing]{}
 					child {node {data/}
 						child {node {archive.7z}
 						}
 					}
-					 child [missing]{}
-					}
+					child [missing]{}
+				}
 				child [missing]{}
 				child [missing]{}
 				child [missing]{}
 				child [missing]{}
 				child {node {erasim.shortcut/} 
 					child { node {...} }
-					}
 				}
+			}
 		};
 		\end{tikzpicture}
 	\end{center}

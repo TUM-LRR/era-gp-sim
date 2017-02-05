@@ -103,18 +103,18 @@ unabhängig zu machen. Daher werden pro Core-Instanz weitere Threads erstellt.
 
 \subsubsection{Threading}
 
-Bei der Verwendung von mehreren Threads ist erhöhter Programmieraufwand
+Bei der Verwendung mehrerer Threads ist erhöhter Programmieraufwand
 notwendig, um Probleme wie Race-Conditions zu vermeiden. Daher verwenden wir das
-\textit{Active Object Pattern}, da dadurch der Aufwand hauptsächlich auf die
-Implementierung dieses Patterns im Core reduziert wird. Das \textit{Active
+\emph{Active Object Pattern}, da dadurch der Aufwand hauptsächlich auf die
+Implementierung dieses Patterns im Core reduziert wird. Das \emph{Active
 Object Pattern} sieht vor, dass für ein Objekt auf dem Synchronisierung
-notwendig ist, auch \textit{Active Object} oder \textit{Servant} genannt, ein
+notwendig ist, auch \emph{Active Object} oder \emph{Servant} genannt, ein
 eigener Thread erstellt wird. Dabei wird sichergestellt, dass die Methoden
-dieses Objektes nur in diesem Thread laufen. Dazu wird pro \textit{Servant} ein
-\textit{Scheduler} benötigt, der Befehle zur Ausführung einer Methode des
+dieses Objektes nur in diesem Thread laufen. Dazu wird pro \emph{Servant} ein
+\emph{Scheduler} benötigt, der Befehle zur Ausführung einer Methode des
 Objektes in einer Warteschlange verwaltet und nacheinander ausführt. Dieser
 verwaltet auch den Thread des Servants. Der Zugriff von außen auf dieses
-\textit{Active Object} darf nur über sogenannte \textit{Proxy}-Objekte erfolgen,
+\emph{Active Object} darf nur über sogenannte \emph{Proxy}-Objekte erfolgen,
 die Methodenaufrufe in die Warteschlange des Schedulers einreihen. Dieses
 Konzept wird in \autoref{fig:active-object-pattern} dargestellt. Die Rückgabe
 von Werten erfolgt dabei über \texttt{futures} oder Callbacks. Es wurden dabei
@@ -124,13 +124,13 @@ auch ein Active Object ist. Diese Art der Callbacks fand daher bis jetzt keine
 Verwendung. Bei normalen Callbacks muss darauf geachtet werden, dass diese immer
 noch im jeweiligen Active-Object-Thread ausgeführt werden.
 
-Wenn in einem \textit{Active Object} gerade kein Befehl ausgeführt wird, schläft
+Wenn in einem \emph{Active Object} gerade kein Befehl ausgeführt wird, schläft
 der Scheduler (also der Active-Object-Thread) so lange, bis er durch das
 Einfügen eines Befehls in seine Warteschlange aufgeweckt wird. Dadurch wird
 durch die zusätzlichen Threads im Allgemeinen keine zusätzliche Performance
-beansprucht. Trotzdem ist es natürlich nicht sinnvoll, sehr viele \textit{Active
+beansprucht. Trotzdem ist es natürlich nicht sinnvoll, sehr viele \emph{Active
 Objects} zu erstellen. Im \texttt{ProjectModule} werden daher nur zwei
-\textit{Active Objects} verwaltet: Das \texttt{Project} Objekt verwaltet den
+\emph{Active Objects} verwaltet: Das \texttt{Project} Objekt verwaltet den
 Speicher, die Register und das Architekturobjekt. Dabei wird ein eigenes Active
 Object mit einem Thread benötigt, da es beispielsweise möglich sein muss, über
 die Benutzeroberfläche während der Ausführung auf den Speicher zuzugreifen. Das
@@ -247,9 +247,9 @@ Informationen des Parsers zugegriffen werden kann. In \autoref{fig:core-proxies}
 wird die Aufteilung der Interface Klassen auf die verschiedenen Core Module
 dargestellt.
 
-Des weiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
+Des Weiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
 Cores geändert hat und die Ansichten aktualisiert werden sollen. Dafür werden
-Callbacks verwendet, damit der Core keine Referenz auf die GUI braucht und daher
+Callbacks verwendet, damit der Core keine Referenz auf die GUI benötigt und so
 unabhängig von deren Aufbau ist. Diese Callbacks werden über die Interface
 Klassen gesetzt und bei entsprechenden Änderungen durch die Core-Komponenten
 aufgerufen. Dabei ist zu beachten, dass die Callbacks im jeweiligen Active
@@ -280,7 +280,7 @@ Vor der Ausführung wird jeder Befehl mit seiner \texttt{validateRuntime()}
 Methode validiert, um Fehler, die nur während der Laufzeit überprüfbar sind,
 abzufangen. Bei einem Fehler wird dabei die Ausführung abgebrochen und die GUI
 über einen Callback benachrichtigt. Falls kein Fehler aufgetreten ist, wird der
-Befehl mit über seine \texttt{getValue()} Methode ausgeführt, dabei wird als
+Befehl über seine \texttt{getValue()} Methode ausgeführt, dabei wird als
 Rückgabewert der neue Befehlszählerstand geliefert. Dieser Wert wird vom Core in
 das Befehlszählerregister geschrieben.
 
@@ -311,7 +311,7 @@ In den vorherigen Sektionen wird ein Überblick über den Core gegeben. Weiterf�
 	growth parent anchor=west,
 	parent anchor=south west]
 	\tikzstyle{every node}=[draw=black,anchor=west]
-	\node {\erasim}
+	\node {\erasim{}}
 	child { node {$\{\text{tests/}, \text{include/}, \text{source/}\}$}
 		child { node {core/}}
 	};

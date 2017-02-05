@@ -1,45 +1,41 @@
 % ERA-Großpraktikum: Entwickleranleitung -- Module
 
 \section{Module}
+\label{dev:modules}
 
 Diese Sektion führt in den Aufbau des Simulators ein und beschreibt detailliert
 die einzelnen Funktionen der Module. Das Ziel dieses Kapitels ist es, neue
 Entwickler mit dem Aufbau unseres Codes vertraut zu machen, sodass diese in der
-Lage sind, selbstständig Änderungen am Code vorzunehmen. \\
-Zunächst wird ein Überblick über den Aufbau des Programms gegeben und
-anschließend ausführlich auf die einzelnen Module eingegangen.
+Lage sind, selbstständig Änderungen am Code vorzunehmen. Zunächst wird ein
+Überblick über den Aufbau des Programms gegeben und anschließend ausführlich auf
+die einzelnen Module eingegangen.
 
 \subsection{Überblick}
 
 Wir haben den Simulator in vier Module aufgeteilt, die jeweils unterschiedliche
-Aufgaben bei der Simulation eines Befehlssatzes übernehmen.
-
-Die \textbf{Architektur} ist für die Ausführung eines simulierten Assembler
-Programms zuständig und implementiert die verfügbaren Befehlssätze (zum Stand
-dieses Berichts \textit{RISCV}). Des Weiteren stellt das Architekturmodul die
+Aufgaben bei der Simulation eines Befehlssatzes übernehmen. Die
+\emph{Architektur} ist für die Ausführung eines simulierten Assembler Programms
+zuständig und implementiert die verfügbaren Befehlssätze (zum Stand dieses
+Berichts \emph{RISCV}). Des Weiteren stellt das Architekturmodul die
 Befehlssatz-spezifischen Fehler- und Hilfetexte zur Verfügung, die dem Anwender
-im Endprodukt präsentiert werden. \\ Von der Idee geleitet, dass verschiedene
+im Endprodukt präsentiert werden. Von der Idee geleitet, dass verschiedene
 Assembler Dialekte für den gleichen Befehlssatz existieren, ist der
-\textbf{Parser} ein eigenes Modul, der für die Übersetzung des Assembler
+\emph{Parser} ein eigenes Modul, der für die Übersetzung des Assembler
 Quelltextes zuständig ist. Der Parser übersetzt die möglicherweise verschiedenen
 Assembler Dialekte in ein allgemeines Format (wir sprechen dabei von einem
-\textit{Syntax Baum}), das anschließend von der Architektur verarbeitet werden
-kann. \\
-Die einzelnen Module werden vom \textbf{Core} verbunden. Der Core ist das
+\emph{Syntaxbaum}), das anschließend von der Architektur verarbeitet werden
+kann. Die einzelnen Module werden vom \emph{Core} verbunden. Der Core ist das
 Herzstück des Simulators und regelt die Kommunikation zwischen allen anderen
 Modulen. Insbesondere stellt er der Architektur eine Umgebung zur Verfügung, in
 der diese arbeiten kann (Speicher, Register). Des Weiteren ist er für die
-Verwaltung der verschiedenen Threads zuständig. \\
-Die \textbf{GUI} (Graphical User Interface) implementiert die grafische
-Oberfläche des Simulators. Sie ist bewusst abgekoppelt vom Rest der Module,
-um auch durch andere Oberflächen (wie z.B. eine Kommandozeile) ausgetauscht
-werden zu können. Die grafische Oberfläche leitet die Benutzereingaben an den
-Core weiter, welcher dann wiederum die übrigen Module anspricht.
+Verwaltung der verschiedenen Threads zuständig. Die \emph{GUI} (Graphical User
+Interface) implementiert die grafische Oberfläche des Simulators. Sie ist
+bewusst abgekoppelt vom Rest der Module, um auch durch andere Oberflächen (wie
+z.B. eine Kommandozeile) ausgetauscht werden zu können. Die grafische Oberfläche
+leitet die Benutzereingaben an den Core weiter, welcher dann wiederum die
+übrigen Module anspricht.
 
 \input{module-arch.tex}
-
 \input{module-parser.tex}
-
 \input{module-core.tex}
-
 \input{module-gui.tex}
