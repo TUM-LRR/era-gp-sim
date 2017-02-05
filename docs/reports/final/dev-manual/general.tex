@@ -169,7 +169,7 @@ Installationsort erfragt. Dieser muss später beim Bauen des Projekts angegeben 
 \input{setup-qtcreator-linux.tex}
 
 \subsubsection{macOS}
-Im folgenden wird Beschrieben, welche Schritte auf dem Betriebssystem macOS erfolgen sollten.
+Im folgenden wird beschrieben, welche Schritte auf dem Betriebssystem macOS erfolgen sollten.
 \paragraph{Qt installieren}
 
 Um Qt auf ein Mac-Computer zu installieren, bietet es sich an, den Installer zu
@@ -259,7 +259,7 @@ Oberfläche von QtCreator erzeugt werden.
 
 \subsection{Tests}
 
-Wir nutzten das \emph{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
+Wir nutzen das \emph{Google Test}\footnote{\url{https://github.com/google/googletest}} Framework
 zur Automatisierung unserer Tests. Die Tests befinden sich im \texttt{tests/} Verzeichnis, gruppiert
 nach ihren Modulen. Da Tests der grafischen Oberfläche zu komplex wären, haben wir uns auf die übrigen
 Module des Simulators beschränkt, deren korrekte Funktionalität in jeweils separaten Unit Tests
@@ -299,4 +299,67 @@ In diesem Kapitel wird die Funktion jedes Ordners beschrieben.
 	\item \textbf{\texttt{tests/}} enthält die Unit Tests jeder Module.
 	\item \textbf{\texttt{third-party/}} enthält genutzte Bibliotheken. Konkret
 	wird Google Tests dadurch eingebunden und ein JSON Parser bereitgestellt.
+\end{itemize}
+
+\subsection{Release}
+Wegen Abhängigkeiten zu Qt bzw. QtQuick und Konfigurationsdateien, wie \texttt{isa-} und \texttt{themes-}Ordner fallen bei jedem Betriebssystem noch Dateien neben der ausführbaren Programmdatei an. Eine Auslieferung soll trotzdem für den Endnutzer möglichst einfach sein, daher haben wir uns für eine Installation per Installer entschieden.
+
+Das Qt Installer Framework\footnote{\url{https://wiki.qt.io/Qt-Installer-Framework}} bringt hierbei eine Lösung mit einigen Vorteilen mit. Das Verhalten bzw. die Konfiguration des Installer wird über JavaScript und XML ermöglicht, so ist keine Kompilierung nötig. Außerdem bietet das Framework eine Abstraktion des Ziel-Betriebssystems, so lassen sich mit einer Konfiguration die Installer für alle drei unterstützte Plattformen erzeugen. Der Installer liefert dabei lediglich die Nutzlast (eine gepackte Version des Simulators) an den vom Benutzer benannten Speicherort und erzeugt Verknüpfungen usw.
+
+\subsubsection{Konfiguration des Installers}
+\begin{figure}[H]
+	\begin{center}
+		\begin{tikzpicture}[%
+		grow via three points={one child at (0.8,-0.8) and
+			two children at (0.8,-0.8) and (0.8,-1.7)},
+		edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |- (\tikzchildnode\tikzchildanchor)},
+		growth parent anchor=west,
+		parent anchor=south west]
+		\tikzstyle{every node}=[draw=black,anchor=west]
+		\node {\erasim}
+		child { node {installer/}
+			child { node {config/}
+				child {node {config.xml} } 
+			}
+			child [missing]{}
+			child { node {packages/} 
+				child {node {erasim.base/} 
+					child {node {meta/} 
+						child {node{ package.xml} }
+					}
+					child [missing]{}
+					child {node {data/}
+						child {node {archive.7z}
+						}
+					}
+					child [missing]{}
+				}
+				child [missing]{}
+				child [missing]{}
+				child [missing]{}
+				child [missing]{}
+				child {node {erasim.shortcut/} 
+					child { node {...} }
+				}
+			}
+		};
+		\end{tikzpicture}
+	\end{center}
+	
+	\caption{Struktur der Installerkonfiguration}
+	\label{dev-manual-installer}
+\end{figure}
+Die Konfiguration des Installer (z.B. Aussehen, voreingestellte Pfade) wird in der Datei \texttt{config.xml} im Ordner \texttt{config} vorgenommen. Die auszuliefernden Dateien sind dabei in Pakete unterteilt. Die Installation dieser Pakete kann der Nutzer an- und abwählen.\\
+\texttt{erasim.base} enthält die Installation des Simulators. Diese wird an den vom Nutzer angegebenen Ort (standardmäßig unter Windows z.B \texttt{C:$\backslash$Programme} unter Linux \texttt{/opt/}) entpackt.\\
+\texttt{erasim.shortcut} liefert keine Dateien aus, sondern erstellt einen Startmenüeintrag unter Windows bzw. einen Desktopeintrag unter Unix.
+
+\subsubsection{Erzeugen des Installers}
+Das Framework besteht aus mehreren Tools, die zum Erzeugen notwendig sind. \texttt{archivegen} verpackt angegebene Daten in ein .7z Archiv. \texttt{binarycreator} erzeugt den Installer aus den Archivdaten und der Konfiguration.\\
+Die genauen Schritte bis zum fertigen Installer variieren je nach Betriebssystem, die Grundvorgehensweise ist jedoch gleich. Genaue Instruktionen für jedes Betriebssystem sind im \texttt{README} im \texttt{installer} Ordner des Repositorys zu finden.
+Die Grundschritte sind:
+\begin{itemize}
+	\item Saubere Version mit Optimierung und ohne Debug-Symbole bauen
+	\item Executable und alle benötigten Qt- und Compiler-Bibliotheken sowie alle verwendeten QtQuick/QML Module zusammen mit \texttt{isa} und \texttt{themes}-Ordner mit \texttt{archivegen} in ein Archiv zusammenfügen.\\
+	Dieses Archiv kommt nach \texttt{installer/packages/erasim.base/data/}
+	\item \texttt{binarycreator} ausführen, um den Installer zu bauen 
 \end{itemize}
