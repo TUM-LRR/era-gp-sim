@@ -173,6 +173,17 @@ fügt weitere Instruktionen hinzu, die auf 32-Bit Werten operieren (da die
 arbeiten). Diese Beziehung lässt sich in ISA-Dateien exakt spezifizieren. Ein
 Ausschnitt der RV64I Spezifikation wird hierzu in \autoref{lst:rv64i} gezeigt.
 
+Neben dieser einfachen Vererbungshierarchie zwischen RV64I und RV32I sind noch
+weitere beliebig komplexe Beziehungen möglich, sofern diese sich in einem
+\emph{azyklischen} Graphen darstellen lassen. Beim Laden einer Architektur über
+eine \texttt{ArchitectureFormula}, also einer Liste der Namen aller Extensions,
+wird über einen Graphalgorithmus die transitive Hülle sämtlicher benötigter
+Erweiterungen berechnet. Steht diese Menge von Extensions fest, kann sie in eine
+einzige vereint werden, wobei einfach die Vereinigung sämtlicher Attribute,
+Register- und Instruktionssätze gebildet wird. Sofern im Beziehungsgraphen keine
+Zyklen gefunden wurden und die resultierende Extension vollständig ist, entsteht
+so eine fertige Architektur.
+
 \begin{table}
 \begin{lstlisting}[language=ISA]
                                     # RISC-V: RV64I
@@ -193,3 +204,11 @@ Ausschnitt der RV64I Spezifikation wird hierzu in \autoref{lst:rv64i} gezeigt.
 \begin{lstlisting}[caption={Ein Ausschnitt der Definition der RV64I-Extension des RISC-V Befehlssatzes. Zur Vererbung der Attribute von RV32I benötigt es lediglich der Spezifikation der \texttt{extends} Klausel. Zusätzlich wird die Wortgröße sowie eine Hand voll weiterer Befehle neu definiert.}, label={lst:rv64i}]
 \end{lstlisting}
 \end{table}
+
+Neben dem \texttt{extends} Schlüssel ist letztlich noch \texttt{builtin-macros}
+hervorzuheben. Dieser Schlüssel erwartet eine Liste von Strings, welche jeweils
+ein Makro definieren, das für eine Architektur schon vordefiniert ist. Ein
+solches vordefiniertes Makro kann hierbei auch \emph{Pseudoinstruktion} genannt
+werden, da es dem Benutzer wie eine "eingebaute" Instruktion erscheint, jedoch
+nicht standardmäßig zum Befehlssatz gehört und auch nicht in C++ implementiert
+wird. Das Format eines solchen eingebauten Makros ist ident zu einem benutzerdefinierten Makro.
