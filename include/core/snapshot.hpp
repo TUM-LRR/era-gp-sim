@@ -33,6 +33,11 @@ class Snapshot {
   using Json = nlohmann::json;
 
   /**
+   * Default constructor to create an empty Snapshot.
+   */
+  Snapshot() = default;
+
+  /**
    * Creates a new snapshot of a project.
    *
    * \param architectureFormula The architecture formula of the project.

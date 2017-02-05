@@ -322,6 +322,16 @@ class Ui : public QObject {
   */
   void _sendCreationFailedSignal(const Translateable& message, int index);
 
+  /**
+   * Loads a project file.
+   *
+   * \param url The file path.
+   * \param newTab The index of the new tab (needed to send error messages).
+   * \return A snapshot generated from the project file. If any errors occur, an
+   * empty snapshot wil be returned.
+   */
+  Snapshot _loadProjectFile(const QUrl& url, int newTab);
+
   /** This map contains the Architectures as string and a list of their
    * extensions as vector of strings. */
   ArchitectureMap _architectureMap;

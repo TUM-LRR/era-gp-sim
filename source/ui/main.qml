@@ -64,9 +64,14 @@ ApplicationWindow {
     Connections {
       target: ui
       onProjectCreationFailed: {
-        tabView.removeTab(index);
-        main.errorDialog.text = errorMessage;
-        main.errorDialog.open();
+        if (tabView.count == 1) {
+          // Create a new empty project so the simulator doesn't exit.
+          window.createProject();
+        }
+        // delete the new project, as it might be in a bad state.
+        window.closeProject(index);
+        window.errorDialog.text = errorMessage;
+        window.errorDialog.open();
       }
     }
   }
@@ -111,7 +116,10 @@ ApplicationWindow {
     tab.setCreationScreenInvisible();
     tab.projectId =
         ui.loadProject(tab, projectComponent, path, tabView.currentIndex);
-    tab.tabReady();
+    if (tab.projectId >= 0) {
+      // only if projet is valid
+      tab.tabReady();
+    }
   }
 
   function createProject() {

@@ -189,32 +189,14 @@ Ui::id_t Ui::loadProject(QQuickItem* tabItem,
                          QQmlComponent* projectComponent,
                          const QUrl& url,
                          int newTab) {
-  auto path = url.toLocalFile();
-  QFile file(path);
-  if (!file.open(QIODevice::ReadOnly)) {
-    _sendCreationFailedSignal(
-        Translateable(QT_TRANSLATE_NOOP("GUI error messages",
-                                        "Could not load project file!")),
-        newTab);
-  }
-
-  QString contents = file.readAll();
-
-  if (contents.isEmpty()) {
-    _sendCreationFailedSignal(
-        Translateable(
-            QT_TRANSLATE_NOOP("GUI error messages", "Project file is empty!")),
-        newTab);
-  }
-
-  auto json = Json::parse(contents.toStdString());
-  Snapshot projectSnapshot(json);
+  auto projectSnapshot = _loadProjectFile(url, newTab);
 
   if (!projectSnapshot.isValidProject()) {
     _sendCreationFailedSignal(
         Translateable(QT_TRANSLATE_NOOP(
             "GUI error messages", "This snapshot is not a project file!")),
         newTab);
+    return -1;
   }
 
   auto projectId = _createProject(tabItem,
@@ -384,4 +366,38 @@ Ui::id_t Ui::_createProject(QQuickItem* tabItem,
 void Ui::_sendCreationFailedSignal(const Translateable& message, int index) {
   auto translatedMessage = translate(message);
   emit projectCreationFailed(translatedMessage, index);
+}
+
+Snapshot Ui::_loadProjectFile(const QUrl& url, int newTab) {
+  auto path = url.toLocalFile();
+  QFile file(path);
+  if (!file.open(QIODevice::ReadOnly)) {
+    _sendCreationFailedSignal(
+        Translateable(QT_TRANSLATE_NOOP("GUI error messages",
+                                        "Could not load project file!")),
+        newTab);
+    return Snapshot();
+  }
+
+  QString contents = file.readAll();
+
+  if (contents.isEmpty()) {
+    _sendCreationFailedSignal(
+        Translateable(
+            QT_TRANSLATE_NOOP("GUI error messages", "Project file is empty!")),
+        newTab);
+    return Snapshot();
+  }
+
+  Json json;
+  try {
+    json = Json::parse(contents.toStdString());
+  } catch (const std::exception& exception) {
+    _sendCreationFailedSignal(
+        Translateable(QT_TRANSLATE_NOOP("GUI error messages",
+                                        "Project file is corrupt!")),
+        newTab);
+    return Snapshot();
+  }
+  return Snapshot(json);
 }
