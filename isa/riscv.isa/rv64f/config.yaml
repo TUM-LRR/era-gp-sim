@@ -1,7 +1,6 @@
 # RISC-V: RV64F
 
 name: rv64f
-
 extends: rv32f
 
 instructions:

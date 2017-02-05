@@ -1,0 +1,151 @@
+% !TEX root = dev-manual.tex
+% ERA-Großpraktikum: Entwickleranleitung -- Architekturmodul (Architektur Design)
+
+\subsubsection{\texttt{Architecture}}
+
+Die \texttt{Architecture} Klasse repräsentiert eine vollständig beschriebene
+Architektur, welche anderen Modulen im Simulator zur Verfügung steht und dessen
+Attribute die abstrakt gehaltenen Klassen im Simulator zur Laufzeit
+konkretisieren. Beispielsweise ist eine Architektur unter anderem durch ihre
+Wortgröße definiert, welche die Größe der Register im Speichermodell des Cores
+bestimmt. Ebenso enthält eine Architektur Informationen zu sämtlichen
+Instruktionen des Befehlssatzes, welche dem Parser Bescheid geben, welche
+Instruktionen existieren und welche Operanden für diese erlaubt sind.
+
+Zur Modellierung sämtlicher bestehender Befehlssätze wie x86, ARM oder RISC-V,
+aber auch beliebiger, zukünftiger und noch unbekannter Architekturen benötigten
+wir gewiss ein flexibles Design. Unser hauptsächlicher Leitfaden bei der
+Konzeption eines abstrakten Architekturinterfaces war das modulare Design von
+RISC-V. Dieses besticht durch eine enorme Flexibilität, da es nicht nur einen,
+monolithischen und rundherum vollständigen Befehlssatz definiert, sondern viele
+kleine, spezifische \emph{Extensions}. Eine solche Extension kann hierbei neue
+Instruktionen oder neue Registersätze definieren, ebenso aber auch einfach eine
+Veränderung der Wortgröße, der Repräsentation eines Vorzeichens oder der
+Endianness mit sich bringen. Nach diesem Prinzip ist auch in unserem Design eine
+Architektur die Vereinigung mehrerer Extensions.
+
+Neben der Gliederung einer Architektur in viele Extensions haben wir auch die
+weitere Definition und Implementierung einer Extension offen und modular
+gehalten. Genauer besteht eine Extension neben Attributen wie Endianness oder
+Wortgröße noch aus zwei weiteren, möglicherweise leeren, Mengen: einer Menge von
+\texttt{Unit}s und einer Menge von \texttt{Instruction}s. Eine \texttt{Unit}
+repräsentiert hierbei einen Registersatz mit Namen, besteht also selbst im
+Weiteren aus einer Menge von Registern, welche ebenso Attribute, Namen und
+andere Eigenschaften besitzen können. In Praxis wären für eine Unit eine CPU,
+mit Ganzzahl-Registern, oder eine FPU, mit Gleitkommazahl-Registern, als
+Beispiele zu nennen. Instruktionen werden hingegen in einer Extension in einem
+\texttt{InstructionSet} gesammelt, wobei Instruktionen selbst ein Format, einen
+Mnemonic und einen Opcode spezifizieren. \autoref{fig:arch-design} fasst unser
+Design einer Architektur zusammen.
+
+Es sei noch angemerkt, dass wie bei RISC-V bestimmte Extensions einen speziellen
+Sonderstatus, wenn sie \emph{vollständig} sind (im RISC-V Jargon dann als
+\emph{Base-Extension} bezeichnet). Ein Modul ist dann vollständig, wenn es alle
+nötigen Attribute und Eigenschaften besitzt, um eine eigenständige und
+funktionsfähige Architektur zu bilden. Genauer definieren wir drei Anforderungen:
+\begin{enumerate}
+  \item Die Extension hat zumindest eine Instruktion,
+  \item Die Extension hat zumindest eine nicht leere Unit (also ein Register),
+  \item Die Extension definiert sämtliche Attribute wie Endianness oder Wortgröße.
+\end{enumerate}
+
+Ist eine Erweiterung selbst noch nicht vollständig, so muss sie mit einer oder
+vielen weiteren Extensions vereinigt werden, was durch die \texttt{merge}
+Methode der \texttt{ExtensionInformation} Klasse leicht zu realisieren ist.
+Schlussendlich ist eine \texttt{Architecture} Instanz nur dann gültig, wenn sie
+einer vollständigen Extension entspricht.
+
+\autoref{dev:arch-yaml} geht nun genauer auf die Beschreibung einer Architektur
+in YAML ein, während \autoref{dev:arch-impl} kurz die Implementierungsdetails
+des \texttt{Architecture} und \texttt{Extension} Codes bespricht.
+
+\begin{figure}[h!]
+  \centering
+  \scalebox{1.3}{
+  \begin{tikzpicture}[thick]
+    \tikzset{block/.style={%
+      draw,%
+      rectangle,%
+      rounded corners,%
+      text width=2cm,%
+      text height=0.45cm}%
+    };
+    \tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
+
+    %%%%%%%%%%%%%%%
+    % Architektur %
+    %%%%%%%%%%%%%%%
+    \node [class] (arch) at (0, 0.2) {\texttt{Architektur}};
+
+    %%%%%%%%%%%%%%
+    % Extensions %
+    %%%%%%%%%%%%%%
+    \node [class] (ext) at (0, -1.2) {\texttt{Extension}};
+
+    % Edge
+    \draw [->] (arch) -- (ext)
+          node [midway, right] {\footnotesize\texttt{1..N}};
+
+    %%%%%%%%%%%%%%%%%%%%%%%%
+    % Units (e.g. CPU/FPU) %
+    %%%%%%%%%%%%%%%%%%%%%%%%
+    \node [class] (units) at (-1.5, -3) {\texttt{Unit}};
+    \path (ext)
+          edge [->, bend right]
+          node [pos=0.7, right] {\footnotesize\texttt{1..N}}
+          (units);
+
+    % Register
+    \node [class] (reg) at (-1.5, -4.5) {\texttt{Register}};
+    \draw [->] (units) -- (reg)
+          node [midway, left] {\footnotesize\texttt{1..N}};
+
+    \node (rname) at (-2.3, -5.5) {\scriptsize Name};
+    \node (rtype) at (-1.5, -5.55) {\scriptsize Typ};
+    \node (rwidth) at (-0.8, -5.5) {\scriptsize Breite};
+
+    \draw [->, semithick] (reg) -- (rname);
+    \draw [->, semithick] (reg) -- (rtype);
+    \draw [->, semithick] (reg) -- (rwidth);
+
+    %%%%%%%%%%%%%%%%%%%
+    % Instruction Set %
+    %%%%%%%%%%%%%%%%%%%
+    \node [class] (is) at (1.5, -3) {\texttt{Instruktionssatz}};
+    \path (ext)
+          edge [->, bend left]
+          node [pos=0.7, left] {\footnotesize\texttt{1}}
+          (is);
+
+    % Instruktionen
+    \node [class] (inst) at (1.5, -4.5) {\texttt{Instruktion}};
+    \draw [->] (is) -- (inst) node [midway, right] {\footnotesize\texttt{1..N}};
+
+    \node (iname) at (0.8, -5.5) {\scriptsize Name};
+    \node (ikey) at (1.5, -5.55) {\scriptsize Key};
+    \node (iformat) at (2.3, -5.5) {\scriptsize Format};
+
+    \draw [->, semithick] (inst) -- (iname);
+    \draw [->, semithick] (inst) -- (ikey);
+    \draw [->, semithick] (inst) -- (iformat);
+
+    %%%%%%%%%%%%%%
+    % Attributes %
+    %%%%%%%%%%%%%%
+    \draw [->, semithick] (ext) -- (2, -0.8)
+          node [right] {\footnotesize Wortgröße};
+
+    \draw [->, semithick] (ext) -- (2, -1.6)
+          node [right]{\footnotesize Endianness};
+
+    \draw [->, semithick] (ext) -- (-2, -0.8)
+          node [left] {\footnotesize Datentypen};
+
+    \draw [->, semithick] (ext) -- (-2, -1.6)
+          node [left] {\footnotesize Signed Rep.}; {\texttt{1}};;
+  \end{tikzpicture}
+  }
+  \caption{Der modulare Aufbau einer Architektur in \erasim{}. Eine Architektur besteht in unserem Modell aus \emph{Extensions}. Eine Extension besteht dann im Weiteren aus \emph{Units} und einem \emph{InstructionSet}. Ersteres repräsentiert einen Registersatz, letzteres sammelt die Instruktionen eines Befehlssatzes. Sowohl eine Extension als auch weitere Akteure in unserem Design besitzen schließlich noch Attribute wie eine Wortgröße, Registergröße oder einen menschenlesbaren Namen.}
+  \label{fig:arch-design}
+  \vspace{-0.2cm}
+\end{figure}

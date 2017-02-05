@@ -88,10 +88,92 @@
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
 \lstdefinelanguage [riscv]{Assembler}{
-  morekeywords={ADD, ADDI, SLTI, SLTU, SLTIU, AND, ANDI, OR, ORI, XOR, XORI, SLLI, SRLI, SRAI, SLAI, LUI, AUIPC, SLT, SLL, SRL, SRA, SLA, JAL, JALR, BEQ, BNE, BLT, BLTU, BGE, BGEU, LW, LH, LB, SW, SH, SB, LHU, LBU, SHU, SBU, MUL, MULH, MULHU, MULHSU, DIV, DIVU, REM, REMU, .RESB},
+  morekeywords={
+	 .RESB
+	 ADDI,
+	 AND,
+	 ANDI,
+	 AUIPC,
+	 BEQ,
+	 BGE,
+	 BGEU,
+	 BLT,
+	 BLTU,
+	 BNE,
+	 DIV,
+	 DIVU,
+	 JAL,
+	 JALR,
+	 LB,
+	 LBU,
+	 LH,
+	 LHU,
+	 LUI,
+	 LW,
+	 MUL,
+	 MULH,
+	 MULHSU,
+	 MULHU,
+	 OR,
+	 ORI,
+	 REM,
+	 REMU,
+	 SB,
+	 SBU,
+	 SH,
+	 SHU,
+	 SLA,
+	 SLAI,
+	 SLL,
+	 SLLI,
+	 SLT,
+	 SLTI,
+	 SLTIU,
+	 SLTU,
+	 SRA,
+	 SRAI,
+	 SRL,
+	 SRLI,
+	 SW,
+	 XOR,
+	 XORI,
+   ADD,
+  },
   sensitive=false,
   morecomment=[l]{;},
 }
+
+\lstdefinelanguage{ISA}{
+  alsoletter=-,
+  morekeywords={
+    alignment-behavior,
+    builtin-macros,
+    byte-size,
+    endianness,
+    extends,
+    format,
+    funct,
+    funct3,
+    funct7,
+    id,
+    instructions,
+    key,
+    length,
+    mnemonic,
+    name,
+    opcode,
+    operand,
+    registers,
+    signed-representation,
+    size,
+    type,
+    units,
+    word-size,
+  },
+  sensitive=false,
+  morecomment=[l]{\#}
+}
+
 
 \lstnewenvironment{c++}{\lstset{language=C++}}{}
 \lstnewenvironment{riscv}{\lstset{language={[riscv]Assembler}}}{}
@@ -141,6 +223,7 @@
 \usepackage{import}
 \usepackage{todonotes}
 \usepackage{url}
+\usepackage{array}
 
 \usepackage{csquotes}
 \MakeOuterQuote{"}
@@ -186,7 +269,7 @@
 \newcommand{\erasim}{{\fontfamily{zi4}\selectfont ERASIM}}
 
 \newcommand{\smallurl}[1]{{\small\url{#1}}}
-\renewcommand{\texttt}[1]{{\ttfamily\small #1}}
+% \renewcommand{\texttt}[1]{{\ttfamily\small #1}}
 
 \newcommand{\cyclearrow}{
   \hspace{-0.5cm}
@@ -200,6 +283,14 @@
   }
   \hspace{-0.4cm}
 }
+
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}%
+  {\z@}{3.25ex \@plus 1ex \@minus 2ex}{0.2cm}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEW ENVIRONMENTS                                     %
