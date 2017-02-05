@@ -52,5 +52,5 @@ ProjectSettings::Json ProjectSettings::toJson() {
     json[key] = value;
   }
   auto data = QJsonDocument(json).toJson();
-  return Json::parse(data.toStdString());
+  return Json::parse(data.constData());
 }
