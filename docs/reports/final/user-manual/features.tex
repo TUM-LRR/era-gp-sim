@@ -322,10 +322,10 @@ anstelle des eingegebenen Wertes an die Speicherstelle geschrieben. Dazu zählt
 auch die Eingabe zu großer Zahlen. Die Ersetzung erfolgt sofort.
 \end{warningblock}
 
-Eine Speicherzelle kann außerdem als read-only markiert sein. 
-Dies kann passieren, wenn die Speicherzelle einen Teil des ausführbaren 
-Programmcodes enthält. 
-Das Betriebssystem markiert bestimmte Bereiche des Speichers als 
+Eine Speicherzelle kann außerdem als read-only markiert sein.
+Dies kann passieren, wenn die Speicherzelle einen Teil des ausführbaren
+Programmcodes enthält.
+Das Betriebssystem markiert bestimmte Bereiche des Speichers als
 schreibgeschützt, um selbstmodifizierenden Code zu verhindern.
 Dieser Schutz ist sehr wichtig um Schadprogramme zu verhindern.
 Auch der Simulator markiert die Speicherzellen, den den assemblierten Code
@@ -343,20 +343,21 @@ der Adresse zeigt dies an.
 \subsection{Interaktion mit laufenden Programmen}
 %\todo[inline]{Hier sollte (für alle Komponenten ja gleich) die Einstellungsmöglichkeiten (Zahnrad-knopf) und welches Symbol welche Komponente bedeutet}
 
-Der Simulator unterstützt eine Reihe von Ein- und Ausgabekomponenten, die im
-Folgenden erläutert werden. Eine Eingabekomponente nimmt dabei Eingaben des
-Nutzers über die Benutzeroberfläche des Simulators entgegen, während
-Ausgabekomponenten Zahlenwerte graphisch darstellen.
+Der Simulator unterstützt eine Reihe von Ein-/Ausgabekomponenten, die im
+Folgenden erläutert werden. Ein-/Ausgabekomponenten stellen Zahlenwerte
+graphisch dar und nehmen Eingaben des Nutzers über die Benutzeroberfläche des
+Simulators entgegen, welche diese Zahlenwerte manuell ändern.
 
-Die Kommunikation mit den Ein- und Ausgabekomponenten erfolgt über den Speicher.
-Für Eingabekomponenten lässt sich eine Adresse im Speicher, die sogenannte
-\textit{Memory Source Address} angeben, an die jegliche eingelesene Werte
-geschrieben werden. Analog gibt es auch für Ausgabekomponenten eine
-\textit{Memory Source Address}, die angibt, von welcher Stelle im Speicher an
-Daten von der Ausgabekomponente ausgelesen und graphisch interpretiert werden.
-Da auch Ausgabekomponenten oftmals Benutzereingaben zulassen, werden gleichfalls
-Daten in den Speicher geschrieben, natürlich an die gleiche \textit{Memory Source
-Address}, die auch zum Einlesen verwendet wird.
+Die Kommunikation mit den Ein-/Ausgabekomponenten erfolgt über den Speicher.
+Dabei lässt sich für jede Komponente eine spezielle Adresse im Speicher angeben,
+die sogenannte \textit{Memory Source Address}. Von dieser ausgehend werden
+Speicherwerte ausgelesen und graphisch interpretiert. Je nach
+Ein-/Ausgabekomponente und zugehörigen Einstellungen werden ein oder mehrere
+Byte Daten ab der \textit{Memory Source Address} zum Auslesen verwendet.
+Komponenten, die Benutzerinteraktion zulassen, passen je nach Eingabe den
+ausgelesenen Wert an und schreiben ihn ebenfalls an die \textit{Memory Source
+Address}. Dieser neue Wert wird wiederum von der Komponente ausgelesen und
+graphisch interpretiert, wodurch die Änderung sichtbar wird.
 
 Die \textit{Memory Source Address}, sowie gegebenenfalls weitere Optionen, können
 über das Einstellungsmenü jeder Ein- und Ausgabekomponente einzeln festgelegt
@@ -365,10 +366,10 @@ Komponente eingeblendet wird, wenn man den Mauszeiger darüberbewegt. Ein Klick
 auf den Zahnradbutton (\includegraphics[scale=0.22]{Images/SettingsIcon}) öffnet
 das Einstellungsfenster.
 
-\subsubsection{Eingabe -- Tastatur}
+\subsubsection{Ein-/Ausgabe -- Tastatur}
 
-Die Tastatur-Eingabekomponente fängt einzelne Tastatureingaben ab und schreibt
-eine Kodierung, die der gedrückten Taste entspricht, in den Speicher.
+Die Tastatur-Komponente fängt einzelne Tastatureingaben ab und schreibt eine
+Kodierung, die der gedrückten Taste entspricht, in den Speicher.
 
 Ein Klick auf das Rechteck im Zentrum der Komponente startet die Eingabe. In
 diesem Zustand werden alles Tastatureingaben abgefangen und in den Speicher
@@ -408,8 +409,9 @@ Tabelle \ref{tab:keys}.
 	... & ... \\
 	Z & 0x0000005a \\
 \end{tabular}
-	\caption{Liste der wichtigsten Tasten und zugehöriger Kodierung, die in den
-	Speicher geschrieben wird.\newline Quelle und vollständige Tabelle:
+	\caption{Liste der wichtigsten Tasten und zugehörigen Kodierungen, die von der
+	Tastatur-Komponente in den Speicher geschrieben werden.\newline Quelle und
+	vollständige Tabelle:
 	\url{http://doc.qt.io/qt-4.8/qt.html\#Key-enum}}
 	\label{tab:keys}
 \end{figure}
@@ -426,9 +428,9 @@ Tastatureingabe geschrieben wird.
 \end{figure}
 
 
-\subsubsection{Eingabe -- Mausklick}
+\subsubsection{Ein-/Ausgabe -- Mausklick}
 %\todo[inline]{welche werte werden geschrieben, Reihenfolge?}
-Die Mausklick-Eingabekomponente liest Mausklicks des Benutzers über einen
+Die Mausklick-Komponente liest Mausklicks des Benutzers über einen
 Klick-Bereich ein und schreibt die x- und y-Koordinate des Klicks relativ zum
 Klick-Bereich in den Speicher. Der Klick-Bereich deckt ein Koordinatensystem von
 $0$ bis $255$ in beiden Dimensionen ab, unabhängig von der absoluten Größe des
@@ -450,7 +452,7 @@ y-Koordinate steht.
 	\label{MouseArea}
 \end{figure}
 
-\subsubsection{Ausgabe -- Lichtbandanzeige}
+\subsubsection{Ein-/Ausgabe -- Lichtbandanzeige}
 
 Die Lichtbandanzeige dient hauptsächlich zur Anzeige verschiedener Arten von
 Fortschrittsbalken. Sie besteht aus mehreren einzelnen Leuchtkomponenten, der
@@ -487,7 +489,7 @@ Farbwahldialog, wo die Leuchtfarbe des Segments gewählt werden kann.
 \end{figure}
 
 
-\subsubsection{Ausgabe -- 7-Segmentanzeige}
+\subsubsection{Ein-/Ausgabe -- 7-Segmentanzeige}
 Die sogenannte 7-Segment Anzeige ist eine einfache alphanumerische Ausgabe, wie
 sie häufig bei kleinen digitalen Geräten zum Einsatz kommt. Die Anzeige besteht, wie
 der Name schon sagt, aus 7 Strichen, die unabhängig voneinander zum Leuchten
@@ -547,7 +549,8 @@ Für die Anzeige gibt es zwei Einstellungen, die man über das Zahnrad rechts un
 
 
 
-\subsubsection{Konsole}
+\subsubsection{Ein-/Ausgabe -- Konsole}
+
 \todo[inline]{Nach review von feature/theme-input Bild der Konsole einfügen. }
 Die Konsole erlaubt es, Text aus dem Speicher auszulesen und byteweise zu
 Zeichen umgewandelt anzuzeigen. Außerdem kann Text eingegeben werden, der
