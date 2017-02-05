@@ -105,7 +105,7 @@ struct LazyRange {
 
 
    private:
-    friend class LazyRange;
+    friend struct LazyRange;
 
     Iterator(T index, T step) : _index(index), _step(step) {
     }
