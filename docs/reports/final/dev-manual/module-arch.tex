@@ -206,9 +206,9 @@ Folgende Methoden werden von ihr vorgegeben:
 	\item \textbf{\texttt{getValue(MemoryAccess\&)}}: Diese Methode führt den
 	darunter liegenden Syntax Baum aus, und ruft ggf. rekursiv dieselbe Methode
 	bei den Kindknoten auf. Je nach Knotentyp variiert der Rückgabewert: So gibt
-	beispielsweise ein Instruktionsknoten die Adresse der nächsten Instruktion
-	zurück, ein Register seinen aktuellen Wert und ein Immediateknoten die
-	abgespeicherte Konstante. Als Parameter wird eine Zugriffsmöglichkeit auf den
+	beispielsweise ein Instruktionsknoten die Adresse der nächsten Instruktion, 
+	ein Register seinen aktuellen Wert und ein Immediateknoten die
+	abgespeicherte Konstante zurück. Als Parameter wird eine Zugriffsmöglichkeit auf den
 	Speicher übergeben, mit dem die Instruktion z.B. das Resultat der Operation
 	abspeichern kann.
 	Mit Diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
@@ -317,7 +317,7 @@ Die Factory Methoden geben einen \texttt{std::shared\_ptr} auf den erzeugten
 Knoten zurück.
 
 Des Weiteren fällt auf, dass RISC-V die beiden letzten Node Factories nicht
-implementiert. Der Grund dafür wurde in der vorherigen Sektion beschrieben:
+implementiert. Der Grund dafür wurde im vorherigen Abschnitt beschrieben:
 RISC-V unterstützt keine Inline Speicherzugriffe. Architekturen können durch das
 Fehlen einer Factory signalisieren, dass sie einen Knotentyp nicht unterstützen.
 
@@ -344,7 +344,7 @@ auszuführenden Operation unterscheidet, existiert eine weitere abstrakte
 Oberklasse \texttt{riscv::AbstractIntegerInstructionNode}, die all jene
 Instruktionen abdeckt. In dieser Oberklasse wird die Validierung der
 Instruktionen vollständig behandelt und der Aufruf von \texttt{getValue()} so
-weit abstrahiert, dass die konkreten Anwendung der Operation effektiv in einen
+weit abstrahiert, dass die konkreten Anwendung der Operation effektiv auf einen
 einzeiligen Lamda Ausdruck reduziert werden kann. Die Implementierung befindet
 sich in der Datei \texttt{integer-instructions.hpp}.
 
@@ -364,7 +364,7 @@ Implementation eines \texttt{uint128\_t} schreiben, indem man z.B. zwei
 
 \subsubsection{Weiterführende Dokumentation}
 
-Diese vorherigen Sektionen geben einen Überblick über die Architektur.
+Die vorherigen Abschnitte geben einen Überblick über die Architektur.
 Weiterführende Dokumentation findet sich in denen für die Architektur relevanten
 Dateien, welche in \autoref{fig:arch-further} aufgelistet sind.
 

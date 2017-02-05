@@ -103,7 +103,7 @@ unabhängig zu machen. Daher werden pro Core-Instanz weitere Threads erstellt.
 
 \subsubsection{Threading}
 
-Bei der Verwendung von mehreren Threads ist erhöhter Programmieraufwand
+Bei der Verwendung mehrerer Threads ist erhöhter Programmieraufwand
 notwendig, um Probleme wie Race-Conditions zu vermeiden. Daher verwenden wir das
 \emph{Active Object Pattern}, da dadurch der Aufwand hauptsächlich auf die
 Implementierung dieses Patterns im Core reduziert wird. Das \emph{Active
@@ -247,9 +247,9 @@ Informationen des Parsers zugegriffen werden kann. In \autoref{fig:core-proxies}
 wird die Aufteilung der Interface Klassen auf die verschiedenen Core Module
 dargestellt.
 
-Des weiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
+Des Weiteren muss der GUI auch signalisiert werden, dass sich der Zustand des
 Cores geändert hat und die Ansichten aktualisiert werden sollen. Dafür werden
-Callbacks verwendet, damit der Core keine Referenz auf die GUI braucht und daher
+Callbacks verwendet, damit der Core keine Referenz auf die GUI benötigt und so
 unabhängig von deren Aufbau ist. Diese Callbacks werden über die Interface
 Klassen gesetzt und bei entsprechenden Änderungen durch die Core-Komponenten
 aufgerufen. Dabei ist zu beachten, dass die Callbacks im jeweiligen Active
@@ -280,7 +280,7 @@ Vor der Ausführung wird jeder Befehl mit seiner \texttt{validateRuntime()}
 Methode validiert, um Fehler, die nur während der Laufzeit überprüfbar sind,
 abzufangen. Bei einem Fehler wird dabei die Ausführung abgebrochen und die GUI
 über einen Callback benachrichtigt. Falls kein Fehler aufgetreten ist, wird der
-Befehl mit über seine \texttt{getValue()} Methode ausgeführt, dabei wird als
+Befehl über seine \texttt{getValue()} Methode ausgeführt, dabei wird als
 Rückgabewert der neue Befehlszählerstand geliefert. Dieser Wert wird vom Core in
 das Befehlszählerregister geschrieben.
 
