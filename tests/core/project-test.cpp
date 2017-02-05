@@ -125,13 +125,13 @@ addi x0, x0, 0)";
   std::function<void(int)> lineNumberCallback = [this](int line) {
     proxy.setLine(line);
   };
-  std::function<void(const FinalRepresentation&)> errorListCallback =
-      [this](const FinalRepresentation& finalRepresentation) {
-        std::vector<CompileError> errors = finalRepresentation.errorList().errors();
-        proxy.setErrorList(errors);
-      };
-  std::function<void(const Translateable&)>
-      errorCallback = [](const Translateable& message) {
+  std::function<void(const FinalRepresentation&)> errorListCallback = [this](
+      const FinalRepresentation& finalRepresentation) {
+    std::vector<CompileError> errors = finalRepresentation.errorList().errors();
+    proxy.setErrorList(errors);
+  };
+  std::function<void(const Translateable&)> errorCallback =
+      [](const Translateable& message) {
         std::cout << message.getBaseString() << std::endl;
         assert::gtest(false);
       };
@@ -236,7 +236,8 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
     MemoryValue assembledValidator = command.node()->assemble();
     MemoryValue assembledInMemory =
         memoryAccess
-            .getMemoryValueAt(command.address(), assembledValidator.getSize() / 8)
+            .getMemoryValueAt(command.address(),
+                              assembledValidator.getSize() / 8)
             .get();
     EXPECT_EQ(assembledValidator, assembledInMemory);
   }
@@ -249,8 +250,8 @@ TEST_F(ProjectTestFixture, CommandInterfaceTest) {
   while (nextNode < finalRepresentationValidator.commandList().size()) {
     const FinalCommand& currentCommand =
         finalRepresentationValidator.commandList().at(nextNode);
-    memoryAccess.putRegisterValue("pc",
-                                  currentCommand.node()->getValue(memoryAccess));
+    memoryAccess.putRegisterValue(
+        "pc", currentCommand.node()->getValue(memoryAccess));
     nextNode = findNextNode(
         memoryAccess, addressCommandMapValidator, finalRepresentationValidator);
     commandInterface.executeNextLine();
@@ -345,7 +346,7 @@ TEST_F(ProjectTestFixture, SerializationTest) {
     memoryValues.push_back(testValue);
     memoryAccess.putMemoryValueAt(i, testValue);
   }
-  nlohmann::json snapshot = memoryManager.generateSnapshot().get();
+  auto snapshot = memoryManager.generateSnapshot().get();
   EXPECT_NO_THROW(memoryManager.loadSnapshot(snapshot));
 
   for (int i = 0; i < 31; i++) {

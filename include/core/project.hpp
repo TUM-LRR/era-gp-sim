@@ -186,14 +186,14 @@ class Project : public Servant {
    *
    * \param snapshotData The json snapshot object.
    */
-  void loadSnapshot(const Json &snapshotData);
+  void loadSnapshot(const Snapshot &snapshot);
 
   /**
    * Generates a snapshot of the current state of memory and registers.
    *
    * \return The generated json object.
    */
-  Json generateSnapshot() const;
+  Snapshot generateSnapshot() const;
 
   /**
    * Returns the callback used for conversion from a MemoryValue to a signed

@@ -41,8 +41,6 @@ EditorComponent::EditorComponent(QQmlContext *projectContext,
   projectContext->setContextProperty("editor", this);
   parserInterface.setSetCurrentLineCallback(
       [this](std::size_t line) { setCurrentLine(line); });
-
-  // TODO select colors according to a theme/possibility to change colors
 }
 
 void EditorComponent::init(QQuickTextDocument *qDocument) {
