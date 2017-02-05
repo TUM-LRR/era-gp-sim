@@ -59,7 +59,7 @@ SplitView {
   orientation: Qt.Vertical
   SplitviewItem {
     id: item1
-    Layout.minimumHeight: 25
+    Layout.minimumHeight: 5
     height: parent.height/2
     usual: parent.usual1
     defaultTab: defaultTabUpper
@@ -68,7 +68,7 @@ SplitView {
   SplitviewItem {
     id: item2
     height: parent.height/2
-    Layout.minimumHeight: 10
+    Layout.minimumHeight: 5
     usual: parent.usual2
     defaultTab: defaultTabLower
   }
@@ -83,7 +83,7 @@ SplitView {
   }
 
   /*Sets heigth at the beginning*/
-  Component.onCompleted: {
+  onHeightChanged: {
     item1.height = factor * (height / quotient) - 5;
     item2.height = height - item1.height - 5;
   }

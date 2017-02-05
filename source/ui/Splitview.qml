@@ -25,9 +25,14 @@ SplitView {
   id: splitviewRoot
   orientation: Qt.Horizontal
 
+  // Height and width are still 0 when the component is completed.
+  // Because of this, the inner splitviews have to be resized when the size
+  // changes for the first time. Somehow bindings don't work here.
+  property bool widthInitialized: false
+
   InnerSplitviews {
     id: splitView1
-    Layout.minimumWidth: 10
+    Layout.minimumWidth: 5
     Layout.fillWidth: false
     settingsKey: "splitview-left"
     factor: 2
@@ -39,43 +44,43 @@ SplitView {
 
   InnerSplitviewsEditor {
     id: splitView2
-    Layout.minimumWidth: 10
+    Layout.minimumWidth: 5
     Layout.fillWidth: false
-    width: 9*(splitviewRoot.width/20);
     implicitWidth: width
     settingsKey: "splitview-editor"
     factor: 2
     quotient: 3
     usual2: "inputoutput"
-    Component.onCompleted: splitView2.width = 9*(splitviewRoot.width/20);
   }
 
   InnerSplitviews {
     id: splitView3
-    Layout.minimumWidth: 10
+    Layout.minimumWidth: 5
     Layout.fillWidth: false
-    width: 4*(splitviewRoot.width/20);
     settingsKey: "splitview-middle"
     factor: 1
     quotient: 2
     usual1: "register"
     usual2: "register"
-    Component.onCompleted: splitView3.width = 4*(splitviewRoot.width/20);
   }
 
   InnerSplitviews {
     id: splitView4
-    Layout.minimumWidth: 10
+    Layout.minimumWidth: 5
     Layout.fillWidth: true
-    width: 4*(splitviewRoot.width/20);
     settingsKey: "splitview-right"
     factor: 1
     quotient: 2
     usual1: "memory"
     usual2: "help"
-    Component.onCompleted: splitView4.width = 4*(splitviewRoot.width/20);
   }
 
+  onWidthChanged: {
+    splitView1.width = 4 * (splitviewRoot.width / 20);
+    splitView2.width = 9 * (splitviewRoot.width / 20);
+    splitView3.width = 4 * (splitviewRoot.width / 20);
+    splitView4.width = 4 * (splitviewRoot.width / 20);
+  }
 
   function collectSettings() {
     for (var index = 0; index < splitviewRoot.children.length; ++index) {

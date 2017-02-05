@@ -107,6 +107,7 @@ ApplicationWindow {
       tabView.currentIndex = tabView.count - 1;
       tab = tab.item;
     }
+    window.expand();
     tab.setCreationScreenInvisible();
     tab.projectId =
         ui.loadProject(tab, projectComponent, path, tabView.currentIndex);
@@ -170,7 +171,6 @@ ApplicationWindow {
 
       // Complete the setup of the tab.
       function tabReady() {
-        window.expand();
         window.showMenus();
         projectValid = true;
       }
@@ -187,6 +187,8 @@ ApplicationWindow {
         anchors.fill: parent
         onCreateProject: {
           setCreationScreenInvisible();
+          // Expand before creating the project to set the size properly.
+          window.expand();
 
           parent.parent.title = projectName;
           placeholderItem.projectId = ui.addProject(placeholderItem,
