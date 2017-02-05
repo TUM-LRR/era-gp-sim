@@ -198,7 +198,7 @@ Ui::id_t Ui::loadProject(QQuickItem* tabItem,
         newTab);
   }
 
-  auto contents = file.readAll();
+  QString contents = file.readAll();
 
   if (contents.isEmpty()) {
     _sendCreationFailedSignal(
