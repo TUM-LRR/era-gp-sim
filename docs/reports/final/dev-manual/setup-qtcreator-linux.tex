@@ -1,7 +1,7 @@
 % !TEX root = dev-manual.tex
 % ERA-Großpraktikum: Entwickleranleitung -- QtCreator stup
 
-\subsubsection{Aufsetzen von QtCreator}
+\paragraph{Aufsetzen von QtCreator}
 
 QtCreator ist eine integrierte Entwicklungsumgebung, die von Qt selbst zur
 Verfügung gestellt wird und somit alle Features von Qt (QML, Widget-Designer
@@ -10,21 +10,21 @@ sie sich als Allrounder-IDE für dieses Projekt. Im Folgenden werden das
 Aufsetzen von QtCreator und erste Schritte danach für \textbf{Ubuntu 16.10}
 beschrieben:
 
-\textbf{QtCreator installieren}
+\subparagraph{QtCreator installieren}
 
-Über den Paketmanager:
+QtCreator kann meist über den Paketmanager mit folgendem Befahl installiert werden: 
 \begin{lstlisting}
 apt install qtcreator
 \end{lstlisting}
 
-\textbf{Repository klonen}
+\subparagraph{Repository klonen}
 
 Siehe \autoref{dev-report-cmake-build}. Endet die Ausführung von cmake in einem
 Fehler "Could not find a package configuration file provided by Qt5Widgets",
 dann ist vermutlich bei der Installation von \texttt{qtdeclarative5-dev} etwas
-schiefgegangen.\\
+missglückt.
 
-\textbf{QtCreator und CMake}
+\subparagraph{QtCreator und CMake}
 
 Im Startbildschirm \texttt{Open Project} und dann die oberste
 \texttt{CMakeLists.txt} (die in \texttt{root/CMakeLists.txt}) öffnen. Im Reiter
@@ -55,13 +55,16 @@ Build-Ordner zum obersten Ordner des Projekts sein. Im Beispiel ist der
 Build-Order unter \texttt{era-gp-sim/build\_qtcreator\_debug} angelegt, d.h.
 eine Ebene höher liegt der root-Ordner des Projekts. Das \texttt{-j4} Argument
 bei \texttt{make} erhöht die Geschwindigkeit beim Bauen, da 4 Jobs gleichzeitig
-ausgeführt werden. Zur Run-Konfiguration wechseln
-\includegraphics[scale=1.0]{images/setup-qtcreator-run-config} und als ''Working
+ausgeführt werden. Im Anschluss zur Run-Konfiguration wechseln (\autoref{run-Konfig}) und als ''Working
 Directory'' den Build-Ordner eintragen.\\
-
+\begin{figure}
+	\centering
+	\includegraphics[scale=1.0]{images/setup-qtcreator-run-config}
+	\caption{Zur Run-Konfiguration wechseln}
+	\label{run-Konfig}
+\end{figure}
 Nun zurück wechseln und bei \texttt{Edit build configuration} Release auswählen und
 sowohl \texttt{Build Steps} als auch \texttt{Run} wie oben verändern.\\
-
 Ins Edit-Tab wechseln und am linken Rand unten beim Monitor von \texttt{Release} auf
 \texttt{Debug} wechseln und dann mit Klick auf den Hammer das Projekt bauen.\\
 \begin{figure}[H]
@@ -74,28 +77,25 @@ ausgeführt werden. In der \texttt{Compile Output} Konsole kann der Fortschritt 
 Bauvorgangs überwacht werden.\\
 
 
-\textbf{Nützliche Einstellungen}
-
+\subparagraph{Nützliche Einstellungen}
+Hier sind hilfreiche Einstellungen in QtCreator aufgelistet:
 \begin{itemize}
 	\item File Naming:\\
   Im Menü \texttt{Tools $\rightarrow$ Options}, dort in der linken Auswahlliste C++ $\rightarrow$
   Reiter \texttt{File Naming}:\\ Bei Headers Suffix zu hpp ändern.
 
 	\item Lizenz automatisch einfügen:\\
-
   Im Menü \texttt{Tools $\rightarrow$ Options $\rightarrow$ C++ $\rightarrow$ FileNaming}: Unter ''License
   Template'' kann der Pfad zu einer Textdatei eingegeben werden, deren Inhalt
   dann als Kommentar an den Anfang jeder neu erzeugten Datei platziert wird.
 
 	\item Auto-Formatting (Plugin):\\
-
   Muss evtl. über \texttt{Help $\rightarrow$ About plugins} heruntergeladen werden (\texttt{Beautifier}).
   Ist dann unter \texttt{Tools $\rightarrow$ Options $\rightarrow$ Beautifier} zu finden.
   \end{itemize}
-\textbf{Erste Schritte}\\
-\begin{itemize}
-	\item Neue Datei erstellen:\\
-	\texttt{File $\rightarrow$ New File or Project}
-	\item Aktuelle Datei formatieren:\\
-	\texttt{Tools $\rightarrow$ Beautifier $\rightarrow$ ClangFormat $\rightarrow$ Format Current File}
-\end{itemize}
+
+\subparagraph{Erste Schritte}
+
+Eine neue Datei kann über \texttt{File $\rightarrow$ New File or Project} erstellt werden.\\
+Außerdem lässt sich die aktuelle Datei über \texttt{Tools $\rightarrow$ Beautifier $\rightarrow$ ClangFormat $\rightarrow$ Format Current File} formatieren.
+

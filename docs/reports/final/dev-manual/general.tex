@@ -149,12 +149,12 @@ sind die benötigten Versionen erst ab Debian Stretch (Debian 9) verfügbar, unt
 Ubuntu erst ab Version 16.10.
 
 \begin{itemize}
-	\item \textbf{Debian basierte Betriebssysteme:} \\
+	\item Debian basierte Betriebssysteme: 
 	\begin{lstlisting}
 apt install build-essential cmake git qtdeclarative5-dev
 	\end{lstlisting}
 
-	\item \textbf{Arch Linux:} \\
+	\item Arch Linux: 
 	\begin{lstlisting}
 pacman -S base-devel cmake git qt5-declarative \
  qt5-graphicaleffects qt5-quickcontrols
@@ -169,8 +169,8 @@ Installationsort erfragt. Dieser muss später beim Bauen des Projekts angegeben 
 \input{setup-qtcreator-linux.tex}
 
 \subsubsection{macOS}
-
-\textbf{Qt installieren}
+Im folgenden wird Beschrieben, welche Schritte auf dem Betriebssystem macOS erfolgen sollten.
+\paragraph{Qt installieren}
 
 Um Qt auf ein Mac-Computer zu installieren, bietet es sich an, den Installer zu
 verwenden, den man über die offizielle Website herunterladen kann
@@ -179,13 +179,13 @@ aktuellsten auch ältere Versionen des Framework heruntergeladen werden. Nach
 der Installation befindet sich am angegebenen Installationspfad ein Ordner "Qt",
 in dem sich auch der QtCreator-IDE befindet.
 
-\textbf{CMake aktualisieren}
+\paragraph{CMake aktualisieren}
 
 Zum Bauen des Projekts wird CMake benötigt, das in der Regel über einen
 Paketmanager installiert oder alternativ von der offiziellen Website
 heruntergeladen werden kann.
 
-\textbf{In QtCreator CMake-Projekt einrichten}
+\paragraph{In QtCreator CMake-Projekt einrichten}
 
 Um ein CMake-Projekt in QtCreator einzurichten, können die gleichen Schritte, wie
 im Kapitel für Linux beschrieben, durchgeführt werden.
