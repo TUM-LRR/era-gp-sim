@@ -32,8 +32,23 @@ Item {
   property var defaultTab: 0
   property bool isExpanded: false
 
+  property var sourceComponents: [
+    "Snapshots/SnapshotList.qml",
+    "InputOutput/InputOutput.qml",
+    "Register/RegisterComponent.qml",
+    "Memory/MemoryComponent.qml",
+    "help/HelpWindow.qml"
+  ]
+
   // The component which is displayed by this item.
-  property var currentComponent
+  property var currentComponent: sourceComponents[componentSelector.currentIndex]
+
+  function setCurrentComponent(component) {
+    componentSelector.currentIndex = sourceComponents.indexOf(component);
+    currentComponent = Qt.binding(function () {
+      return sourceComponents[componentSelector.currentIndex]
+    });
+  }
 
   onIsExpandedChanged: {
     if (isExpanded == true) {
@@ -166,16 +181,7 @@ Item {
     anchors.right: parent.right
     anchors.bottom: parent.bottom
 
-    property var sourceComponents: [
-      "Snapshots/SnapshotList.qml",
-      "InputOutput/InputOutput.qml",
-      "Register/RegisterComponent.qml",
-      "Memory/MemoryComponent.qml",
-      "help/HelpWindow.qml"
-    ]
-
     source: {
-      root.currentComponent = sourceComponents[componentSelector.currentIndex];
       if (root.currentComponent) {
         return  "Components/" + root.currentComponent;
       } else {

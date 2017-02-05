@@ -24,6 +24,7 @@ import QtQuick.Layouts 1.2
 import Theme 1.0
 
 SplitView {
+  id: innerSplitview
   // a tag to identify an inner splitview
   property bool isSplitView: true
 
@@ -82,7 +83,7 @@ SplitView {
   }
 
   /*Sets heigth at the beginning*/
-  onHeightChanged: {
+  Component.onCompleted: {
     item1.height = factor * (height / quotient) - 5;
     item2.height = height - item1.height - 5;
   }
@@ -92,15 +93,17 @@ SplitView {
     projectSettings[settingsKey+"-item2"] = item2.currentComponent;
     projectSettings[settingsKey+"-item1-height"] = item1.height;
     projectSettings[settingsKey+"-item2-height"] = item2.height;
+    projectSettings[settingsKey+"-width"] = width;
   }
 
   Connections {
     target: projectSettings
     onSettingsLoaded: {
-      item1.currentComponent = projectSettings[settingsKey+"-item1"];
-      item2.currentComponent = projectSettings[settingsKey+"-item2"];
+      item1.setCurrentComponent(projectSettings[settingsKey+"-item1"]);
+      item2.setCurrentComponent(projectSettings[settingsKey+"-item2"]);
       item1.height = projectSettings[settingsKey+"-item1-height"];
       item2.height = projectSettings[settingsKey+"-item2-height"];
+      innerSplitview.width = projectSettings[settingsKey+"-width"];
     }
   }
 }

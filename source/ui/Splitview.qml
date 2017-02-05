@@ -26,9 +26,9 @@ SplitView {
   orientation: Qt.Horizontal
 
   InnerSplitviews {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView1
+    Layout.minimumWidth: 10
+    Layout.fillWidth: false
     settingsKey: "splitview-left"
     factor: 2
     quotient: 3
@@ -38,43 +38,46 @@ SplitView {
   }
 
   InnerSplitviewsEditor {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView2
+    Layout.minimumWidth: 10
+    Layout.fillWidth: false
+    width: 9*(splitviewRoot.width/20);
+    implicitWidth: width
     settingsKey: "splitview-editor"
     factor: 2
     quotient: 3
     usual2: "inputoutput"
+    Component.onCompleted: splitView2.width = 9*(splitviewRoot.width/20);
   }
 
   InnerSplitviews {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView3
+    Layout.minimumWidth: 10
+    Layout.fillWidth: false
+    width: 4*(splitviewRoot.width/20);
     settingsKey: "splitview-middle"
     factor: 1
     quotient: 2
     usual1: "register"
     usual2: "register"
+    Component.onCompleted: splitView3.width = 4*(splitviewRoot.width/20);
   }
 
   InnerSplitviews {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView4
+    Layout.minimumWidth: 10
+    Layout.fillWidth: true
+    width: 4*(splitviewRoot.width/20);
     settingsKey: "splitview-right"
     factor: 1
     quotient: 2
     usual1: "memory"
     usual2: "help"
+    Component.onCompleted: splitView4.width = 4*(splitviewRoot.width/20);
   }
 
-  /*Sets the widht at the beginning, because else the columns are too small*/
   Component.onCompleted: {
-    splitView1.width = 3*(width/20);
-    splitView2.width = 9*(width/20);
-    splitView3.width = 4*(width/20);
-    splitView4.width = 4*(width/20);
+    console.log(widht + " " + height);
   }
 
   function collectSettings() {
