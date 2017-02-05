@@ -62,6 +62,8 @@ if [[ -z $DIR ]]; then
   mkdir -v $DIR
 fi
 
+export LD_LIBRARY_PATH="$QT/lib"
+
 echo "Copying executable..."
 cp $EXEC $DIR
 
