@@ -41,9 +41,13 @@ Snapshot::Snapshot(Json json) : _snapshot(json) {
 
 bool Snapshot::isValid() const {
   if (!_snapshot.count("architecture-name")) return false;
+  if (!_snapshot["architecture-name"].is_string()) return false;
   if (!_snapshot.count("extensions")) return false;
+  if (!_snapshot["extensions"].is_array()) return false;
   if (!_snapshot.count("memory")) return false;
+  if (!_snapshot["memory"].is_object()) return false;
   if (!_snapshot.count("registers")) return false;
+  if (!_snapshot["registers"].is_object()) return false;
 
   return true;
 }
@@ -51,10 +55,15 @@ bool Snapshot::isValid() const {
 bool Snapshot::isValidProject() const {
   if (!isValid()) return false;
   if (!_snapshot.count("project-name")) return false;
+  if (!_snapshot["project-name"].is_string()) return false;
   if (!_snapshot.count("parser-name")) return false;
+  if (!_snapshot["parser-name"].is_string()) return false;
   if (!_snapshot.count("project-settings")) return false;
+  if (!_snapshot["project-settings"].is_object()) return false;
   if (!_snapshot.count("code")) return false;
+  if (!_snapshot["code"].is_string()) return false;
   if (!_snapshot["memory"].count("memory_byteCount")) return false;
+  if (!_snapshot["memory"].find("memory_byteCount")->is_number()) return false;
 
   return true;
 }
