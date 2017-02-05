@@ -1,25 +1,23 @@
+% !TEX root = dev-manual.tex
+% ERA-Großpraktikum: Entwickleranleitung -- Architekturmodul
+
 \subsection{Architektur}
 
-\todo[inline]{
-	* Architecture Description Language
-}
-
-Die Architektur (kurz: \emph{Arch}) kümmert sich um die Ausführung der
+Das Architekturmodule (kurz: \emph{Arch}) kümmert sich um die Ausführung der
 Assembler Programme und wurde vor dem Hintergrund entworfen, einen möglichst
 Architektur-unabhängigen Simulator zu entwickeln. So stellt sie Klassen zur
-Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt
-werden kann. Eine Architektur wird in \texttt{YAML} Konfigurationsdateien
-beschrieben, und anschließend in das Programm geladen. \\
-Da wir uns gegen das Disassemblieren von Maschinencode zur Ausführung eines
-Programms entschieden haben, bietet die Architektur eine abstraktere Darstellung
-von Assembler Programmen in Form eines Syntax Baums. Des Weiteren ist die
-Architektur für die Validierung einer Instruktion zuständig, und stellt bei
-Fehlern entsprechende Nachrichten zur Verfügung, die dem Nutzer helfen sollen,
-das Problem zu beheben.
+Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt werden
+kann. Eine Architektur wird in \texttt{YAML} Konfigurationsdateien beschrieben,
+und anschließend in das Programm geladen. Da wir uns gegen das Disassemblieren
+von Maschinencode zur Ausführung eines Programms entschieden haben, bietet die
+Architektur eine abstraktere Darstellung von Assembler Programmen in Form eines
+Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
+Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
+Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
 
 Eine Übersicht über die Schnittstellen des Architekturmoduls bietet
-\autoref{fig:arch-overview} (Die verwendeten Klassennahmen stimmen nicht mit denen
-im Quellcode überein, es geht hier nur um das Prinzip).
+\autoref{fig:arch-overview} (Die verwendeten Klassennahmen stimmen nicht mit
+denen im Quellcode überein, es geht hier nur um das Prinzip).
 
 \begin{figure}[H]
 	\begin{center}
@@ -32,9 +30,9 @@ im Quellcode überein, es geht hier nur um das Prinzip).
 			\textbf{Architecture}
 			\nodepart{second}
 			\begin{tabular}{c}
-				getName() \\
-				getEndianness() \\
-				getWordSize() \\
+				getName()\\
+				getEndianness()\\
+				getWordSize()\\
 				\ldots
 			\end{tabular}
 		};
@@ -47,8 +45,8 @@ im Quellcode überein, es geht hier nur um das Prinzip).
 			\textbf{SyntaxTreeNode}
 			\nodepart{second}
 			\begin{tabular}{c}
-				validate() \\
-				getValue() \\
+				validate()\\
+				getValue()
 				\ldots
 			\end{tabular}
 		};
@@ -60,23 +58,21 @@ im Quellcode überein, es geht hier nur um das Prinzip).
 	\label{fig:arch-overview}
 \end{figure}
 
-Die Architektur ist in einen allgemeinen Teil (im Folgenden \textbf{common})
+Die Architektur ist in einen allgemeinen Teil (im Folgenden \emph{common})
 genannt) und in einen Architektur-spezifischen Teil (benannt nach der
-entsprechenden Architektur, z.B. \textbf{riscv} aufgeteilt. Die Schnittstelle
-ist so konzeptioniert, dass andere Module nichts von der konkreten Architektur
-mitbekommen, und lässt sich folgendermaßen charakterisieren: \\ Das
+entsprechenden Architektur, z.B. \emph{riscv} aufgeteilt. Die Schnittstelle ist
+so konzipiert, dass andere Module nichts von der konkreten Architektur
+mitbekommen, und lässt sich folgendermaßen charakterisieren: Das
 \emph{Architecture} Objekt stellt allgemeine Informationen über die geladene
 Architektur zur Verfügung (wie z.B. der Name, die Byte-Reihenfolge oder die
 Wortgröße) und bietet zusätzlich Zugang zur \emph{NodeFactory}. Mit der
 NodeFactory werden die Syntax Bäume in Form von \emph{SyntaxTreeNode} Objekten
-erzeugt, welche anschließend validiert und ausgeführt werden können. \\ Im
+erzeugt, welche anschließend validiert und ausgeführt werden können. Im
 Folgenden wird auf diese Klassen genauer eingegangen.
 
 \subsubsection{Architecture Description Language}
 
-Eine Architektur kann in \texttt{YAML} Dateien beschrieben werden.
-
-\todo[inline]{@Peter}
+Foo. Bar? Baz!
 
 \subsubsection{Architecture}
 
@@ -86,7 +82,7 @@ RISC-V zu unterstützen, dieses Konzept lässt sich aber leicht auf andere
 Prozessorarchitekturen übertragen. So wird angenommen, dass eine Architektur
 immer aus einem Basismodul besteht (bei RISC-V: \emph{RV32I}), welches wieder
 durch andere Module erweitert werden kann (bei RISC-V z.B.
-Multiplikation/Division, Floating Point, etc.). \\ Um also ein Architecture
+Multiplikation/Division, Floating Point, etc.). Um also ein Architecture
 Objekt zu erzeugen, wird im ersten Schritt eine \emph{ArchitectureFormula}
 erstellt, die das Basismodul und alle Erweiterungen spezifiziert. Ein Aufruf von
 \emph{Brew()} löst die Abhängigkeiten auf und liest anschließend die
@@ -214,7 +210,7 @@ Folgende Methoden werden von ihr vorgegeben:
 	zurück, ein Register seinen aktuellen Wert und ein Immediateknoten die
 	abgespeicherte Konstante. Als Parameter wird eine Zugriffsmöglichkeit auf den
 	Speicher übergeben, mit dem die Instruktion z.B. das Resultat der Operation
-	abspeichern kann. \\
+	abspeichern kann.
 	Mit Diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
 	Operation, die sowohl mit Registern, als auch mit Immediate Werten arbeiten
 	kann, nur einmal implementiert werden muss. In RISC-V kann man dieses Konzept
@@ -238,7 +234,7 @@ Folgende Methoden werden von ihr vorgegeben:
 	\item \textbf{\texttt{assemble()}}: Wandelt einen Syntax Baum in die
 	Binärdarstellung der Architektur um. Diese Darstellung ist lediglich zur
 	Visualisierung für den Benutzer vorgesehen, die eigentliche Simulation der
-	Instruktionen wird über den Syntax Baum vorgenommen. Ein Registerknoten x5 
+	Instruktionen wird über den Syntax Baum vorgenommen. Ein Registerknoten x5
 	gibt z.B. \texttt{00101} (also 5 als Binärzahl der Länge n), ein Konstantenknoten gibt seinen Wert
 	zurück. Der Instruktionsknoten (die Wurzel) gibt anschließend die
 	zusammengefügte, komplette assemblierte Instruktion zurück.
@@ -252,7 +248,7 @@ Folgende Methoden werden von ihr vorgegeben:
 
 Die Aufgabe einer konkreten Architektur besteht nun darin, die eben beschriebenen
 Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In
-\autoref{dev:extension} wird darauf genauer eingegangen. \\
+\autoref{dev:extension} wird darauf genauer eingegangen.
 Um nun Objekte des Syntax Baums zu erzeugen, wird die Node Factory benötigt, auf
 die im Folgenden eingegangen wird.
 
@@ -316,7 +312,7 @@ schnell unübersichtlich werden kann. Um zu verhindern, dass andere Module
 mehrere Node Factory Objekte verwalten müssen, wird eine
 \texttt{NodeFactoryCollection} über das Architecture Objekt zur Verfügung
 gestellt, welches die einzelnen Factory Objekte kapselt und die
-\texttt{create()} Aufrufe weiterleitet. \\
+\texttt{create()} Aufrufe weiterleitet.
 Die Factory Methoden geben einen \texttt{std::shared\_ptr} auf den erzeugten
 Knoten zurück.
 

@@ -1,3 +1,4 @@
+% !TEX root = dev-manual.tex
 % ERA-Großpraktikum: Entwickleranleitung -- Erweiterung
 
 \section{Erweiterung}
@@ -5,23 +6,24 @@
 
 Der folgende Abschnitt soll Anhaltspunkte zur Erweiterung des Simulators bieten.
 Eine Erweiterung kann entweder ein neues Assembler-Paket (also die Unterstützung
-einer neuen Assembler-Sprache, z.B. Intel-386\todo{Stimmt der Name?}) oder ein
-neues Modul (''Extension'') für das bereits vorhandene Assembler-Paket RISC-V
-(z.B. das Modul RV32F) sein. Des Weiteren ist es auch möglich, weitere
-Komponenten oder Themes in der GUI zu ergänzen.\\
+einer neuen Assembler-Sprache, z.B. Intel-x86\_64) oder ein neues Modul bzw.
+\emph{Extension} für das bereits vorhandene Assembler-Paket RISC-V (z.B. das
+Modul RVF) sein. Des Weiteren ist es auch möglich, weitere Komponenten oder
+Themes in der GUI zu ergänzen.
 
 Da der Simulator für mehrere Assembler-Pakete konzipiert worden ist, müssen
 große Teile der Benutzeroberfläche und auch der Grundstruktur nicht neu
 geschrieben bzw. verändert werden. Vielmehr kommt es darauf an, das Konzept der
-bereits vorhandenen Teile zu verstehen und anzuwenden.\\
+bereits vorhandenen Teile zu verstehen und anzuwenden.
 
 \subsection{Übersicht}
 
 Um zu verstehen, wo die Erweiterung im Konzept einzuordnen ist, und welche
 Klassen zu implementieren sind, sollte man den Prozess verstehen, wie ein
-Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet \autoref{dev-manual-extension-overview}. Die Namen der Komponenten finden sich so nicht im Code
-wieder, sie dienen lediglich als Oberbegriff für eine ganze Reihe von Klassen
-und -strukturen die grob dieselbe Aufgabe haben.
+Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet
+\autoref{dev-manual-extension-overview}. Die Namen der Komponenten finden sich
+so nicht im Code wieder, sie dienen lediglich als Oberbegriff für eine ganze
+Reihe von Klassen und -strukturen die grob dieselbe Aufgabe haben.
 
 \begin{figure}
 	\centering
@@ -69,16 +71,16 @@ des Pakets und seinen Extensions, anschließend wird der passende Parser über d
 Parser-Factory erzeugt. Die Daten von Arch-Common enthalten zum Einen
 standardisierte, abstrahierte Informationen zum geladenen Paket (z.B. Länge,
 Anzahl, Funktion und Name von Registern, Speicher-Ausrichtung, Endianness, ...)
-und zum Anderen Zugriff auf Factories zur Erzeugung von Instruktionsknoten.\\
-Soll jetzt ein Quelltext eingelesen und ausgeführt werden, bekommt der Core den
-Text und gibt diesen an die geladene Parser-Implementierung weiter. Diese
+und zum Anderen Zugriff auf Factories zur Erzeugung von Instruktionsknoten. Soll
+jetzt ein Quelltext eingelesen und ausgeführt werden, bekommt der Core den Text
+und gibt diesen an die geladene Parser-Implementierung weiter. Diese
 Implementierung wandelt das Programm in eine paket-unabhängige Darstellung
 mithilfe eines Syntaxbaumes um. Die Knoten des Syntaxbaums kann der Parser dabei
-über die NodeFactories der geladenen Architektur beziehen. Die
-paket-unabhängige Darstellung wird daraufhin von der Ausführungseinheit des Core-Moduls ausgeführt. Alle Effekte
-auf Register und Speicher passieren in einer abstrahierten Art, so dass die
-Benutzeroberfläche Veränderungen anzeigen kann, ohne die konkrete
-Implementierung der Architektur zu kennen.\\
+über die NodeFactories der geladenen Architektur beziehen. Die paket-unabhängige
+Darstellung wird daraufhin von der Ausführungseinheit des Core-Moduls
+ausgeführt. Alle Effekte auf Register und Speicher passieren in einer
+abstrahierten Art, so dass die Benutzeroberfläche Veränderungen anzeigen kann,
+ohne die konkrete Implementierung der Architektur zu kennen.
 
 Es sind also nur diejenigen Teile zu implementieren, die im Diagramm gestrichelt
 umrandet sind. Es muss eine Architekturdefinition inklusive Implementierungen
@@ -525,20 +527,100 @@ QML auf die C++ Instanz zugegriffen werden soll. Ist die neue Komponente dagegen
 für alle Projekte gleich, so verwende man die \texttt{Ui} Klasse. Bei der
 Programmierung der neuen C++-Klasse sollte der Abschnitt zur Kommunikation der
 Module beachtet werden, siehe \autoref{gui-kommunikation}.
+\vspace{-0.4cm}
 
 \subsubsection{Erstellen neuer Themes}
+\vspace{-0.2cm}
 
-Sollen neue Themes hinzugefügt werden, kann man dafür einfach das zum Auslieferungszeitpunkt
-bereits bestehende Theme abändern. Dazu kopiert man zuerst den Ordner \texttt{default.theme}
-einmal zusätzlich in den Ordner \texttt{.erasim/themes} im Home-Verzeichnis. Wir haben uns entschieden, zur Erstellung von Themes SASS-Dateien zu verwenden. In diesen Dateien ändert man dann
-alles, was anders aussehen soll. Dies ist recht intuitiv. Auch der Name des Ordners sollte angepasst werden, wichtig ist, dass\texttt{.theme} am Ende stehen bleibt, also zum Beispiel \texttt{my\_theme.theme}. Im Anschluss muss die Datei in eine JSON-Datei umgewandelt werden, damit der Simulator sie verwenden kann. Hierfür gibt es ein Python-Skript im Ordner \texttt{era-gp-sim/scripts}.
-Man führt also im Ordner \texttt{era-gp-sim} folgenden Befehl aus:
-\begin{lstlisting}
-python3 scripts/theme2json.py ~/.erasim/themes/my_theme.theme/theme.sass
+Eine Stärke von \erasim{} ist die Möglichkeit, fast alle Oberflächen,
+Schriftarten und -größen sowie Komponentenhöhen und -breiten via Themes anpassen
+zu können. Ein \emph{Theme} ist hierbei eine Gruppe von Dateien, die in einem
+Unterordner des in der Wurzel des Projekts liegenden \texttt{themes/}
+Verzeichnisses dem Simulator zur Verfügung stehen. Ein Theme-Ordner muss hierfür
+auch eine entsprechende \texttt{.theme} Endung aufweisen. Die Spezifikation von
+Farben und Dimensionen ist im Weiteren zunächst über \emph{SASS}-Dateien
+realisiert. SASS steht hierbei für \emph{Syntactically Awesome
+Stylesheets}\footnote{\url{http://sass-lang.com}} und benennt sowohl eine
+CSS-ähnliche Sprache zur Spezifikation kaskadierender Formatierungsregeln als
+auch einen ausführbaren Präprozessor, der SASS-Dateien in CSS umwandelt. Die
+Vorteile von SASS gegenüber reinem CSS, welche diesen Zwischenschritt von SASS
+auf CSS lohnenswert machen, sind unter anderem eine vereinfache Syntax sowie die
+Möglichkeit, Variablen und Funktionen deklarieren und sogar objektorientierte
+Konzepte wie Vererbung (auf entfernte Weise) in CSS nutzen zu können.
+\autoref{lst:sass-css} zeigt einen Vergleich zweier funktional
+identischer Codestücke sowohl in SASS- als auch CSS-Syntax.
+\begin{figure}[h!]
+  \begin{minipage}{0.5\textwidth}
+    \begin{lstlisting}[%
+        keywords={body, div, hover},%
+        emph={background, border, color}%
+      ]
+      $purple: #ff00ff
+      body
+        color: $purple
+        &:hover
+          background: $purple
+
+      div
+        @extends body
+        border: 2px lighten($purple, 10%)
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \begin{lstlisting}[%
+        keywords={body, div, hover},%
+        emph={background, border, color}%
+      ]
+      body, div {
+        color: #ff00ff;
+      }
+      body:hover, div:hover {
+        background: #ff00ff;
+      }
+      div {
+        border: 2px #fd00fd;
+      }
+    \end{lstlisting}
+  \end{minipage}
+  \begin{lstlisting}[label={lst:sass-css}, caption={Diese beiden Codebeispiele geben einen Vergleich eines kurzen Codeausschnitts,
+  links in SASS- und rechts in CSS-Syntax. Das SASS Beispiel profitiert klar von
+  der Verwendung von Variablen, Funktionen und der Möglichkeit, Selektoren
+  voneinander "erben" zu lassen.}]
+  \end{lstlisting}
+  \vspace{-1cm}
+\end{figure}
+
+Da die SASS-Sprache lediglich ein Vorstadium für CSS ist, muss ein
+entsprechender Präprozessor verwendet werden, um für die weitere Integration mit
+dem Simulator die SASS-Dateien in reines CSS zu überführen. Ein solcher
+Präprozessor kann von der offiziellen Website des SASS Projekts heruntergeladen.
+
+Da der Simulator jedoch nicht in der Lage ist, CSS direkt zu verstehen, muss
+nach Konvertierung von SASS in CSS noch eine weitere Transformation von CSS in
+reines JSON geschehen. Hierfür kann unser selbstentwickelter CSS $\rightarrow$
+JSON Konvertierer, \texttt{theme2json.py}, genutzt werden. Dieser befindet sich
+im \texttt{scripts/} Verzeichnis und lässt sich wie folgt ausführen:
+
+\begin{lstlisting}[emph={python3}]
+python3 scripts/theme2json.py ~/.erasim/themes/<theme>.theme/theme.css
 \end{lstlisting}
-Man beachte, dass dafür ein SASS-Compiler installiert sein muss\footnote{http://sass-lang.com/install}.
-Im Anschluss sind auch andere Benutzer in der Lage, das Theme ohne erneutes Umwandeln zu verwenden, sofern man ihnen die JSON-Datei zukommen lässt.
-\todo[inline]{Ich habe keine Ahnung, ob das stimmt. Bitte überprüfen}
+
+wobei \texttt{<theme>} mit dem konkreten Namen des zu konvertierenden Themes
+auszutauschen ist. Es sei angemerkt, dass dieser Konvertierer keinen Wert auf
+Selektivität nimmt, da dieses Konzept von JSON nicht unterstützt wird. Damit ist
+gemeint, dass \texttt{\#ID}s die selbe Priorität haben wie \texttt{.Klassen},
+was bei regulärem CSS natürlich nicht der Fall ist. Auch beachte man, dass Qt,
+im Gegensatz zu einem Webbrowser, Styles nicht kaskadieren lässt. Das bedeutet
+schlussendlich, dass jede Komponente in der GUI einzeln und isoliert gestyled
+werden muss.
+
+Ist ein SASS-Präprozessor installiert, so kann das \texttt{theme2json.py} Skript
+diesen im Übrigen auch selbst gleich ausführen und im selben Schritt das
+"Kompilat" in JSON umwandeln. Dies ist mit folgendem Kommando möglich:
+
+\begin{lstlisting}[emph={python3}]
+python3 scripts/theme2json.py ~/.erasim/themes/<theme>.theme
+\end{lstlisting}
 
  \subsection{Weitere Anmerkungen}
 
