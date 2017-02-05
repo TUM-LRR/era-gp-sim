@@ -32,6 +32,9 @@ Item {
   property var defaultTab: 0
   property bool isExpanded: false
 
+  // The component which is displayed by this item.
+  property var currentComponent
+
   onIsExpandedChanged: {
     if (isExpanded == true) {
       headerFadeOut.stop()
@@ -172,9 +175,9 @@ Item {
     ]
 
     source: {
-      var currentComponent = sourceComponents[componentSelector.currentIndex];
-      if (currentComponent) {
-        return  "Components/" + currentComponent;
+      root.currentComponent = sourceComponents[componentSelector.currentIndex];
+      if (root.currentComponent) {
+        return  "Components/" + root.currentComponent;
       } else {
         return "Components/help/HelpWindow.qml";
       }

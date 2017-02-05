@@ -229,7 +229,8 @@ Ui::id_t Ui::loadProject(QQuickItem* tabItem,
       QString::fromStdString(projectSnapshot.getProjectName()));
   iterator->second->setText(QString::fromStdString(projectSnapshot.getCode()));
   iterator->second->loadSnapshot(projectSnapshot);
-  // TODO(janschopohl): Add project settings
+  iterator->second->loadProjectSettings(projectSnapshot.getProjectSettings());
+  iterator->second->setDefaultProjectPath(url);
 
   return projectId;
 }

@@ -43,6 +43,7 @@
 #include "ui/input-key-model.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
+#include "ui/project-settings.hpp"
 #include "ui/register-model.hpp"
 #include "ui/snapshot-component.hpp"
 
@@ -208,6 +209,20 @@ class GuiProject : QObject {
   void loadSnapshot(const Snapshot& snapshot);
 
   /**
+   * Loads project settings from a json object.
+   *
+   * \param The json object.
+   */
+  void loadProjectSettings(const Json& json);
+
+  /**
+   * Set the default path to save the project to.
+   *
+   * \param url The path as an url.
+   */
+  void setDefaultProjectPath(const QUrl& url);
+
+  /**
    * Removes a snapshot.
    *
    * \param qName name of the snapshot.
@@ -371,6 +386,11 @@ class GuiProject : QObject {
    * The C++ component for the memory.
    */
   MemoryComponentPresenter _memoryModel;
+
+  /**
+   * Component for the project settings.
+   */
+  ProjectSettings _projectSettings;
 
   /**
    * The default path to save the text of this project to.

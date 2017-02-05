@@ -70,6 +70,7 @@ GuiProject::GuiProject(
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
+, _projectSettings(context)
 , _defaultTextFileSavePath()
 , _defaultProjectSavePath()
 , _snapshotComponent(snapshotComponent)
@@ -268,6 +269,7 @@ void GuiProject::saveProjectAs(const QUrl& url) {
   snapshot.setCode(_editorComponent.getText().toStdString());
   snapshot.setParserName(_parserName);
   snapshot.setProjectName(_projectName);
+  snapshot.setProjectSettings(_projectSettings.toJson());
 
   auto snapshotString = QByteArray::fromStdString(snapshot.getJson().dump(4));
 
@@ -290,6 +292,14 @@ void GuiProject::setText(const QString& text) {
 
 void GuiProject::loadSnapshot(const Snapshot& snapshot) {
   _projectModule.getMemoryManager().loadSnapshot(snapshot);
+}
+
+void GuiProject::loadProjectSettings(const Json& json) {
+  _projectSettings.loadSettings(json);
+}
+
+void GuiProject::setDefaultProjectPath(const QUrl& url) {
+  _defaultProjectSavePath = url;
 }
 
 void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {

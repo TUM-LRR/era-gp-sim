@@ -22,13 +22,15 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 
 SplitView {
+  id: splitviewRoot
   orientation: Qt.Horizontal
 
   InnerSplitviews {
     Layout.minimumWidth: 10
     width: parent.width/4
     id: splitView1
-    faktor: 2
+    settingsKey: "splitview-left"
+    factor: 2
     quotient: 3
     usual1: "snapshots"
     usual2: "inputoutput"
@@ -39,7 +41,8 @@ SplitView {
     Layout.minimumWidth: 10
     width: parent.width/4
     id: splitView2
-    faktor: 2
+    settingsKey: "splitview-editor"
+    factor: 2
     quotient: 3
     usual2: "inputoutput"
   }
@@ -48,7 +51,8 @@ SplitView {
     Layout.minimumWidth: 10
     width: parent.width/4
     id: splitView3
-    faktor: 1
+    settingsKey: "splitview-middle"
+    factor: 1
     quotient: 2
     usual1: "register"
     usual2: "register"
@@ -58,19 +62,32 @@ SplitView {
     Layout.minimumWidth: 10
     width: parent.width/4
     id: splitView4
-    faktor: 1
+    settingsKey: "splitview-right"
+    factor: 1
     quotient: 2
     usual1: "memory"
     usual2: "help"
   }
 
   /*Sets the widht at the beginning, because else the columns are too small*/
-  onWidthChanged: {
+  Component.onCompleted: {
     splitView1.width = 3*(width/20);
     splitView2.width = 9*(width/20);
     splitView3.width = 4*(width/20);
     splitView4.width = 4*(width/20);
   }
 
+  function collectSettings() {
+    for (var index = 0; index < splitviewRoot.children.length; ++index) {
+      var child = splitviewRoot.children[index];
+      // The children of the splitview are not the real objects, there is a nested structure.
+      for (var innerIndex = 0; innerIndex < child.children.length; ++innerIndex) {
+        var innerChild = child.children[innerIndex];
+        if (innerChild.isSplitView) {
+          innerChild.storeSettings();
+        }
+      }
+    }
+  }
 
 }

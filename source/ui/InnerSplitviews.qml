@@ -24,12 +24,19 @@ import QtQuick.Layouts 1.2
 import Theme 1.0
 
 SplitView {
+  // a tag to identify an inner splitview
+  property bool isSplitView: true
+
+  // the settings key of this item
+  property string settingsKey
+
+  // the default items of this splitview
   property var usual1
   property var usual2
 
   /*heigth of the first component*/
   property int quotient
-  property int faktor
+  property int factor
 
   // Allows parent items to set a default tab of each component,
   // if they consist of multiple tabs (i.e. InputOutput).
@@ -76,8 +83,24 @@ SplitView {
 
   /*Sets heigth at the beginning*/
   onHeightChanged: {
-    item1.height=faktor*(height/quotient)-5;
-    item2.height=height-item1.height-5;
+    item1.height = factor * (height / quotient) - 5;
+    item2.height = height - item1.height - 5;
   }
 
+  function storeSettings() {
+    projectSettings[settingsKey+"-item1"] = item1.currentComponent;
+    projectSettings[settingsKey+"-item2"] = item2.currentComponent;
+    projectSettings[settingsKey+"-item1-height"] = item1.height;
+    projectSettings[settingsKey+"-item2-height"] = item2.height;
+  }
+
+  Connections {
+    target: projectSettings
+    onSettingsLoaded: {
+      item1.currentComponent = projectSettings[settingsKey+"-item1"];
+      item2.currentComponent = projectSettings[settingsKey+"-item2"];
+      item1.height = projectSettings[settingsKey+"-item1-height"];
+      item2.height = projectSettings[settingsKey+"-item2-height"];
+    }
+  }
 }

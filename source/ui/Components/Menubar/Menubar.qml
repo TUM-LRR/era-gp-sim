@@ -108,7 +108,11 @@ MenuBar {
       id: saveProject
       text: "Save Project"
       shortcut: "Ctrl+Alt+S"
-      onTriggered: ui.saveProject(tabView.currentProjectId());
+      onTriggered: {
+        // Call store settings method here directly, as a signal could be delayed.
+        tabView.currentProjectItem().storeProjectSettings();
+        ui.saveProject(tabView.currentProjectId());
+      }
     }
 
     MenuItem {
@@ -168,6 +172,8 @@ MenuBar {
 
   function actionSaveProjectAs() {
     main.fileDialog.onAcceptedFunction = function(path) {
+      // Call store settings method here directly, as a signal could be delayed.
+      tabView.currentProjectItem().storeProjectSettings();
       ui.saveProjectAs(tabView.currentProjectId(), path);
     };
 

@@ -52,7 +52,7 @@ bool Snapshot::isValidProject() const {
   if (!isValid()) return false;
   if (!_snapshot.count("project-name")) return false;
   if (!_snapshot.count("parser-name")) return false;
-  // if (!_snapshot.count("project-settings")) return false;
+  if (!_snapshot.count("project-settings")) return false;
   if (!_snapshot.count("code")) return false;
   if (!_snapshot["memory"].count("memory_byteCount")) return false;
 
@@ -100,6 +100,11 @@ Memory::size_t Snapshot::getMemorySize() const {
   return _snapshot["memory"].find("memory_byteCount")->get<Memory::size_t>();
 }
 
+Snapshot::Json Snapshot::getProjectSettings() const {
+  assert::that(isValidProject());
+  return _snapshot["project-settings"];
+}
+
 void Snapshot::setCode(const std::string& code) {
   _snapshot["code"] = code;
 }
@@ -110,6 +115,10 @@ void Snapshot::setProjectName(const std::string& projectName) {
 
 void Snapshot::setParserName(const std::string& parserName) {
   _snapshot["parser-name"] = parserName;
+}
+
+void Snapshot::setProjectSettings(const Json& json) {
+  _snapshot["project-settings"] = json;
 }
 
 Snapshot::Json Snapshot::getJson() const {

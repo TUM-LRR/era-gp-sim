@@ -105,6 +105,11 @@ class Snapshot {
   Memory::size_t getMemorySize() const;
 
   /**
+   * \return The project settings.
+   */
+  Json getProjectSettings() const;
+
+  /**
    * Set the code property of this snapshot.
    *
    * \param code The code (text).
@@ -124,6 +129,13 @@ class Snapshot {
    * \param parserName The parser name.
    */
   void setParserName(const std::string& parserName);
+
+  /**
+   * Sets the project-settings property.
+   *
+   * \param json The project settings json-object.
+   */
+  void setProjectSettings(const Json& json);
 
   /**
    * \return The underlying json object.

@@ -143,6 +143,17 @@ ApplicationWindow {
       // If there is a project for this tab in the backend, this is true.
       property bool projectValid: false
 
+      // The project item
+      property var projectItem: {
+        for (var index = 0; index < placeholderItem.children.length; ++index) {
+          var child = placeholderItem.children[index];
+          if (child.isProject) {
+            return child;
+          }
+        }
+        return undefined;
+      }
+
       // Index of the project in the project vector.
       property int projectId: -1
 
@@ -162,6 +173,13 @@ ApplicationWindow {
         window.expand();
         window.showMenus();
         projectValid = true;
+      }
+
+      // stores the project settings to the settings object
+      function storeProjectSettings() {
+        if (projectValid) {
+          projectItem.projectSplitview.collectSettings();
+        }
       }
 
       ProjectCreationScreen {
@@ -190,8 +208,16 @@ ApplicationWindow {
   Component {
     id: projectComponent
     Item {
+      id: projectItem
       anchors.fill: parent
+
+      // A flag which identifies this as the project item.
+      property bool isProject: true
+
+      property alias projectSplitview: projectSplitview
+
       Splitview {
+        id: projectSplitview
         anchors.fill: parent
 
         SystemPalette { id: systemPalette }
