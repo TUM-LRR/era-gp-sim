@@ -76,9 +76,6 @@ SplitView {
     Component.onCompleted: splitView4.width = 4*(splitviewRoot.width/20);
   }
 
-  Component.onCompleted: {
-    console.log(widht + " " + height);
-  }
 
   function collectSettings() {
     for (var index = 0; index < splitviewRoot.children.length; ++index) {
