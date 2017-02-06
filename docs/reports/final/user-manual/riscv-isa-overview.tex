@@ -5,7 +5,7 @@
 
 Die Menge an verwendbaren Befehlen für den Simulator lässt sich grob in zwei
 Teile aufteilen. Die erste Menge an Befehlen sind die sogenannten
-Parser-Direktiven. Das sind diejenigen Befehle bzw. Direktiven, die schon 
+Parser-Direktiven. Das sind diejenigen Befehle bzw. Direktiven, die schon
 Zeitpunkt der Übersetzung (also Assemblierung) aufgelöst und verarbeitet werden.
 Direktiven tauchen also nicht direkt im assemblierten Code auf, dennoch nehmen
 sie u.a. durch Anordnung des Speichers (Sektionen, Speicherreservierungen) oder
@@ -24,7 +24,7 @@ Um die Übersichtlichkeit eines Programmes zu verbessern, können häufig benöt
 Konstanten eigens definiert werden. Auf diese kann dann über einen Namen
 zugegriffen werden.
 
-\textbf{.equ <name>, <wert>} erzeugt eine Konstante \texttt{name} mit Wert
+\texttt{.equ <name>, <wert>} erzeugt eine Konstante \texttt{name} mit Wert
 \texttt{wert}
 
 \begin{exampleblock}{Beispiel: Konstanten}
@@ -81,17 +81,20 @@ Assemblierer keine assemblierten Instruktionen in diese Speicherzelle schreibt.
 So kann man sicherstellen, dass man bei Verwendung dieser Speicherzelle(n) nicht
 den gerade auszuführenden Code korrumpiert. Da die Adresse der Speicherzelle(n)
 vom Assemblierer abhängt, sollte man die Adresse mit einem vorgeschobenen Label
-''speichern''. Das Label vor einer Speicherreservierungs-Direktive nimmt die
-Anfangsadresse des reservierten Speicherblocks an.\\
+"speichern". Das Label vor einer Speicherreservierungs-Direktive nimmt die
+Anfangsadresse des reservierten Speicherblocks an.
 
-\begin{centering}
-	\begin{tabular}{rcl}
-		reserve byte & \textbf{.resb <anz>} & reserviert \texttt{anz} Byte\\
-		reserve half word & \textbf{.resh <anz>} & reserviert \texttt{anz} Halbwörter (also jeweils 16 Bit)\\
-		reserve word & \textbf{.resw <anz>} & reserviert \texttt{anz} Wörter (also jeweils 32 Bit)\\
-		reserve double word & \textbf{.resd <anz>} & reserviert \texttt{anz} Doppelwörter (also jeweils 64 Bit)\\
+\begin{table}[H]
+\centering
+	\begin{tabular}{>{\ttfamily}c l}
+    \textbf{Direktive} & \textbf{Beschreibung}\\
+    \toprule
+		.resb <n> & reserviert \texttt{n} Byte\\
+		.resh <n> & reserviert \texttt{n} Halbwörter (also jeweils 16 Bit)\\
+		.resw <n> & reserviert \texttt{n} Wörter (also jeweils 32 Bit)\\
+		.resd <n> & reserviert \texttt{n} Doppelwörter (also jeweils 64 Bit)\\
 	\end{tabular}
-\end{centering}
+\end{table}
 
 \begin{warningblock}
 	Speicherreservierungen sollten sich nur in der Datensektion befinden!
@@ -123,14 +126,17 @@ noch vor der Ausführung des Programms mit Daten befüllen. Da auch hier die
 genaue Adresse des Speicherblocks von der Assemblierung abhängt, sollte zur
 Verwendung ein Label vorangestellt werden.\\
 
-\begin{centering}
-	\begin{tabular}{rcl}
-		define byte & \textbf{.byte <data>} & legt \texttt{data} als bytes in den Speicher\\
-		define half word & \textbf{.half <data>} & legt \texttt{data} als Halbwörter (16 Bit) in den Speicher\\
-		define word & \textbf{.word <data>} & legt \texttt{data} als Wort (32 Bit) in den Speicher\\
-		define double word & \textbf{.dword <data>} & legt \texttt{data} als Doppelwort (64 Bit) in den Speicher\\
+\begin{table}[H]
+  \centering
+	\begin{tabular}{>{\ttfamily}cl}
+    \textbf{Direktive} & \textbf{Beschreibung}\\
+    \toprule
+		.byte <data> & legt \texttt{data} als bytes in den Speicher\\
+		.half <data> & legt \texttt{data} als Halbwörter (16 Bit) in den Speicher\\
+		.word <data> & legt \texttt{data} als Wort (32 Bit) in den Speicher\\
+		.dword <data> & legt \texttt{data} als Doppelwort (64 Bit) in den Speicher\\
 	\end{tabular}
-\end{centering}
+\end{table}
 
 \texttt{data} kann hier eine oder mehrere Zahlen sein (durch Kommas getrennt), die dann hintereinander als Bytes, Halbwörter, usw. abgelegt werden.
 
@@ -159,14 +165,13 @@ Häufig benötigte Folgen von Befehlen können als Makro definiert werden. Hierz
 existieren folgende Direktiven:
 
 \begin{itemize}
-	\item \textbf{.macro <name> [, <parameter>]} beginnt die Definition eines
+	\item \texttt{.macro <name> [, <parameter>]} beginnt die Definition eines
 	Makros mit dem Namen \texttt{name}. Optional kann eine durch Kommata getrennte Liste
 	von Parametern angegeben werden.
-	\item \textbf{.endm} schließt die Definition eines Makros ab.
+	\item \texttt{.endm} schließt die Definition eines Makros ab.
 \end{itemize}
 
 Alle Befehle zwischen \texttt{.macro} und \texttt{.endm} sind Teil des Makros.
-
 Im Programm kann das Makro wie jeder andere Befehl mit seinem Namen aufgerufen
 werden.
 
@@ -221,11 +226,16 @@ werden.
 \end{infoblock}
 
 \subsection{RISC-V Instruktionen}
-Die RISC-V Instruktionen sind in verschiedene Module aufgeteilt. Durch eine Modularisierung des Dialekts kann ganz bewusst auf Arten von Instruktionen verzichtet werden. Es braucht z.B. nicht jeder Mikrocontroller Multiplikation oder atomare Operationen. Der Simulator unterstützt folgende Module:\\
+
+Die RISC-V Instruktionen sind in verschiedene Module aufgeteilt. Durch eine
+Modularisierung des Dialekts kann ganz bewusst auf Arten von Instruktionen
+verzichtet werden. Es braucht z.B. nicht jeder Mikrocontroller Multiplikation
+oder atomare Operationen. Der Simulator unterstützt folgende Module:
+
 \begin{itemize}
-	\item \textbf{RV32I} Das ''Basispaket'' mit 32 Bit Arithmetik-, Sprung- und Verzweigungsinstruktionen
+	\item \textbf{RV32I} Das "Basispaket" mit 32 Bit Arithmetik-, Sprung- und Verzweigungsinstruktionen
 	\item\textbf{ RV32M} Fügt dem Basispaket Befehle zur Multiplikation und Division für 32 Bit hinzu
-	\item \textbf{RV64I} Das ''Basispaket'' mit 64 Bit Arithmetik-, Sprung- und Verzweigungsinstruktionen
+	\item \textbf{RV64I} Das "Basispaket" mit 64 Bit Arithmetik-, Sprung- und Verzweigungsinstruktionen
 	\item \textbf{RV64M} Fügt dem Basispaket Befehle zur Multiplikation und Division für 64 Bit hinzu
 \end{itemize}
 Es kann generell für ein Projekt im Simulator entweder 32 oder 64 Bit als Registerlänge gewählt werden. Dementsprechend können nur Module mit der gleichen Länge verwendet werden. Die 64 Bit Erweiterungen enthalten alle Instruktionen ihrer 32 Bit Gegenstücke, allerdings funktionieren diese auf den gesamten 64 Bit.\\
@@ -234,19 +244,19 @@ Im Folgenden wird jeder unterstützte Befehl kurz erläutert. Eine detaillierter
 Alle regulären Instruktionen verwenden in der einen oder anderen Art Register
 also Operanden. Die im Simulator unterstützten Module stellen dem Programmierer
 32 Allzweckregister zur Verfügung. Diese Register sind je nach gewähltem
-Basismodul 32 oder 64 bit lang. Das Register 0 (''zero''-Register) hat
+Basismodul 32 oder 64 bit lang. Das Register 0 ("zero"-Register) hat
 unveränderbar den Wert 0. Für eine gute Verwendungsmöglichkeit siehe
 \autoref{manual-riscv-jump-instructions}. Die Register werden über
 \texttt{x<id>} angesprochen, wobei \texttt{id} die Nummer des Registers ist. So
 steht \texttt{x0} für das Register 0 und \texttt{x17} für das Register 17.\\
-Zur Angabe von Zahl-Konstanten (sog. ''Immediates'') unterstützt der Simulator
+Zur Angabe von Zahl-Konstanten (sog. "Immediates") unterstützt der Simulator
 folgende 3 Möglichkeiten:
 \begin{itemize}
 	\item Mit dem Präfix \texttt{0b} lässt sich die Konstante in Binärdarstellung
 	ausdrücken. \texttt{0b1101} steht z.B. für die Zahl 13.
 	\item Mit dem Präfix \texttt{0x} werden Konstanten in Hexadezimal geschrieben.
 	\texttt{0xaffe} $\widehat{=}$ 45 054.
-	
+
 	\item Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
 	in Dezimaldarstellung.
 \end{itemize}
@@ -260,25 +270,40 @@ folgende 3 Möglichkeiten:
 		\dots
 		lb x1, x0, addr
 	\end{riscv}
-	Die Definition von Konstanten und Labels kann auch unterhalb der Verwendung im arithmetischen Ausdruck oder in einem anderen Segment sein, solange sich keine zyklische Abhängigkeit ergibt. Es sind allerdings nur Ausdrücke erlaubt, die zur Übersetzungszeit in eine Zahl aufgelöst werden können. \texttt{addi x1, x0, 2*x4} ist nicht erlaubt, da der Wert des Registers 4 zur Übersetzungszeit noch nicht feststeht.\\
-	Die Operatoren für die Ausdrücke sind an Operatoren aus C angelehnt:\\
-		\begin{tabular}{|c|c|}
-			+ & Addition \\
-			- & Subtraktion \\
-			* & Multiplikation \\
-			/ & Division \\
-			\% & Modulo \\
-			<< & shift links\\
-			>> & logischer shift rechts\\
-			<= & Vergleich: kleiner gleich\\
-			< & Vergleich: kleiner\\
-			>= & Vergleich: größer gleich\\
-			> & Vergleich: größer\\
-			! & boolsche Negation\\
-			== & Vergleich: Gleichheit\\
-			!= & Vergleich: Ungleichheit\\
-		\end{tabular}\\
-	Hinweis zu boolschen Operationen: eine Zahl $=0$ repräsentiert gleichzeitig einen falschen, eine Zahl $\neq 0$ einen wahren Ausdruck. Vergleiche ergeben jeweils $0$ bzw. $1$.
+
+  Die Definition von Konstanten und Labels kann auch unterhalb der Verwendung im
+  arithmetischen Ausdruck oder in einem anderen Segment sein, solange sich keine
+  zyklische Abhängigkeit ergibt. Es sind allerdings nur Ausdrücke erlaubt, die
+  zur Übersetzungszeit in eine Zahl aufgelöst werden können. \texttt{addi x1,
+  x0, 2*x4} ist nicht erlaubt, da der Wert des Registers 4 zur Übersetzungszeit
+  noch nicht feststeht. Die Operatoren für die Ausdrücke sind an Operatoren aus
+  C angelehnt:
+
+	\begin{center}
+    \begin{tabular}{cc}
+      \textbf{Symbol} & \textbf{Beschreibung}\\
+      \toprule
+      + & Addition \\
+      - & Subtraktion \\
+      * & Multiplikation \\
+      / & Division \\
+      \% & Modulo \\
+      << & Links-Shift\\
+      >> & Logischer Rechts-Shift\\
+      <= & Vergleich: kleiner gleich\\
+      < & Vergleich: kleiner\\
+      >= & Vergleich: größer gleich\\
+      > & Vergleich: größer\\
+      ! & Boolsche Negation\\
+      == & Vergleich: Gleichheit\\
+      != & Vergleich: Ungleichheit\\
+    \end{tabular}
+	\end{center}
+
+	Hinweis zu boolschen Operationen: eine Zahl $=0$ repräsentiert gleichzeitig
+	einen falschen, eine Zahl $\neq 0$ einen wahren Ausdruck. Vergleiche ergeben
+	jeweils $0$ bzw. $1$.
+
 \end{infoblock}
 
 \begin{warningblock}
@@ -293,51 +318,72 @@ folgende 3 Möglichkeiten:
   2048 produziert. Würde die Zahldarstellung auf die Operandengröße beschränkt
   werden, wäre das (unerwartete) Ergebnis $(3 \cdot 2000 \mod 2048)/4 = 476$
   anstatt $1500$}. Das hat zur Folge, dass \texttt{addi x1,x0, 0xfff} mit einem
-  Übersetzungsfehler als ''zu groß'' abgelehnt wird. Grund ist hier, dass der
+  Übersetzungsfehler als "zu groß" abgelehnt wird. Grund ist hier, dass der
   Befehl eine Konstante im Wertebereich von vorzeichenbehafteten 12 Bit
-  erwartet. Die größte darstellbare Zahl ist $2^{11}-1 = 2047$ während 0xfff $
-  \widehat{=} 4095$, also zu groß ist.\\
-  Die obige Instruktion schreibt also nicht -1 in das Register 1. 
-  Um das zu erreichen, sollte \texttt{addi x1, x0, -1} oder
-  \texttt{addi x1, x0, -0x1} o.ä verwendet werden.
+  erwartet. Die größte darstellbare Zahl ist $2^{11}-1 = 2047$ während $\mathtt{0xfff}  \widehat{=} 4095$, also zu groß ist. Die obige Instruktion schreibt also nicht
+  -1 in das Register 1. Um das zu erreichen, sollte \texttt{addi x1, x0, -1}
+  oder \texttt{addi x1, x0, -0x1} o.ä verwendet werden.
+
 \end{warningblock}
 
 \subsubsection{Arithmetische Befehle}
-Jeder arithmetische Befehl hat eine Register-Register und eine Register-Immediate Variante. Letztere hat das Suffix ''i''.\\
+Jeder arithmetische Befehl hat eine Register-Register und eine Register-Immediate Variante. Letztere hat das Suffix \texttt{i}.
 \begin{warningblock}
-	Die Register-Register Instruktionen arbeiten auf den vollen 32/64 Bit.\\
-	Der Immediate-Operand ist aber auf den Wertebreich von vorzeichenbehafteten 12 Bit beschränkt (-2048 -- 2047)
+
+	Die Register-Register Instruktionen arbeiten auf den vollen 32/64 Bit. Der
+	Immediate-Operand ist aber auf den Wertebreich von vorzeichenbehafteten 12 Bit
+	beschränkt (-2048 -- 2047)
+
 \end{warningblock}
-Das Format der arithmetischen Operationen ist gleich aufgebaut:\\
- \begin{centering}
- 	\texttt{instr <dest>, <reg1>, <reg2|imm>}\\
- \end{centering}
+
+Das Format der arithmetischen Operationen ist gleich aufgebaut:
+\begin{center}
+	\texttt{instr <dest>, <reg1>, <reg2|imm>}
+\end{center}
 
 Die beiden Operanden \texttt{reg1} und \texttt{reg2} bei Register-Register bzw.
 \texttt{reg1} und \texttt{imm} bei Register-Immediate dienen als Operanden für
 die arithmetische Funktion. Das Ergebnis wird immer im Register \texttt{dest}
-abgelegt. Die Operandenregister bleiben also u.U. unverändert.\\
+abgelegt. Die Operandenregister bleiben also u.U. unverändert.
 
+\vspace{-0.2cm}
+\begin{table}[H]
+  \begin{tabular}{ c p{8cm} p{4cm}}
+    \textbf{Instruktion} & \textbf{Beschreibung} & \textbf{Anmerkung}\\
+    \toprule
+  	\texttt{add(i)} & Addiert die beiden Operanden & \\
 
-\begin{tabular}{|c|p{8cm}|p{4cm}|}
-	\hline
-	\textbf{add(i)} & Addiert die beiden Operanden & \\
-	\hline
-	\textbf{sub} & Subtrahiert \texttt{reg2} von \texttt{reg1}& Es gibt kein \texttt{subi}, aber \texttt{addi rd, rs1, -imm} \\
-	\hline
-	\textbf{and(i)} & Führt eine logische, bitweise UND-Operation durch & \\
-	\hline
-	\textbf{or(i)} & Führt eine logische, bitweise ODER-Operation durch & \\
-	\hline
-	\textbf{xor(i)} & Führt eine logische, bitweise exklusiv-ODER-Operation durch & \\
-	\hline
-	\textbf{sll(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \multirow{3}{4cm}{Als Stellenanzahl werden nur die unteren 5 Bit betrachtet} \\
-	\cline{1-2}
-	\textbf{srl(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
-	\cline{1-2}
-	\textbf{sra(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit eingeschoben) & \\
-	\hline
-\end{tabular}
+    \midrule
+
+  	\texttt{sub} & Subtrahiert \texttt{reg2} von \texttt{reg1} & Es gibt kein
+  	\texttt{subi}, aber \texttt{addi rd, rs1, -imm} \\ \midrule
+
+  	\texttt{and(i)} & Führt eine logische, bitweise UND-Operation durch & \\
+  	\midrule
+
+  	\texttt{or(i)} & Führt eine logische, bitweise ODER-Operation durch & \\
+  	\midrule
+
+  	\texttt{xor(i)} & Führt eine logische, bitweise exklusiv-ODER-Operation
+  	durch & \\ \midrule
+
+  	\texttt{sll(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch
+  	nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) &
+  	\multirow{3}{4cm}{Es werden nur die unteren 5 Bit betrachtet} \\
+
+    \midrule
+
+  	\texttt{srl(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch
+  	nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
+
+    \midrule
+
+  	\texttt{sra(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen
+  	arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit
+  	eingeschoben) & \\
+
+  \end{tabular}
+\end{table}
 
 \begin{warningblock}
 Alle Shift-Instruktionen der Variante Register-Immediate erlauben eine
@@ -347,42 +393,61 @@ verwendet werden, führt eine Zahl, die größer als 5 Bit ist, nicht zu einem
 \end{warningblock}
 
 Das 64 Bit Modul \textbf{RV64I} fügt zusätzliche spezielle arithmetische Befehle
-hinzu. Mit RV64I werden die ''normalen'' Instruktionen (siehe Tabelle oben) auf
-64 Bit erweitert. Die nun folgenden ''word''-Instruktionen (erkennbar am Suffix
-''w'') betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten
-Operandenregister und berechnen ein 32 Bit breites Ergebnis, das auf 64 Bit
-erweitert wird.\\
+hinzu. Mit RV64I werden die "normalen" Instruktionen (siehe Tabelle oben) auf 64
+Bit erweitert. Die nun folgenden "word"-Instruktionen (erkennbar am Suffix "w")
+betrachten jeweils nur die unteren 32 Bit der 64 Bit breiten Operandenregister
+und berechnen ein 32 Bit breites Ergebnis, das auf 64 Bit erweitert wird.
 
-\begin{tabular}{|c|p{8cm}|p{4cm}|}
-	\hline
-	\textbf{add(i)w} & Addiert die beiden Operanden & \\
-	\hline
-	\textbf{subw} & Subtrahiert \texttt{reg2} von \texttt{reg1}& Es gibt kein \texttt{subiw}, aber \texttt{addiw rd, rs1, -imm} \\
-	\hline
-	\textbf{sll(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \multirow{3}{4cm}{Arbeitet auf den vollen 64Bit. Als Stellenanzahl werden nur die unteren 6 Bit betrachtet} \\
-	\cline{1-2}
-	\textbf{srl(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
-	\cline{1-2}
-	\textbf{sra(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit eingeschoben) & \\
-	\hline
-	\textbf{sll(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \multirow{3}{4cm}{Als Stellenanzahl werden nur die unteren 5 Bit betrachtet} \\
-	\cline{1-2}
-	\textbf{srl(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
-	\cline{1-2}
-	\textbf{sra(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit eingeschoben) & \\
-	\hline
-\end{tabular}
+\begin{table}[H]
+  \begin{tabular}{c p{8cm} p{4cm}}
+    \textbf{Instruktion} & \textbf{Beschreibung} & \textbf{Anmerkung}\\
+    \toprule
 
-\subsubsection{LUI, AUIPC, SLT}
+  	\texttt{add(i)w} & Addiert die beiden Operanden & \\
 
-Die Befehle \textbf{lui} und \textbf{auipc} sind spezielle Instruktionen, um 32-Bit große
-Konstanten in ein Register zu übertragen. Da die Instruktionslänge bei RISC-V nur
-32 Bit beträgt, kann also keine 32 Bit große Konstante und der Ladebefehl
-gleichzeitig in einer Instruktion zusammengefasst werden. Somit muss das Laden
-der Konstante in mehreren Instruktionen erfolgen.\\
+  	\texttt{subw} & Subtrahiert \texttt{reg2} von \texttt{reg1}& Es gibt kein
+  	\texttt{subiw}, aber \texttt{addiw rd, rs1, -imm} \\
+
+  	\texttt{sll(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch
+  	nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) &
+  	\multirow{3}{4cm}{Arbeitet auf den vollen 64Bit. Als Stellenanzahl werden
+  	nur die unteren 6 Bit betrachtet} \\ \midrule
+
+  	\texttt{srl(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen logisch
+  	nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
+  	\midrule
+
+  	\texttt{sra(i)} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen
+  	arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit
+  	eingeschoben) & \\
+
+  	\texttt{sll(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen
+  	logisch nach links (Am LSBit werden \texttt{reg2|imm} Nullen eingeschoben) &
+  	\multirow{3}{4cm}{Als Stellenanzahl werden nur die unteren 5 Bit betrachtet} \\
+  	\midrule
+
+  	\textbf{srl(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen
+  	logisch nach rechts (Am MSBit werden \texttt{reg2|imm} Nullen eingeschoben) & \\
+  	\midrule
+
+  	\texttt{sra(i)w} & Shiftet \texttt{reg1} um \texttt{reg2|imm} Stellen
+  	arithmetisch nach rechts (Am MSBit wird \texttt{reg2|imm}-mal das Sign-Bit
+  	eingeschoben) & \\
+
+  \end{tabular}
+\end{table}
+
+\subsubsection{\texttt{LUI}, \texttt{AUIPC}, \texttt{SLT}}
+
+Die Befehle \textbf{lui} und \textbf{auipc} sind spezielle Instruktionen, um
+32-Bit große Konstanten in ein Register zu übertragen. Da die Instruktionslänge
+bei RISC-V nur 32 Bit beträgt, kann also keine 32 Bit große Konstante und der
+Ladebefehl gleichzeitig in einer Instruktion zusammengefasst werden. Somit muss
+das Laden der Konstante in mehreren Instruktionen erfolgen.
 
 Mit \textbf{lui} kann eine bis zu 20 Bit große Konstante \texttt{imm} direkt in die oberen 20 Bit des Registers \texttt{reg} geladen werden:
-\texttt{lui <reg>, <imm>}
+\texttt{lui <reg>, <imm>}.
+
 \begin{exampleblock}{32 Bit Konstante laden}
 Die Konstante 0xabcd1234 in x2 laden:\\
 \begin{riscv}
@@ -404,11 +469,11 @@ besten eine passende Pseudoinstruktion
 
 \end{exampleblock}
 
-\textbf{auipc} ermöglicht es, 32 Bit große Sprungadressen relativ zum
+\texttt{auipc} ermöglicht es, 32 Bit große Sprungadressen relativ zum
 Programmzähler zu bauen. Wie auch schon bei \texttt{lui} werden hier mehrere
 Instruktionen benötigt. \texttt{auipc} lädt eine bis zu 20 Bit große Konstante
 \texttt{imm} in die oberen 20 Bit des Registers \texttt{reg} und addiert danach
-den Programmzähler auf das Register: \texttt{auipc <reg>, <imm>}
+den Programmzähler auf das Register: \texttt{auipc <reg>, <imm>}.
 
 \begin{exampleblock}{Ganz weiter Sprung}
 Sprung um 0xbadeaffe Byte nach unten:
@@ -420,24 +485,27 @@ Auch hier ist eine elegantere Variante mit Konstante und Übersetzungszeit
 Arithmetik möglich.
 \end{exampleblock}
 
-\textbf{slt} \texttt{<dest>, <reg1>, <reg2>} vergleicht reg1 und reg2 und
+\texttt{slt} \texttt{<dest>, <reg1>, <reg2>} vergleicht reg1 und reg2 und
 schreibt eine 1 in Register dest, wenn reg1 kleiner reg2. Ist dies nicht der
 Fall, wird eine 0 in Register dest geschrieben. \textbf{sltu} vergleicht die
 Register vorzeichenlos. \textbf{slti} bzw. \textbf{sltiu} akzeptieren anstatt
 eines zweiten Registers eine 12-Bit vorzeichenbehaftete bzw. vorzeichenlose
 Zahl.
 
-\subsubsection{Kontrollflussbefehle (Sprung und Verzweigung)}
-\label{manual-riscv-jump-instructions}
-In RISC-V gibt es zwei Arten von Sprung- bzw. Verzweigungsbefehle: unbedingte und bedingte Sprünge.
+\subsubsection{Kontrollflussbefehle} \label{manual-riscv-jump-instructions} In
+RISC-V gibt es zwei Arten von Sprung- bzw. Verzweigungsbefehle: unbedingte und
+bedingte Sprünge. Die folgenden Instruktionen sind unbedingte Sprünge, springen
+also an die gegebenen Adressen, sobald sie ausgeführt werden:
 
-\textbf{Unbedigte Sprünge}\\
+\texttt{jal} \texttt{<rd>, <marke>} springt zu \texttt{marke} und legt die
+Rücksprungadresse in \texttt{rd} ab.
 
-Die folgenden Instruktionen springen an die gegebenen Adressen, sobald sie ausgeführt werden.\\
-\textbf{jal} \texttt{<rd>, <marke>} springt zu \texttt{marke} und legt die Rücksprungadresse in \texttt{rd} ab.\\
-\textbf{jalr} \texttt{<rd>, <basis>, <offset>} springt zur Adresse \texttt{<basis> + <offset>} und legt die Rücksprungadresse in \texttt{rd} ab.\\
+\texttt{jalr} \texttt{<rd>, <basis>, <offset>} springt zur Adresse
+\texttt{<basis> + <offset>} und legt die Rücksprungadresse in \texttt{rd} ab.
 
-Im Gegensatz zu Intel-386 besitzt RISC-V keine Instruktionen zur Verwaltung des Stacks. Benötigt man einen Stack (z.B. für rekursive Aufrufe), muss man entsprechende push, pop, call und ret Funktionalitäten selbst schreiben.
+Im Gegensatz zu Intel-386 besitzt RISC-V keine Instruktionen zur Verwaltung des
+Stacks. Benötigt man einen Stack (z.B. für rekursive Aufrufe), muss man
+entsprechende push, pop, call und ret Funktionalitäten selbst schreiben.
 
 \begin{exampleblock}{Sprünge}
 Das folgende Programm springt zu sub\_routine und kehrt wieder zurück:
@@ -450,30 +518,43 @@ sub_routine:
   ; \dots Ausführung Unterprogramm
   jalr x0, x4, 0
 \end{riscv}
-Der \texttt{jal}-Ausdruck speichert die Adresse des nachfolgenden Befehls (durch Kommentar angedeutet) in Register x4 und spring das Unterprogramm an. Der \texttt{jalr}-Ausdruck springt daraufhin am Ende des Unterprogramms zur Adresse in Register 4. Die Adresse des nachfolgenden Befehls wird verworfen (also in x0 gespeichert)
+
+Der \texttt{jal}-Ausdruck speichert die Adresse des nachfolgenden Befehls (durch
+Kommentar angedeutet) in Register x4 und spring das Unterprogramm an. Der
+\texttt{jalr}-Ausdruck springt daraufhin am Ende des Unterprogramms zur Adresse
+in Register 4. Die Adresse des nachfolgenden Befehls wird verworfen (also in x0
+gespeichert)
 \end{exampleblock}
 
-\textbf{Bedingte Sprünge}\\
+Die Syntax der bedingten Sprünge ist gleich: \textbf{op} \texttt{<cmp1>, <cmp2>,
+<marke>} Bei Ausführung prüft die Instruktion eine Bedingung (spezifiziert durch
+\texttt{op}) zwischen den beiden Registern \texttt{cmp1} und \texttt{cmp2}. Ist
+diese Bedingung wahr, springt die Instruktion zu \texttt{marke}. Ist die
+Bedingung falsch, wird kein Sprung ausgeführt, d.h. die Ausführung läuft ganz
+normal mit dem nächsten Befehl weiter.
 
-Die Syntax der bedingten Sprünge ist gleich: \textbf{op} \texttt{<cmp1>, <cmp2>, <marke>}\\
-Bei Ausführung prüft die Instruktion eine Bedingung (spezifiziert durch \texttt{op}) zwischen den beiden Registern \texttt{cmp1} und \texttt{cmp2}. Ist diese Bedingung wahr, springt die Instruktion zu \texttt{marke}. Ist die Bedingung falsch, wird kein Sprung ausgeführt, d.h. die Ausführung läuft ganz normal mit dem nächsten Befehl weiter.\\
-\begin{tabular}{|c|c|l|}
-	\hline
-	op & Bedingung & Besonderheit\\
-	\hline
-	beq & $\mathtt{cmp1} = \mathtt{cmp2}$ & \\
-	\hline
-	bne & $\mathtt{cmp1} \ne \mathtt{cmp2}$ & \\
-	\hline
-	blt & $\mathtt{cmp1} < \mathtt{cmp2}$ & Vorzeichenbehafteter Vergleich\\
-	\hline
-	bltu & $\mathtt{cmp1} < \mathtt{cmp2}$ & Vorzeichenloser Vergleich\\
-	\hline
-	bge & $\mathtt{cmp1} \ge \mathtt{cmp2}$ & Vorzeichenbehafteter Vergleich\\
-	\hline
-	bgeu & $\mathtt{cmp1} \ge \mathtt{cmp2}$ & Vorzeichenloser Vergleich\\
-	\hline
-\end{tabular}
+\begin{table}[H]
+  \centering
+  \begin{tabular}{>{\ttfamily}l c l}
+
+  	\textbf{Instruktion} & \textbf{Bedingung} & \textbf{Besonderheit}\\
+    \toprule
+
+  	beq & \texttt{x} $ = $ \texttt{y} & \\
+
+  	bne & \texttt{x} $ \ne $ \texttt{y} & \\
+
+  	blt & \texttt{x} $ < $ \texttt{y} & Vorzeichenbehafteter Vergleich\\
+
+  	bltu & \texttt{x} $ < $ \texttt{y} & Vorzeichenloser Vergleich\\
+
+  	bge & \texttt{x} $ \ge $ \texttt{y} & Vorzeichenbehafteter Vergleich\\
+
+  	bgeu & \texttt{x} $ \ge $ \texttt{y} & Vorzeichenloser Vergleich\\
+
+  \end{tabular}
+
+\end{table}
 
 \begin{infoblock}{Umgang mit Labels in Sprungbefehlen}
   Ein Label enthält die absolute Adresse an der es definiert ist. Einige der
@@ -500,67 +581,95 @@ jalr x0, x0, 0x44 ; Springt an Adresse 0x44
 
 
 \subsubsection{Speicherinteraktion}
-Für Interaktion mit dem Speicher (Laden und Speichern) stellt RISC-V folgende Instruktionen bereit:\\
 
-\textbf{Store-Instruktionen}\\
+Für Interaktion mit dem Speicher (Laden und Speichern) stellt RISC-V weiter
+Instruktionen bereit, die im Folgenden beschrieben werden.
 
-Alle Instruktionen zum Speichern eines Wertes aus einem Register sind gleich aufgebaut:\\
- \textbf{op} \texttt{<source>, <base>, <offset>}. Der Inhalt aus \texttt{source} (\texttt{op} entscheidet welche Byte) wird an Speicheradresse \texttt{base+offset} und folgende geschrieben.\\
+\paragraph{Store-Instruktionen}
 
-\begin{tabular}{|c|c|l|}
-	\hline
-	Befehl & Größe & Beispiel (source= 0x1234 5678)\\
-	\hline
-	sb & unteres Byte & 0x78\\
-	\hline
-	sh & unteres Halbwort (2 Byte) & 0x5678\\
-	\hline
-	sw & (unteres) Wort (4 Byte) & 0x1234 5678\\
-	\hline
-\end{tabular}\\
+Alle Instruktionen zum Speichern eines Wertes aus einem Register sind gleich
+aufgebaut:
 
-Für RV64 kommt eine weitere Instruktion dazu, die oberen Instruktionen funktionieren wie angegeben.\\
+\begin{center}
+  \texttt{op <source>, <base>, <offset>}
+\end{center}
 
-\begin{tabular}{|c|c|l|}
-	\hline
-	Befehl & Größe & Beispiel (source= 0x1234 5678 9abc def0)\\
-	\hline
-	sd & Doppelwort (8 Byte) & 0x1234 5678 9abc def0\\
-	\hline
-\end{tabular}
+Der Inhalt aus \texttt{source} (\texttt{op} entscheidet welche Byte) wird an
+Speicheradresse \texttt{base+offset} und folgende geschrieben.
 
-\textbf{Load-Instruktionen}\\
+\begin{table}[H]
+  \centering
+  \begin{tabular}{>{\ttfamily}lcl}
+
+  	\normalfont\textbf{Befehl} & \textbf{Größe} & \textbf{Beispiel} (Quelle = \texttt{0x1234 5678})\\
+    \toprule
+
+  	sb & unteres Byte & 0x78\\
+
+  	sh & unteres Halbwort (2 Byte) & 0x5678\\
+
+  	sw & (unteres) Wort (4 Byte) & 0x1234 5678\\
+
+  \end{tabular}
+\end{table}
+
+Für RV64 kommt eine weitere Instruktion dazu, die oberen Instruktionen
+funktionieren wie angegeben.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{>{\ttfamily}lcl}
+    \normalfont\textbf{Befehl} & \textbf{Größe} & \textbf{Beispiel} (Quelle = \texttt{0x1234 5678 9abc def0})\\
+    \toprule
+
+  	sd & Doppelwort (8 Byte) & 0x1234 5678 9abc def0\\
+
+  \end{tabular}
+\end{table}
+
+\pagebreak
+\textbf{Load-Instruktionen}
 
 Auch die Lade-Instruktionen sind gleich aufgebaut: \textbf{op} \texttt{<dest>,
 <base>, <offset>}. Der Inhalt aus Speicherzelle(n) ab \texttt{base+offset} wird
 ins Register \texttt{dest} geschrieben. Analog zu den Store-Instruktionen
 spezifiert auch hier \texttt{op} die genaue Anzahl an Bytes. Übrige Bytes im
-Register \texttt{dest} werden auf 0 gesetzt.\\
+Register \texttt{dest} werden auf 0 gesetzt.
+\begin{table}[H]
+  \centering
+  \begin{tabular}{>{\ttfamily}lcl}
 
-\begin{tabular}{|c|c|l|}
-	\hline
-	Befehl & Größe & Beispiel (Speicher: 0x01|0x23|0x45|0x67|0x89)\\
-	\hline
-	lb & 1 Byte in unterstes Byte & dest = 0x0000 0001\\
-	\hline
-	lh & 2 Byte in unteres Halbwort & dest = 0x0000 000123\\
-	\hline
-	lw & 4 Byte in (unteres) Wort & dest =  0x0123 4567\\
-	\hline
-\end{tabular}\\
+    \normalfont\textbf{Befehl} & \textbf{Größe} & \textbf{Beispiel} (Speicher = \texttt{0x01|0x23|0x45|0x67|0x89})\\
+    \toprule
 
-Für RV64 kommt eine weitere Instruktion dazu:\\
+  	lb & 1 Byte in unterstes Byte & dest = 0x0000 0001\\
 
-\begin{tabular}{|c|c|l|}
-	\hline
-	Befehl & Größe & Beispiel (Speicher: 0x01|0x23|0x45|0x67|0x89|0xab|0xcd|0xef)\\
-	\hline
-	sd & 8 Byte in Doppelwort& dest = 0x0123 4567 89ab cdef\\
-	\hline
-\end{tabular}
+  	lh & 2 Byte in unteres Halbwort & dest = 0x0000 000123\\
+
+  	lw & 4 Byte in (unteres) Wort & dest =  0x0123 4567\\
+
+  \end{tabular}
+\end{table}
+\vspace{-0.6cm}
+
+Für RV64 kommt eine weitere Instruktion dazu:
+\begin{table}[H]
+  \centering
+  \begin{tabular}{>{\ttfamily}{l}cl}
+
+    \normalfont\textbf{Befehl} & \textbf{Größe} & \textbf{Beispiel} (Speicher = \footnotesize\texttt{0x01|0x23|0x45|0x67|0x89|0xab|0xcd|0xef})\\
+    \toprule
+
+  	sd & 8 Byte in Doppelwort& dest = 0x0123 4567 89ab cdef\\
+
+  \end{tabular}
+\end{table}
+\vspace{-0.4cm}
 
 \begin{warningblock}
-	Ein schreibender Speicherzugriff in den Text-Bereich, in dem assemblierten Instruktionen des Programms liegen, führt zu einem Laufzeitfehler. Ein lesender Zugriff ist jedoch erlaubt.
+  Ein schreibender Speicherzugriff in den Text-Bereich, in dem assemblierten
+  Instruktionen des Programms liegen, führt zu einem Laufzeitfehler. Ein
+  lesender Zugriff ist jedoch erlaubt.
 \end{warningblock}
 
 \begin{infoblock}{Reihenfolge der Load-Operanden}
@@ -571,19 +680,20 @@ analog zu den Store-Instruktionen definiert.
 \end{infoblock}
 
 \subsubsection{Simulatorbefehle}
+
 Um ein einfaches Debuggen zu ermöglichen, unterstützt der Simulator noch
 Instruktionen, die nicht im RISC-V Standard enthalten sind und vom Verhalten
 auch eigentlich nicht mehr einer Maschineninstruktion entsprechen. Die
 Funktionalität ist jedoch, zur einfachen Benutzung, auch als Instruktion im
-selben Stil implementiert.\\
+selben Stil implementiert.
 
-\textbf{simucrash } \texttt{<msg>} akzeptiert als einzigen Operanden ein
+\texttt{simucrash } \texttt{<msg>} akzeptiert als einzigen Operanden ein
 String-Literal. Wird diese Instruktion ausgeführt, terminiert das Programm und
 die eingegebene Nachricht wird angezeigt. Diese Simulatorinstruktion eignet sich
 also zur Absicherung des Codes, ähnlich wie Exceptions in höheren
-Programmiersprachen.\\
+Programmiersprachen.
 
-\textbf{simusleep }\texttt{<ms>} akzeptiert als einzigen Operanden eine
+\texttt{simusleep }\texttt{<ms>} akzeptiert als einzigen Operanden eine
 ganzzahlige Konstante, die die Zeit in Millisekunden repräsentiert. Wird der
 Befehl ausgeführt, wird die Ausführung der folgenden Instruktion um
 mindestens\footnote{Aufgrund spezieller Umstände kann das Betriebssystem die
@@ -600,65 +710,62 @@ RISC-V Instruktionen erreichen. Diese Kombination kann aber unter Umständen
 recht kompliziert oder mühsam sein, daher stellen viele Assembler-Dialekte
 Pseudo-Instruktionen zur Verfügung. Diese können wie eine normale Instruktion
 verwendet werden, werden aber beim Übersetzen/Assemblieren in die eigentliche
-Kombination zerlegt.\\
-Diese Funktionalität bietet auch der Simulator. Die Pseudoinstruktionen sind
-hier als Makros ''vordefiniert'', können also überall genutzt werden. Durch
-Aufklappen der Makros kann man diejenigen Instruktionen sehen, in die die
-Pseudo-Instruktion zerlegt wird.\\
+Kombination zerlegt. Diese Funktionalität bietet auch der Simulator. Die
+Pseudoinstruktionen sind hier als Makros "vordefiniert", können also überall
+genutzt werden. Durch Aufklappen der Makros kann man diejenigen Instruktionen
+sehen, in die die Pseudo-Instruktion zerlegt wird.
 
-\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
-\hline
+\begin{tabular}{ p{4.8cm} p{5.0cm} p{5.0cm}}
 
-	Pseudoinstruktion & Operanden & Beschreibung\\
-
-\hline
+	\textbf{Pseudoinstruktion} & \textbf{Operanden} & \textbf{Beschreibung}\\
+  \toprule
 
 	\textbf{la} \texttt{<rd>, <symbol>} &
 	\textbullet \texttt{rd}: Register, in das die Adresse reingeladen wird \newline
 	\textbullet \texttt{symbol}: 32-Bit Adresse (relativ zum Programmzähler)\footnotemark
 	& Lädt die zum Programmzähler relative Adresse \texttt{symbol} in das Register \texttt{rd}. Im Gegensatz zu den Kontrollflussinstruktionen kann hier eine bis zu 32-Bit große Konstante verwendet werden.\\
-\hline
+
 
 	\textbf{lbg} \texttt{<rd>, <mem\_addr>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
 
-\hline
+
 
 	\textbf{lhg} \texttt{<rd>, <mem\_addr>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
 
-\hline
+
 
 	\textbf{lwg} \texttt{<rd>, <mem\_addr>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{lw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
 
-\hline
+
 
 	\textbf{sbg} \texttt{<rd>, <mem\_addr>, <rt>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
 
-\hline
+
 
 	\textbf{shg} \texttt{<rd>, <mem\_addr>, <rt>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
 
-\hline
+
 
 	\textbf{swg} \texttt{<rd>, <mem\_addr>, <rt>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
 
-\hline
+
 
 	\textbf{nop} & & Eine No-Operation. Es wird kein Register und keine Speicherzelle verändert.\\
 
-\hline
+
 
 	\textbf{li} \texttt{<rd>, <immediate>} &
 	\textbullet \texttt{rd}: Zielregister, in das die Konstante geladen wird \newline
 	\textbullet \texttt{immediate}: 32-Bit Konstante
 	& Lädt die gegebene 32-Bit Konstante in das Register \texttt{rd}.\\
 
-\hline
+
 \end{tabular}\\
 \footnotetext{\label{user-manual-riscv-overview-pseudos-foot1}Da jede Marke eine
 Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem
@@ -666,33 +773,31 @@ Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem
 hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse
 umgewandelt}
 
-\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
-\hline
+\begin{tabular}{p{4.8cm} p{5.0cm} p{5.0cm}}
 
-	Pseudoinstruktion & Operanden & Beschreibung\\
-
-\hline
+  \textbf{Pseudoinstruktion} & \textbf{Operanden} & \textbf{Beschreibung}\\
+  \toprule
 
 	\textbf{mv} \texttt{<rd>, <rs>} &
 	\textbullet \texttt{rd}: Zielregister \newline
 	\textbullet \texttt{rs}: Register, dessen Wert kopiert wird
 	& Kopiert den Inhalt des Registers \texttt{rs} in Register \texttt{rd}\\
 
-\hline
+
 
 	\textbf{not} \texttt{<rd>, <rs>} &
 	\textbullet \texttt{rd}: Zielregister \newline
 	\textbullet \texttt{rs}: Register, dessen Wert bitweise negiert wird
 	& Negiert den Wert von \texttt{rs} bitweise und schreibt das Ergebnis nach \texttt{rd} ($\equiv$ Negation im 1er-Komplement).\\
 
-\hline
+
 
 	\textbf{neg} \texttt{<rd>, <rs>} &
 		\textbullet \texttt{rd}: Zielregister \newline
 		\textbullet \texttt{rs}: Register, dessen Wert negiert wird
 	& Ändert das Vorzeichen des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd} ($\equiv$ Negation im 2er-Komplement).\\
 
-\hline
+
 
 	\textbf{seqz} \texttt{<rd>, <rs>} &
 	\multirow{4}{5cm}
@@ -713,7 +818,7 @@ umgewandelt}
 	\textbf{sltz} \texttt{<rd>, <rs>} &  &\\
 	\textbf{sgtz} \texttt{<rd>, <rs>} &  &\\
 
-\hline
+
 
 	\textbf{beqz} \texttt{<rs>, <marke>} &
 	\multirow{6}{5cm}{
@@ -736,79 +841,75 @@ umgewandelt}
 	\textbf{bltz} \texttt{<rs>, <marke>} & & \\
 	\textbf{bgtz} \texttt{<rs>, <marke>} & & \\
 
-\hline
+
 
 	\textbf{j} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und verwirft die Rücksprungadresse\\
 
-\hline
+
 
 	\textbf{jal} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und speichert die Rücksprungandresse in Register x1\\
 
-\hline
+
 
 	\textbf{jr} \texttt{<reg>} & \textbullet \texttt{reg}: Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und verwirft die Rücksprungadresse\\
 
-\hline
+
 
 	\textbf{jalr} \texttt{<reg>} & \textbullet \texttt{reg}: Enthält die Adresse, an die gesprungen wird & Springt an die Adresse in Register \texttt{reg} und speichert die Rücksprungadresse in Register x1\\
 
-\hline
+
 \end{tabular}
 
-\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
-\hline
+\begin{tabular}{p{4.8cm} p{5.0cm} p{5.0cm}}
 
-	Pseudoinstruktion & Operanden & Beschreibung\\
-
-\hline
+  \textbf{Pseudoinstruktion} & \textbf{Operanden} & \textbf{Beschreibung}\\
+  \toprule
 
 	\textbf{ret} & & Springt an die Adresse in Register x1.\footnotemark \\
 
-\hline
+
 
 	\textbf{call} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und legt die Rücksprungadresse in Register x1 ab. \textsuperscript{\ref{user-manual-riscv-overview-foot2}} Für die Adressberechnung wird Register x6 verwendet. Es kann beliebige Adresse im 32-Bit Adressbereich angesprungen werden.\\
 
-\hline
+
 
 	\textbf{tail} \texttt{<marke>} & \textbullet \texttt{marke}: Sprungmarke & Springt zu \texttt{marke} und verwirft die Rücksprungadresse. Für die Adressberechnung wird Register x6 verwendet. Es kann beliebige Adresse im 32-Bit Adressbereich angesprungen werden.\\
 
-\hline
+
 \end{tabular}
 
 \footnotetext{\label{user-manual-riscv-overview-foot2}Im Gegensatz zu 386 arbeiten die \texttt{call} bzw. \texttt{ret} Instruktionen nicht mit einem Callstack. \texttt{ret} kehrt also nur zum letzten Aufruf von \texttt{call} zurück, da x1 überschrieben wird.}
 
 Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
 
-\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
-\hline
+\begin{tabular}{p{4.8cm} p{5.0cm} p{5.0cm}}
 
-	Pseudoinstruktion & Operanden & Beschreibung\\
-
-\hline
+  \textbf{Pseudoinstruktion} & \textbf{Operanden} & \textbf{Beschreibung}\\
+  \toprule
 
 	\textbf{ldg} \texttt{<rd>, <mem\_addr>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{ld}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf}\\
 
-\hline
+
 
 	\textbf{sdg} \texttt{<rd>, <mem\_addr>, <rt>} &
 	\multicolumn{2}{|p{10cm}|}{Gleiche Funktionalität wie \textbf{sd}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird}\\
 
-\hline
+
 
 	\textbf{negw} \texttt{<rd>, <rs>} &
 	\textbullet \texttt{rd}: Zielregister \newline
 	\textbullet \texttt{rs}: Register, dessen untere 32Bit negiert werden
 	& Ändert das Vorzeichen der unteren 32Bit des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd}\\
 
-\hline
+
 
 	\textbf{sext.w} \texttt{<rd>, <rs>} &
 	\textbullet \texttt{rd}: Zielregister \newline
 	\textbullet \texttt{rs}: Register, dessen untere 32Bit mit dem richtigen Vorzeichen erweitert werden
 	& Erweitert die unteren 32Bit des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd}\\
 
-\hline
+
 \end{tabular}
 
 \begin{infoblock}{Pseudoinstruktionen}
@@ -819,22 +920,23 @@ Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
 \label{user-manual-riscv-errors}
 Hier werden einige Übersetzungsfehler aufgelistet und erklärt, die für einen Anfänger vielleicht nicht ganz zu verstehen und dann zu beheben sind.
 
-\begin{tabular}{|p{5cm}|p{5cm}|p{5cm}|}
-	\hline
-	Fehlermeldung & häufiger Grund & Mögliche Lösung\\
-	\hline
+\begin{tabular}{p{5cm} p{5cm} p{5cm}}
+
+  \textbf{Fehlermeldung} & \textbf{Häufiger Grund} & \textbf{Mögliche Lösung}\\
+  \toprule
+
 	Immediate operand must be 12(20) bit or less & Eine zu große Konstante als Operand übergeben & Die erwartete Konstante muss inklusive Vorzeichenbit in 12(20) Bit darstellbar sein.\\
-	\hline
-	The given offset \textit{x} will result in an invalid jump adress (pc+\textit{y}) &
+
+	The given offset \emph{x} will result in an invalid jump adress (pc+\emph{y}) &
 	Die errechnete Adresse des Sprungs wird einen Laufzeitfehler generieren, da sie keinen Befehl anspringt oder zwischen zwei Befehle springt. Meist ist die Offset-Konstante ungerade oder zu groß/klein. & Alle Instruktionen des Programms liegen hintereinander im Speicher, die Anfangsadresse kann durch Speicherreservierungen davor nach unten verschoben werden. Die Instruktionen sind stets auf 4 Byte angeordnet.\\
-	\hline
-	Jump(Branch) offset would invalidate program counter to \textit{x} & Die errechnete Sprungadresse ist ungültig. Es wird entweder außerhalb des Textsegments gesprungen oder zwischen zwei Befehle &
+
+	Jump(Branch) offset would invalidate program counter to \emph{x} & Die errechnete Sprungadresse ist ungültig. Es wird entweder außerhalb des Textsegments gesprungen oder zwischen zwei Befehle &
 	Der Wert des Basisregisters ist möglicherweise falsch.\\
-	\hline
+
 	The immediate-register instructions must have 2 registers and 1 immediate as operands & Der Befehl erwartet erst 2 Register und dann eine Konstante. & Möglicherweise wird statt z.B. \texttt{addi} der Register-Register Befehl \texttt{add} genutzt\\
-	\hline
+
 	The register-register instructions must have 3 registers as operands & Der Befehl erwartet 3 Register als Operanden& Möglicherweise wird hier ein Immediate-Register-Befehl, z.B. \texttt{addi} verwendet. Für 3 Register muss jedoch die Register-Register Variante \texttt{add} verwendet werden.\\
-	\hline
-	The memory area you are trying to access is protected (area: [\textit{a},\textit{b}]) & Ein Speicherzugriff greift auf eine ungültige Speicheradresse zu. Entweder der angesprochene Speicherbereich beginnt/endet außerhalb des Speichers oder es wird ein schreibender Zugriff auf Teile des assemblierten Programms durchgeführt. & Die Grenzen \textit{a} und \textit{b} (beide inklusive) geben einen Anhaltspunkt, wo eine fehlerhafte Berechnung der Adresse erfolgt sein könnte. Die aus Basisregister und Offset berechnete Adresse einer Load-/Store-Instruktion gibt immer die Anfangsadresse des Speicherbereichs an. Die Länge ist implizit durch den Befehl (\texttt{lb}: 1 Byte, \texttt{lw}: 4 Byte, \dots) gegeben\\
-	\hline
+
+	The memory area you are trying to access is protected (area: [\emph{a},\emph{b}]) & Ein Speicherzugriff greift auf eine ungültige Speicheradresse zu. Entweder der angesprochene Speicherbereich beginnt/endet außerhalb des Speichers oder es wird ein schreibender Zugriff auf Teile des assemblierten Programms durchgeführt. & Die Grenzen \emph{a} und \emph{b} (beide inklusive) geben einen Anhaltspunkt, wo eine fehlerhafte Berechnung der Adresse erfolgt sein könnte. Die aus Basisregister und Offset berechnete Adresse einer Load-/Store-Instruktion gibt immer die Anfangsadresse des Speicherbereichs an. Die Länge ist implizit durch den Befehl (\texttt{lb}: 1 Byte, \texttt{lw}: 4 Byte, \dots) gegeben\\
+
 \end{tabular}
