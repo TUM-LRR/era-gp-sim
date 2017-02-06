@@ -85,7 +85,7 @@ erklärt wird.
 Snapshots sind, wie der Name bereits nahelegt, Schnappschüsse des
 Prozessorzustands, also der Register- und Speicherinhalte. Sie eigenen sich
 dazu, die Werte von Registern und Speicher automatisch in einen festgelegten
-Zustand zu bringen. Hat man beispielsweise ein Assemblerprogramm, dass auf
+Zustand zu bringen. Hat man beispielsweise ein Assemblerprogramm, das auf
 bestimmten Ausgangswerten in Registern oder Speicher basiert, so kann man diese
 Werte zunächst manuell eintragen und dann einen Snapshot des aktuellen Zustands
 anlegen. Wurden die Inhalte von Registern und Speicher anschließend etwa durch
@@ -287,7 +287,7 @@ sich flexibel an die Bedürfnisse des Nutzers anpassen lässt.
 \end{figure}
 
 Um den Inhalt des Speichers auf einen Blick erfassen zu können, stehen
-verschieden Einstellungen in der Kopfzeile zur Verfügung:\\ In der ersten Spalte
+verschiedene Einstellungen in der Kopfzeile zur Verfügung:\\ In der ersten Spalte
 stehen immer die Adressen der Speicherzellen. Bei großen Datenmengen ist es
 manchmal wünschenswert mehr als nur 1 Byte pro Zeile angezeigt zu bekommen.
 Deshalb kann im Menü oberhalb dieser Spalte die angezeigte Größe der
@@ -576,5 +576,29 @@ einstellbar.
 Bei einem Clear Aufruf über das Kontextmenü wird auch der Speicherbereich
 zurückgesetzt, in dem der Text der Konsole steht.
 \end{warningblock}
+
+
+\subsubsection{Ein-/Ausgabe -- Pixel Display}
+Das Pixel Display liest Daten aus dem Hauptspeicher und stellt diese graphisch
+dar. Das Pixel Display hat verschiedene Einstellungsmöglichkeiten, darunter:
+
+\begin{itemize}
+\item Pixel Base Address: 32 Bit Addresse des Pointers auf den Pixel Buffer im
+Hauptspeicher. Der Pixel Buffer enthält alle Pixel des darzustellenden Bildes
+in Form der Daten die jedes Pixel hält, das heißt Farbe oder Farbindex.
+
+\item Color Base Address: 32 Bit Addresse des Pointers auf den Color Buffer im
+Hauptspeicher. Der Color Buffer enthält, sofern der ausgewählte Farbmodus dies
+unterstützt, alle Farben in tabellarischer Weise.
+
+\item Width: die Breite des Displays in Pixel
+\item Height: die Höhe des Displays in Pixel
+
+\item ColorMode: Farbmodus des Displays. Es gibt bisher zwei Farbmodi, RGB und
+Monochrome. Im RGB Modus wird jedes Pixel als 32 bit RBG Farbe interpretiert.
+Im Monochrome Modus stellt jedes Pixel einen ein Bit Index dar, welcher den
+Eintrag aus der Farbtabelle die Farbe dieses Pixels darstellt.
+\end{itemize}
+
 
 %\subsection{Sonstige Features}

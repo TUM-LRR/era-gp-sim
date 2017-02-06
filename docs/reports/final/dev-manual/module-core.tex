@@ -317,14 +317,143 @@ Ein zentraler Aspekt des Cores ist die Haltung des simulierten Speichers. Dabei 
 \end{figure}
 
 
-Insgesamt ergibt sich kein Datentyp der alle Voraussetzungen erfüllt. Sowohl \texttt{std::vector<bool>} als auch \texttt{std::vector<uint8\_t>} sind jedoch mit jeweils einem unerfülltem Punkt am besten geeignet als Basis eines selbsterstellten Datentypen zu dienen. Im direkten Vergleich ist es mit wenig Aufwand zu erkennen, dass die Implementation eines Einzelbit-Zugriffs für \texttt{std::vector<uint8\_t>} in konstanter Komplexität einfach zu realisieren, während der Zugriff auf irgendwelche Blöcke in einem \texttt{std::vector<bool>} äußerst umständlich oder ineffizient wäre. Der Datentyp, welcher im folgenden \texttt{MemoryValue}, da dieser Werte(engl. Value) aus dem Speicher(engl. Memory) enthält, genannt wird, ist daher über einem \texttt{std::vector<uint8\_t>} aufgebaut.
+Insgesamt ergibt sich kein Datentyp der alle Voraussetzungen erfüllt. Sowohl
+\texttt{std::vector<bool>} als auch \texttt{std::vector<uint8\_t>} sind jedoch
+mit jeweils einem unerfülltem Punkt am besten geeignet als Basis eines
+selbsterstellten Datentypen zu dienen. Im direkten Vergleich ist es mit wenig
+Aufwand zu erkennen, dass die Implementation eines Einzelbit-Zugriffs für
+\texttt{std::vector<uint8\_t>} in konstanter Komplexität einfach zu
+realisieren, während der Zugriff auf irgendwelche Blöcke in einem
+\texttt{std::vector<bool>} äußerst umständlich oder ineffizient wäre. Der
+Datentyp, welcher im folgenden \texttt{MemoryValue}, da dieser Werte(engl.
+Value) aus dem Speicher(engl. Memory) enthält, genannt wird, ist daher über
+einem \texttt{std::vector<uint8\_t>} aufgebaut.
 
-Ein allgemeiner Datentyp zum Halten und Austauschen binärer Daten ist an sich gesehen zwar bereits nützlich, jedoch repräsentieren diese in vielerlei Fällen überdies Zahlwerte. Um diese handhaben zu können muss entweder der \texttt{MemoryValue} arithmetisch-logische Funktionen unterstützen oder es eine konvertierung zwischen \texttt{MemoryValue} und Datentypen die zu arithmetisch-logischen Funktionen fähig sind. Das Implementieren arithmetisch-logischer Funktionen im \texttt{MemoryValue} wäre jedoch aufwändig, fehleranfällig und insbesondere inflexibel, da unterschiedliche Systeme unterschiedliche Arithmetiken, insbesondere die Darstellung vorzeichenbehafteter Zahlen betreffend, verwenden. Daher ist es sinnvoller diese in arithmetisch-logische Datentypen, wie den eingebauten integralen Standard-Zahltypen, umzuwandeln. Durch die Verwendung von C++-Templates ist es möglich mit nur einer Implementation beliebige Datentypen, gegeben diese unterstützen gängige arithmetische und logische Operationen, als Ausgang und Ziel anzugeben. Desweiteren kann man die Konvertierung selbst in verschiedene Teile aufteilen. Zum einen muss der \texttt{MemoryValue} von einer beliebigen Byte-Reihenfolge in eine bestimmte umgewandelt werden, bzw. zurück. Hierbei wurde sich für Little Endian entschieden. Als nächstes muss der \texttt{MemoryValue}, welcher sich in Little Endian befindet, zu einem Zahltypen umgewandelt werden, bzw. umgekehrt. All diese Konvertierungen sind als Funktionsobjekte gestaltet, so dass ohne viel Aufwand eine neue Umwandlung implementiert werden könnte.
+Ein allgemeiner Datentyp zum Halten und Austauschen binärer Daten ist an sich
+gesehen zwar bereits nützlich, jedoch repräsentieren diese in vielerlei Fällen
+überdies Zahlwerte. Um diese handhaben zu können muss entweder der
+\texttt{MemoryValue} arithmetisch-logische Funktionen unterstützen oder es eine
+konvertierung zwischen \texttt{MemoryValue} und Datentypen die zu
+arithmetisch-logischen Funktionen fähig sind. Das Implementieren
+arithmetisch-logischer Funktionen im \texttt{MemoryValue} wäre jedoch
+aufwändig, fehleranfällig und insbesondere inflexibel, da unterschiedliche
+Systeme unterschiedliche Arithmetiken, insbesondere die Darstellung
+vorzeichenbehafteter Zahlen betreffend, verwenden. Daher ist es sinnvoller
+diese in arithmetisch-logische Datentypen, wie den eingebauten integralen
+Standard-Zahltypen, umzuwandeln. Durch die Verwendung von C++-Templates ist es
+möglich mit nur einer Implementation beliebige Datentypen, gegeben diese
+unterstützen gängige arithmetische und logische Operationen, als Ausgang und
+Ziel anzugeben. Desweiteren kann man die Konvertierung selbst in verschiedene
+Teile aufteilen. Zum einen muss der \texttt{MemoryValue} von einer beliebigen
+Byte-Reihenfolge in eine bestimmte umgewandelt werden, bzw. zurück. Hierbei
+wurde sich für Little Endian entschieden. Als nächstes muss der
+\texttt{MemoryValue}, welcher sich in Little Endian befindet, zu einem
+Zahltypen umgewandelt werden, bzw. umgekehrt. All diese Konvertierungen sind
+als Funktionsobjekte gestaltet, so dass ohne viel Aufwand eine neue Umwandlung
+implementiert werden könnte.
 
-Zu der Möglichkeit binäre Daten beliebiger Länge in Form des \texttt{MemoryValues} halten, übertragen und in einen zu arithmetisch-logischen Operationen fähigen Datentypen umzuwandeln wird überdies noch die assoziierte Institution zum Verwalten dieser benötigt, namentlich der Hauptspeicher und der Registersatz.
-Der Hauptspeicher ist hierbei spektakulär einfach implementiert, bestehend aus einem großen \texttt{MemoryValue}, d.h. ein Hauptspeicher mit n Zellen á m Bit besteht zum größten Teil aus einem \texttt{MemoryValue} der Länge n*m. Um nun auf diese zugreifen zu können ist nur noch die Startadresse zu berechnen und im Falle einer Schreiboperation die Gui über die Änderungen zu informieren.
+Zu der Möglichkeit binäre Daten beliebiger Länge in Form des
+\texttt{MemoryValues} halten, übertragen und in einen zu arithmetisch-logischen
+Operationen fähigen Datentypen umzuwandeln wird überdies noch die assoziierte
+Institution zum Verwalten dieser benötigt, namentlich der Hauptspeicher und der
+Registersatz.
 
-Die Register sind etwas komplizierter implementiert da diese erstens nicht über eine Hauptspeicheradresse sondern einem Registerbezeichner, welcher hier als \texttt{std::string} implementiert ist, adressiert werden und zweitens hierarchische Beziehungen zwischen Registern bestehen können(sh. Abb. EAX). Dies ist implementiert durch eine \texttt{std::unordered\_map} die von  Registerbezeichnern auf Registeridentifikatoren abbildet. Diese Registeridentifikatoren bestehen zum ersten aus einem Verweis auf dieses Registers Elterregister(sh. Abb. RID) und zum zweiten Beginn- und und End-Adresse des Teilbitstrings den dieses Register im Elterregister ausmacht. Des weiteren hat jedes Elterregister eine Menge an Kindregistern in welchem die Registerbezeichner aller Register enthalten sind über deren Änderung die GUI zu benachrichtigen ist falls sich in ebendiesem Elterregister oder dieses Kindregister eine Schreiboperation ausgeführt wurde.
+Der Hauptspeicher ist hierbei spektakulär einfach implementiert, bestehend aus
+einem großen \texttt{MemoryValue}, d.h. ein Hauptspeicher mit n Zellen á m Bit
+besteht zum größten Teil aus einem \texttt{MemoryValue} der Länge n*m. Um nun
+auf diese zugreifen zu können ist nur noch die Startadresse zu berechnen und im
+Falle einer Schreiboperation die Gui über die Änderungen zu informieren.
+
+Die Register sind etwas komplizierter implementiert da diese erstens nicht über
+eine Hauptspeicheradresse sondern einem Registerbezeichner, welcher hier als
+\texttt{std::string} implementiert ist, adressiert werden und zweitens
+hierarchische Beziehungen zwischen Registern bestehen
+können(\autoref{fig:register-set}). Dies ist implementiert durch eine
+\texttt{std::unordered\_map} die von  Registerbezeichnern auf
+Registeridentifikatoren abbildet. Diese Registeridentifikatoren bestehen zum
+ersten aus einem Verweis auf dieses Registers
+Elterregister(\autoref{fig:register-set}) und zum zweiten Beginn- und und
+End-Adresse des Teilbitstrings den dieses Register im Elterregister ausmacht.
+Des weiteren hat jedes Elterregister eine Menge an Kindregistern in welchem die
+Registerbezeichner aller Register enthalten sind über deren Änderung die GUI zu
+benachrichtigen ist falls sich in ebendiesem Elterregister oder dieses
+Kindregister eine Schreiboperation ausgeführt wurde.
+
+\begin{figure}[H]
+  \begin{center}
+    \begin{tikzpicture}
+      % pseudo element for centering
+      \node (center) {};
+
+      \node (eax)
+        [font=\scriptsize, draw=black, rounded corners, align=center, minimum height=0.68cm, minimum width=3cm, above left=0.5cm and 3cm of center]
+        {\texttt{EAX}};
+      \node (ebx)
+        [font=\scriptsize, draw=black, rounded corners, align=center, minimum height=0.68cm, minimum width=3cm, above left=-1.5cm and 3cm of center]
+        {\texttt{EBX}};
+      \node (mapEax)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=1.35cm and 7cm of center]
+        {\texttt{"eax"[0,31]}}
+          edge [->, out=0, in=180] (eax);
+      \node (mapAx)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0.85cm and 7cm of center]
+        {\texttt{"ax"[0,15]}}
+          edge [->, out=0, in=180] (eax);
+      \node (mapAl)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=0.35cm and 7cm of center]
+        {\texttt{"al"[0,7]}}
+          edge [->, out=0, in=180] (eax);
+      \node (mapAh)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-0.15cm and 7cm of center]
+        {\texttt{"ah"[8,15]}}
+          edge [->, out=0, in=180] (eax);
+      \node (mapEbx)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-0.65cm and 7cm of center]
+        {\texttt{"ebx"[0,31]}}
+          edge [->, out=0, in=180] (ebx);
+      \node (mapBx)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1.15cm and 7cm of center]
+        {\texttt{"bx"[0,15]}}
+          edge [->, out=0, in=180] (ebx);
+      \node (mapBl)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-1.65cm and 7cm of center]
+        {\texttt{"bl"[0,7]}}
+          edge [->, out=0, in=180] (ebx);
+      \node (mapBh)
+        [font=\scriptsize, draw=black,  align=center, minimum height=0.5cm, minimum width=2cm, above left=-2.15cm and 7cm of center]
+        {\texttt{"bh"[8,15]}}
+          edge [->, out=0, in=180] (ebx);
+
+      \node (eaxUpdate)
+        [font=\scriptsize, draw=black, align=center, minimum height=1.70cm, minimum width=0.8cm, above left=0cm and -1cm of center, rounded corners]
+        {\begin{tabular}{c}
+          \texttt{"eax"} \\
+          \texttt{"ax"} \\
+          \texttt{"al"} \\
+          \texttt{"ah"} \\
+        \end{tabular}};
+      \node (ebxUpdate)
+        [font=\scriptsize, draw=black, align=center, minimum height=1.70cm, minimum width=0.8cm, above left=-2cm and -1cm of center, rounded corners]
+        {\begin{tabular}{c}
+          \texttt{"ebx"} \\
+          \texttt{"bx"} \\
+          \texttt{"bl"} \\
+          \texttt{"bh"} \\
+        \end{tabular}};
+
+      \draw [->] (eax) -- (eaxUpdate);
+      \draw [->] (ebx) -- (ebxUpdate);
+
+
+    \end{tikzpicture}
+  \end{center}
+\caption{Darstellung einer beispielhaften Implementierung eines Registersatzes
+mit einer Map abbildend Registerbezeichner auf Registeridentifikator links, den
+Elterregistern in der Mitte und Listen an zu benachrichtigenden Registern in
+der GUI}
+\label{fig:register-set}
+\end{figure}
+
 
 
 \subsubsection{Weiterführende Dokumentation}

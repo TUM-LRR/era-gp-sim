@@ -23,9 +23,7 @@ Projekt und nennen es ''Mein erstes RISCV Projekt''.\\
 
 Nun öffnet sich das Kernstück des Simulators. Die Tabs im oberen Bereich zeigen
 die zur Zeit geöffneten Projekte. Momentan ist nur unser Projekt geöffnet. Der
-Texteditor ist mittig platziert. Unser simples Programm soll lediglich die
-Antwort auf das Leben, das Universum und den ganzen Rest in Register x3
-ausgeben. Dazu tippen wir folgende Instruktionen in den Editor:
+Texteditor ist mittig platziert. Im folgenden wollen wir ein kleines Beispielprogramm schreiben und danach auch ausführen. Dazu tippen wir folgende Instruktionen in den Editor:
 \begin{lstlisting}
   addi x1, x0, 1
   addi x2, x0, 41
@@ -43,7 +41,7 @@ sind außerdem über das Fragezeichen-Symbol zu erreichen.
 	\caption{Der Simulator}
 \end{figure}
 
-Da uns die Antwort brennend interessiert, werden wir das Programm ausführen. Das
+Nun wollen wir das Programm ausführen. Das
 ist möglich, da keine Übersetzungsfehler aufgetreten sind. Solche Fehler werden
 als rote Nachrichten am rechten Rand des Texteditors angezeigt. In der linken
 oberen Ecke befinden sich 6 Symbole, die die Ausführung steuern. Das zweite
@@ -125,7 +123,7 @@ Hexadezimal.
 	\caption{Darstellungsarten der Register}
 \end{figure}
 
-Und siehe da, 16 Nullen: $16 \cdot 4$Bit $=64$Bit, passt. Wechseln wir in das
+Und siehe da, 16 Nullen: $16 \cdot 4$Bit $=64$Bit, passt. Wechseln wir nun in das
 alte 32-Bit Projekt indem wir auf das Tab mit dem Namen ''Mein erstes RISCV
 Projekt'' klicken und ändern auch dort die Darstellungsart eines Registers auf
 Hexadezimal. Nur 8 Ziffern, also $8 \cdot 4$Bit $=32$Bit.

@@ -2,7 +2,6 @@
 % ERA-Großpraktikum: Benutzeranleitung -- Übersicht Befehlssatz RISC-V
 
 \section{Übersicht Befehlssatz RISC-V}
-\todo[inline]{Hier Erläuterung: Unterschied Parser-direktiven, Instruktionen und Pseudo-instruktionen}
 
 Die Menge an verwendbaren Befehlen für den Simulator lässt sich grob in zwei
 Teile aufteilen. Die erste Menge an Befehlen sind die sogenannten
@@ -95,11 +94,6 @@ Anfangsadresse des reservierten Speicherblocks an.\\
 \end{centering}
 
 \begin{warningblock}
-	\texttt{anz} muss eine positive Ganzzahl sein.\\
-	Ist \texttt{an z$\leq$ 0} wird kein Speicher reserviert und ein Übersetzungsfehler angezeigt
-\end{warningblock}
-
-\begin{warningblock}
 	Speicherreservierungen sollten sich nur in der Datensektion befinden!
 \end{warningblock}
 
@@ -116,7 +110,7 @@ Anfangsadresse des reservierten Speicherblocks an.\\
 	\begin{riscv}
 	memory: .resw 1
 	\end{riscv}
-	Die obigen Befehle sind gleichwertig, es empfiehlt sich jedoch eine Variante zu wählen, die der Verwendung am nächsten kommt, um die Lesbarkeit zu erhöhen. Wird beispielsweise Byte für Byte gearbeitet, ist auch eine Byte-weise Reservierung des Speichers anschaulich.x
+	Die obigen Befehle sind gleichwertig, es empfiehlt sich jedoch eine Variante zu wählen, die der Verwendung am nächsten kommt, um die Lesbarkeit zu erhöhen. Wird beispielsweise Byte für Byte gearbeitet, ist auch eine Byte-weise Reservierung des Speichers anschaulich.
 \end{exampleblock}
 
 \subsubsection{Speicherdefinition}
@@ -227,7 +221,6 @@ werden.
 \end{infoblock}
 
 \subsection{RISC-V Instruktionen}
-\todo[inline]{Erklärung Aufteilung in Module}
 Die RISC-V Instruktionen sind in verschiedene Module aufgeteilt. Durch eine Modularisierung des Dialekts kann ganz bewusst auf Arten von Instruktionen verzichtet werden. Es braucht z.B. nicht jeder Mikrocontroller Multiplikation oder atomare Operationen. Der Simulator unterstützt folgende Module:\\
 \begin{itemize}
 	\item \textbf{RV32I} Das ''Basispaket'' mit 32 Bit Arithmetik-, Sprung- und Verzweigungsinstruktionen
@@ -247,13 +240,16 @@ unveränderbar den Wert 0. Für eine gute Verwendungsmöglichkeit siehe
 \texttt{x<id>} angesprochen, wobei \texttt{id} die Nummer des Registers ist. So
 steht \texttt{x0} für das Register 0 und \texttt{x17} für das Register 17.\\
 Zur Angabe von Zahl-Konstanten (sog. ''Immediates'') unterstützt der Simulator
-folgende 3 Möglichkeiten:\\
-Mit dem Präfix \texttt{0b} lässt sich die Konstante in Binärdarstellung
-ausdrücken. \texttt{0b1101} steht z.B. für die Zahl 13.\\
-Mit dem Präfix \texttt{0x} werden Konstanten in Hexadezimal geschrieben.
-\texttt{0xaffe} $\widehat{=}$ 45 054.\\
-Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
-in Dezimaldarstellung.
+folgende 3 Möglichkeiten:
+\begin{itemize}
+	\item Mit dem Präfix \texttt{0b} lässt sich die Konstante in Binärdarstellung
+	ausdrücken. \texttt{0b1101} steht z.B. für die Zahl 13.
+	\item Mit dem Präfix \texttt{0x} werden Konstanten in Hexadezimal geschrieben.
+	\texttt{0xaffe} $\widehat{=}$ 45 054.
+	
+	\item Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
+	in Dezimaldarstellung.
+\end{itemize}
 
 \begin{infoblock}{Arithmetische Ausdrücke zur Übersetzungszeit}
 	Der Simulator unterstützt zudem arithmetische Ausdrücke für Konstanten. So ist \texttt{andi x1,x1, 2*3} gleichwertig zu \texttt{andi x1, x1, 6}. Das ist besonders hilfreich, da auch mit Labels und \texttt{.equ} definierten Konstanten gerechnet werden kann.\\
@@ -301,8 +297,8 @@ in Dezimaldarstellung.
   Befehl eine Konstante im Wertebereich von vorzeichenbehafteten 12 Bit
   erwartet. Die größte darstellbare Zahl ist $2^{11}-1 = 2047$ während 0xfff $
   \widehat{=} 4095$, also zu groß ist.\\
-  Es ist ein Fehler zu denken, dass die obige Instruktion -1 in das Register 1
-  schreibt. Um das zu erreichen, sollte \texttt{addi x1, x0, -1} oder
+  Die obige Instruktion schreibt also nicht -1 in das Register 1. 
+  Um das zu erreichen, sollte \texttt{addi x1, x0, -1} oder
   \texttt{addi x1, x0, -0x1} o.ä verwendet werden.
 \end{warningblock}
 
@@ -610,10 +606,7 @@ hier als Makros ''vordefiniert'', können also überall genutzt werden. Durch
 Aufklappen der Makros kann man diejenigen Instruktionen sehen, in die die
 Pseudo-Instruktion zerlegt wird.\\
 
-% Define tabular layout
-\def\tabulardef{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
-
-\begin{tabular}{\tabulardef}
+\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
 \hline
 
 	Pseudoinstruktion & Operanden & Beschreibung\\
@@ -673,7 +666,7 @@ Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem
 hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse
 umgewandelt}
 
-\begin{tabular}{\tabulardef}
+\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
 \hline
 
 	Pseudoinstruktion & Operanden & Beschreibung\\
@@ -762,7 +755,7 @@ umgewandelt}
 \hline
 \end{tabular}
 
-\begin{tabular}{\tabulardef}
+\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
 \hline
 
 	Pseudoinstruktion & Operanden & Beschreibung\\
@@ -786,7 +779,7 @@ umgewandelt}
 
 Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
 
-\begin{tabular}{\tabulardef}
+\begin{tabular}{|p{4.8cm}|p{5.0cm}|p{5.0cm}|}
 \hline
 
 	Pseudoinstruktion & Operanden & Beschreibung\\

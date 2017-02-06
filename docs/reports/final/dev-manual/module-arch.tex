@@ -3,15 +3,15 @@
 
 \subsection{Architektur}
 
-Das Architekturmodule (kurz: \emph{Arch}) kümmert sich um die Ausführung der
+Das Architekturmodul kümmert sich um die Ausführung der
 Assembler Programme und wurde vor dem Hintergrund entworfen, einen möglichst
 Architektur-unabhängigen Simulator zu entwickeln. So stellt sie Klassen zur
-Verfügung, mit der eine konkrete Architektur (wie z.B. RISC-V) umgesetzt werden
-kann. Eine Architektur wird in \texttt{YAML} Konfigurationsdateien beschrieben,
+Verfügung, mit der eine konkrete Architektur (z.B. RISC-V) umgesetzt werden
+kann. Eine Architektur wird in \emph{YAML} Konfigurationsdateien beschrieben,
 und anschließend in das Programm geladen. Da wir uns gegen das Disassemblieren
 von Maschinencode zur Ausführung eines Programms entschieden haben, bietet die
 Architektur eine abstraktere Darstellung von Assembler Programmen in Form eines
-Syntax Baums. Des Weiteren ist die Architektur für die Validierung einer
+Syntaxbaums. Des Weiteren ist die Architektur für die Validierung einer
 Instruktion zuständig, und stellt bei Fehlern entsprechende Nachrichten zur
 Verfügung, die dem Nutzer helfen sollen, das Problem zu beheben.
 
@@ -58,60 +58,28 @@ denen im Quellcode überein, es geht hier nur um das Prinzip).
 	\label{fig:arch-overview}
 \end{figure}
 
-Die Architektur ist in einen allgemeinen Teil (im Folgenden \emph{common})
+Die Architektur ist in einen allgemeinen Teil (im Folgenden \texttt{common})
 genannt) und in einen Architektur-spezifischen Teil (benannt nach der
-entsprechenden Architektur, z.B. \emph{riscv} aufgeteilt. Die Schnittstelle ist
-so konzipiert, dass andere Module nichts von der konkreten Architektur
+entsprechenden Architektur, z.B. \texttt{riscv} aufgeteilt. Die Schnittstelle
+ist so konzipiert, dass andere Module nichts von der konkreten Architektur
 mitbekommen, und lässt sich folgendermaßen charakterisieren: Das
-\emph{Architecture} Objekt stellt allgemeine Informationen über die geladene
+\texttt{Architecture} Objekt stellt allgemeine Informationen über die geladene
 Architektur zur Verfügung (wie z.B. der Name, die Byte-Reihenfolge oder die
-Wortgröße) und bietet zusätzlich Zugang zur \emph{NodeFactory}. Mit der
-NodeFactory werden die Syntax Bäume in Form von \emph{SyntaxTreeNode} Objekten
-erzeugt, welche anschließend validiert und ausgeführt werden können. Im
+Wortgröße) und bietet zusätzlich Zugang zur \texttt{NodeFactory}. Mit der
+\texttt{NodeFactory} werden die Syntaxbäume in Form von \texttt{SyntaxTreeNode}
+Objekten erzeugt, welche anschließend validiert und ausgeführt werden können. Im
 Folgenden wird auf diese Klassen genauer eingegangen.
 
-\subsubsection{Architecture Description Language}
+\input{arch-design.tex}
+\input{isa-files.tex}
+\input{arch-impl.tex}
 
-Foo. Bar? Baz!
-
-\subsubsection{Architecture}
-
-Ein \texttt{Architecture} Objekt repräsentiert eine geladene Architektur im
-Simulator. Der Grundgedanke bei der Entwicklung war das modulare Design von
-RISC-V zu unterstützen, dieses Konzept lässt sich aber leicht auf andere
-Prozessorarchitekturen übertragen. So wird angenommen, dass eine Architektur
-immer aus einem Basismodul besteht (bei RISC-V: \emph{RV32I}), welches wieder
-durch andere Module erweitert werden kann (bei RISC-V z.B.
-Multiplikation/Division, Floating Point, etc.). Um also ein Architecture
-Objekt zu erzeugen, wird im ersten Schritt eine \emph{ArchitectureFormula}
-erstellt, die das Basismodul und alle Erweiterungen spezifiziert. Ein Aufruf von
-\emph{Brew()} löst die Abhängigkeiten auf und liest anschließend die
-Informationen aus den Konfigurationsdateien ein.
-
-Intern wird das \emph{Builder Pattern} zum sukzessivem Aufbau des Objekts
-verwendet. Als Oberklasse dient dazu das \texttt{BuilderInterface}, von dem alle
-Komponenten abgeleitet werden. Da eine Architektur lediglich aus strukturierten
-Informationen besteht, existiert eine weitere Oberklasse
-\texttt{InformationInterface}. Von ihr sind wiederum die konkreten
-Informationsklassen abgeleitet. Nennenswert dabei ist die
-\texttt{ExtensionInformation} Klasse, die ein Modul in unserer modularen
-Auffassung einer Architektur widerspiegelt. Ein finales \texttt{Architecture}
-Modul besteht schließlich aus einem ExtensionInformation Objekt, welches mit
-allen Erweiterungen vereint wurde.
-
-Das Architecture Objekt beschreibt lediglich die Eigenschaften einer
-Architektur, d.h. es stellt Informationen wie die Byte-Reihenfolge, Wortgröße,
-Speicherausrichtung oder die Eigenschaften der Register bereit. Es beschreibt
-auch, welche Instruktionen zur Verfügung stehen, definiert aber nicht, wie diese
-konkret implementiert sind, da dies für eine Konfigurationsdatei zu komplex
-wäre. Die Implementation der einzelnen Instruktionen wird deshalb in C++ Code
-übernommen. Wie die Verbindung zwischen der Beschreibung der Architektur und der
-Implementation abläuft, wird im Folgenden erläutert.
-
-\subsubsection{Syntax Tree}
-
-Der Syntax Baum mit durch Vererbung implementiert und in \emph{common} und
-\emph{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
+\subsubsection{Der Syntaxbaum}
+Zur abstrahierten Darstellung von ausführbaren Instruktionen wird ein Syntaxbaum verwendet.
+Jede Instruktion, die der Parser einliest, resultiert in einen Syntaxbaum; ein Programm ist also
+eine Liste dieser Bäume. Dabei bildet der Instruktionsknoten die Wurzel, seine Operanden werden als Kinder an den Baum gehängt.
+Der Syntaxbaum ist durch Vererbung implementiert und in \emph{common} und
+\emph{riscv} (bzw. den konkreten Teil jeder Architektur) gegliedert. Eine
 Übersicht bietet \autoref{fig:arch-syntax-tree}
 
 \begin{figure}[H]
@@ -150,7 +118,7 @@ Der Syntax Baum mit durch Vererbung implementiert und in \emph{common} und
 		\end{pgfonlayer}
 		\end{tikzpicture}
 	\end{center}
-	\caption{Klassendiagramm Syntax Baum}
+	\caption{Klassendiagramm Syntaxbaum}
 	\label{fig:arch-syntax-tree}
 \end{figure}
 
@@ -176,13 +144,13 @@ Die aufgeführten Klassen haben folgende Funktion:
 	weshalb es einen speziellen RegisterNode für RISC-V gibt.
 
 	\item \textbf{AbstractInstructionNode} ist die oberste Ebene eines jeden
-	Syntax Baums und repräsentiert die auszuführende Instruktion.
+	Syntaxbaums und repräsentiert die auszuführende Instruktion.
 
 \end{itemize}
 
-Mit diesen Knotentypen lassen sich alle RISC-V Instruktionen modellieren. Nicht
-RISC Architekturen stellen aber häufig die Möglichkeit bereit, einen
-Speicherzugriff während einer anderen Instruktion durchzuführen. Ein Beispiel in
+Mit diesen Knotentypen lassen sich alle RISC-V Instruktionen modellieren. Andere
+Architekturen stellen aber häufig die Möglichkeit bereit, einen
+Speicherzugriff im Zuge einer anderen Instruktion durchzuführen. Ein Beispiel aus
 x86:
 
 \begin{x86}
@@ -195,7 +163,7 @@ konzeptioniert, die jedoch nicht im Quellcode definiert sind:
 	\item \textbf{MemoryAccessNode} repräsentiert einen Inline Speicherzugriff,
 	im oben aufgeführten Beispiel also der Inhalt der eckigen Klammern.
 	\item \textbf{ArithmeticNode} stellt eine arithmetische Operation dar, im
-	obigen Beispiel also sowohl die Multiplikation, als auch die Addition.
+	obigen Beispiel also sowohl die Multiplikation als auch die Addition.
 \end{itemize}
 
 Die Oberklasse jedes Knotens ist die Klasse \texttt{AbstractSyntaxTreeNode}.
@@ -204,14 +172,14 @@ Folgende Methoden werden von ihr vorgegeben:
 \begin{itemize}
 	\label{dev-manual-arch-node-functions}
 	\item \textbf{\texttt{getValue(MemoryAccess\&)}}: Diese Methode führt den
-	darunter liegenden Syntax Baum aus, und ruft ggf. rekursiv dieselbe Methode
+	darunter liegenden Syntaxbaum aus, und ruft ggf. rekursiv dieselbe Methode
 	bei den Kindknoten auf. Je nach Knotentyp variiert der Rückgabewert: So gibt
-	beispielsweise ein Instruktionsknoten die Adresse der nächsten Instruktion, 
+	beispielsweise ein Instruktionsknoten die Adresse der nächsten Instruktion,
 	ein Register seinen aktuellen Wert und ein Immediateknoten die
 	abgespeicherte Konstante zurück. Als Parameter wird eine Zugriffsmöglichkeit auf den
 	Speicher übergeben, mit dem die Instruktion z.B. das Resultat der Operation
 	abspeichern kann.
-	Mit Diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
+	Mit diesem Konzept werden Codeduplikate verhindert, da z.B. eine arithmetische
 	Operation, die sowohl mit Registern, als auch mit Immediate Werten arbeiten
 	kann, nur einmal implementiert werden muss. In RISC-V kann man dieses Konzept
 	beispielsweise auf \emph{add} und \emph{addi} anwenden.
@@ -231,10 +199,10 @@ Folgende Methoden werden von ihr vorgegeben:
 	Weiteren lässt es sich so verhindert, dass geschützte Speicherbereiche
 	von Store Instruktionen beschrieben werden.
 
-	\item \textbf{\texttt{assemble()}}: Wandelt einen Syntax Baum in die
+	\item \textbf{\texttt{assemble()}}: Wandelt einen Syntaxbaum in die
 	Binärdarstellung der Architektur um. Diese Darstellung ist lediglich zur
 	Visualisierung für den Benutzer vorgesehen, die eigentliche Simulation der
-	Instruktionen wird über den Syntax Baum vorgenommen. Ein Registerknoten x5
+	Instruktionen wird über den Syntaxbaum vorgenommen. Ein Registerknoten x5
 	gibt z.B. \texttt{00101} (also 5 als Binärzahl der Länge n), ein Konstantenknoten gibt seinen Wert
 	zurück. Der Instruktionsknoten (die Wurzel) gibt anschließend die
 	zusammengefügte, komplette assemblierte Instruktion zurück.
@@ -249,13 +217,13 @@ Folgende Methoden werden von ihr vorgegeben:
 Die Aufgabe einer konkreten Architektur besteht nun darin, die eben beschriebenen
 Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In
 \autoref{dev:extension} wird darauf genauer eingegangen.
-Um nun Objekte des Syntax Baums zu erzeugen, wird die Node Factory benötigt, auf
+Um nun Objekte des Syntaxbaums zu erzeugen, wird die Node Factory benötigt, auf
 die im Folgenden eingegangen wird.
 
 \subsubsection{Node Factory}
 \label{module-arch-node-factory}
 
-Mit der \emph{Node Factory} wird der bereits beschriebene Syntax Baum erzeugt.
+Mit der \emph{Node Factory} wird der bereits beschriebene Syntaxbaum erzeugt.
 Um nach außen ein Architektur-unabhängiges Interface zu bieten, basiert die
 Node Factory dem \emph{Abstract Factory Pattern} und wird als Diagramm in
 \autoref{fig:arch-node-factory} dargestellt.
