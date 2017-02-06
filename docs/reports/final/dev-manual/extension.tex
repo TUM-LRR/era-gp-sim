@@ -52,7 +52,7 @@ Reihe von Klassen und -strukturen die grob dieselbe Aufgabe haben.
 
 	\draw[modulearrow] (arch-common) edge node [xshift=-4cm, text width=4cm]{Abstrahierte, geladene Assembler Architektur} (core);
 
-	\draw[modulearrow] (arch-riscv) edge node [yshift=1.5cm, text width=6cm]{konkrete Instruktionen \& Register, Speicherausrichtung, ...} (arch-common);
+	\draw[modulearrow] (arch-riscv) edge node [yshift=1.5cm, text width=6cm]{konkrete Instruktionen \& Register, Speicherausrichtung, \dots} (arch-common);
 
 	\draw[modulearrow] (parser-common) edge node [text width=5cm, xshift=5.5cm]{Lesen/Umwandeln von Quelltext in abstrahierte, ausführbare Form} (core);
 
@@ -70,7 +70,7 @@ der gewählte Parser an den Core übergeben. Dieser lädt über Arch-Common Date
 des Pakets und seinen Extensions, anschließend wird der passende Parser über die
 Parser-Factory erzeugt. Die Daten von Arch-Common enthalten zum einen
 standardisierte, abstrahierte Informationen zum geladenen Paket (z.B. Länge,
-Anzahl, Funktion und Name von Registern, Speicher-Ausrichtung, Endianness, ...)
+Anzahl, Funktion und Name von Registern, Speicher-Ausrichtung, Endianness, \dots)
 und zum anderen Zugriff auf Factories zur Erzeugung von Instruktionsknoten. Soll
 jetzt ein Quelltext eingelesen und ausgeführt werden, bekommt der Core den Text
 und gibt diesen an die geladene Parser-Implementierung weiter. Diese
@@ -241,7 +241,7 @@ jede Zeile Quelltext in einen Baum. Diese Liste an Bäumen repräsentiert dann d
 ausführbare Programm. Alle Knoten des Baumes erben von einer Oberklasse, der
 \texttt{AbstractSyntaxTreeNode}.\\ Die grundlegende Idee ist, dass die
 Ausführungseinheit nur eine bestimmte Methode (nämlich
-\texttt{AbstractSyntaxTreeNode::getValue(...)}) zur Ausführung der, durch den
+\texttt{AbstractSyntaxTreeNode::getValue(\dots)}) zur Ausführung der, durch den
 Baum repräsentierten, Instruktion aufruft. Die Wurzel macht dementsprechend
 rekursive Aufrufe an die Kind- bzw. Operandenknoten. Das hat den Vorteil, dass
 eine Instruktion mit selbem Verhalten, die z.B. einmal ein Register und einmal
@@ -330,7 +330,7 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 			z.B.:\\
 			my-instruction-node-factory.hpp\\
 			my-immediate-node-factory.hpp\\
-			...
+			\dots
 			\end{tabular}
 		};
 

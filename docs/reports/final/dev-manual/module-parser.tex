@@ -234,11 +234,11 @@ Kreise durch, so geben wir noch die topologische Sortierung unserer Knoten
 zurück (diese entspricht der umgedrehten Reihenfolge, in der wir die Knoten
 abgeschlossen haben). Die topologische Sortierung ist in unserem Fall genau eine
 Anordnung der Symbole, sodass das Symbol an Position $i$ nur von allen
-Symbolen im Bereich $\{0,...,i-1\}$ abhängt. Damit können wir nun unsere
+Symbolen im Bereich $\{0,\dots,i-1\}$ abhängt. Damit können wir nun unsere
 Symbole insgesamt vereinfachen: Wir iterieren vorwärts über alle Symbole und
 setzen in Symbol $s_i$ alle Symbole ein, von denen $s_i$ abhängt. Wir wissen
 dabei, wegen der topologischen Sortierung, dass $$s_i$$ nur von
-$s_0,...,s_{i-1}$ abhängt und diese Symbole haben wir schon so weit wie möglich
+$s_0,\dots,s_{i-1}$ abhängt und diese Symbole haben wir schon so weit wie möglich
 ersetzt. Damit erhalten wir am Ende eine Darstellung, in der die Symbole
 weitestmöglich ersetzt sind. Diese können wir dann weitergeben an das
 Ersetzungssystem. Wir unterscheiden dabei noch zwischen statischen und

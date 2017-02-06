@@ -64,14 +64,14 @@ definiert den Beginn einer solchen Sektion:
 
 \begin{exampleblock}{Beispiel zum Sektionswechsel}
 	\begin{riscv}
-	...
+	\dots
 	.section data ; Wechsel zur Datensektion
 	.word 0xff ; Speicherdefinitionen
 	.half 123
 
 	.section text ; Wechsel zurück zum Programmcode
 	addi x1, x1, 10
-	...
+	\dots
   \end{riscv}
 \end{exampleblock}
 
@@ -256,7 +256,7 @@ in Dezimaldarstellung.
 		.equ mem_loc, 0xbeef+2
 		.equ addr, mem_loc + offset
 		.equ offset, 7
-		...
+		\dots
 		lb x1, x0, addr
 	\end{riscv}
 	Die Definition von Konstanten und Labels kann auch unterhalb der Verwendung im arithmetischen Ausdruck oder in einem anderen Segment sein, solange sich keine zyklische Abhängigkeit ergibt. Es sind allerdings nur Ausdrücke erlaubt, die zur Übersetzungszeit in eine Zahl aufgelöst werden können. \texttt{addi x1, x0, 2*x4} ist nicht erlaubt, da der Wert des Registers 4 zur Übersetzungszeit noch nicht feststeht.\\
@@ -444,9 +444,9 @@ Das folgende Programm springt zu sub\_routine und kehrt wieder zurück:
   jal x4, sub_routine
   ; hierhin wird zurückgekehrt
 
-  ; ...
+  ; \dots
 sub_routine:
-  ; ... Ausführung Unterprogramm
+  ; \dots Ausführung Unterprogramm
   jalr x0, x4, 0
 \end{riscv}
 Der \texttt{jal}-Ausdruck speichert die Adresse des nachfolgenden Befehls (durch Kommentar angedeutet) in Register x4 und spring das Unterprogramm an. Der \texttt{jalr}-Ausdruck springt daraufhin am Ende des Unterprogramms zur Adresse in Register 4. Die Adresse des nachfolgenden Befehls wird verworfen (also in x0 gespeichert)
@@ -834,6 +834,6 @@ Hier werden einige Übersetzungsfehler aufgelistet und erklärt, die für einen 
 	\hline
 	The register-register instructions must have 3 registers as operands & Der Befehl erwartet 3 Register als Operanden& Möglicherweise wird hier ein Immediate-Register-Befehl, z.B. \texttt{addi} verwendet. Für 3 Register muss jedoch die Register-Register Variante \texttt{add} verwendet werden.\\
 	\hline
-	The memory area you are trying to access is protected (area: [\textit{a},\textit{b}]) & Ein Speicherzugriff greift auf eine ungültige Speicheradresse zu. Entweder der angesprochene Speicherbereich beginnt/endet außerhalb des Speichers oder es wird ein schreibender Zugriff auf Teile des assemblierten Programms durchgeführt. & Die Grenzen \textit{a} und \textit{b} (beide inklusive) geben einen Anhaltspunkt, wo eine fehlerhafte Berechnung der Adresse erfolgt sein könnte. Die aus Basisregister und Offset berechnete Adresse einer Load-/Store-Instruktion gibt immer die Anfangsadresse des Speicherbereichs an. Die Länge ist implizit durch den Befehl (\texttt{lb}: 1 Byte, \texttt{lw}: 4 Byte, ...) gegeben\\
+	The memory area you are trying to access is protected (area: [\textit{a},\textit{b}]) & Ein Speicherzugriff greift auf eine ungültige Speicheradresse zu. Entweder der angesprochene Speicherbereich beginnt/endet außerhalb des Speichers oder es wird ein schreibender Zugriff auf Teile des assemblierten Programms durchgeführt. & Die Grenzen \textit{a} und \textit{b} (beide inklusive) geben einen Anhaltspunkt, wo eine fehlerhafte Berechnung der Adresse erfolgt sein könnte. Die aus Basisregister und Offset berechnete Adresse einer Load-/Store-Instruktion gibt immer die Anfangsadresse des Speicherbereichs an. Die Länge ist implizit durch den Befehl (\texttt{lb}: 1 Byte, \texttt{lw}: 4 Byte, \dots) gegeben\\
 	\hline
 \end{tabular}
