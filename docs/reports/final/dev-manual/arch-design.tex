@@ -37,21 +37,21 @@ Architektur die Vereinigung mehrerer Extensions.
 				text height=0.45cm}%
 		};
 		\tikzset{smallblock/.style={block, text width=1.5cm, text height=0.3cm}};
-		
+
 		%%%%%%%%%%%%%%%
 		% Architektur %
 		%%%%%%%%%%%%%%%
 		\node [class] (arch) at (0, 0.2) {\texttt{Architektur}};
-		
+
 		%%%%%%%%%%%%%%
 		% Extensions %
 		%%%%%%%%%%%%%%
 		\node [class] (ext) at (0, -1.2) {\texttt{Extension}};
-		
+
 		% Edge
 		\draw [->] (arch) -- (ext)
 		node [midway, right] {\footnotesize\texttt{1..N}};
-		
+
 		%%%%%%%%%%%%%%%%%%%%%%%%
 		% Units (e.g. CPU/FPU) %
 		%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,20 +60,20 @@ Architektur die Vereinigung mehrerer Extensions.
 		edge [->, bend right]
 		node [pos=0.7, right] {\footnotesize\texttt{1..N}}
 		(units);
-		
+
 		% Register
 		\node [class] (reg) at (-1.5, -4.5) {\texttt{Register}};
 		\draw [->] (units) -- (reg)
 		node [midway, left] {\footnotesize\texttt{1..N}};
-		
+
 		\node (rname) at (-2.3, -5.5) {\scriptsize Name};
 		\node (rtype) at (-1.5, -5.55) {\scriptsize Typ};
 		\node (rwidth) at (-0.8, -5.5) {\scriptsize Breite};
-		
+
 		\draw [->, semithick] (reg) -- (rname);
 		\draw [->, semithick] (reg) -- (rtype);
 		\draw [->, semithick] (reg) -- (rwidth);
-		
+
 		%%%%%%%%%%%%%%%%%%%
 		% Instruction Set %
 		%%%%%%%%%%%%%%%%%%%
@@ -82,31 +82,31 @@ Architektur die Vereinigung mehrerer Extensions.
 		edge [->, bend left]
 		node [pos=0.7, left] {\footnotesize\texttt{1}}
 		(is);
-		
+
 		% Instruktionen
 		\node [class] (inst) at (1.5, -4.5) {\texttt{Instruktion}};
 		\draw [->] (is) -- (inst) node [midway, right] {\footnotesize\texttt{1..N}};
-		
+
 		\node (iname) at (0.8, -5.5) {\scriptsize Name};
 		\node (ikey) at (1.5, -5.55) {\scriptsize Key};
 		\node (iformat) at (2.3, -5.5) {\scriptsize Format};
-		
+
 		\draw [->, semithick] (inst) -- (iname);
 		\draw [->, semithick] (inst) -- (ikey);
 		\draw [->, semithick] (inst) -- (iformat);
-		
+
 		%%%%%%%%%%%%%%
 		% Attributes %
 		%%%%%%%%%%%%%%
 		\draw [->, semithick] (ext) -- (2, -0.8)
 		node [right] {\footnotesize Wortgröße};
-		
+
 		\draw [->, semithick] (ext) -- (2, -1.6)
 		node [right]{\footnotesize Endianness};
-		
+
 		\draw [->, semithick] (ext) -- (-2, -0.8)
 		node [left] {\footnotesize Datentypen};
-		
+
 		\draw [->, semithick] (ext) -- (-2, -1.6)
 		node [left] {\footnotesize Signed Rep.}; {\texttt{1}};;
 		\end{tikzpicture}
@@ -131,17 +131,18 @@ Mnemonic und einen Opcode spezifizieren. \autoref{fig:arch-design} fasst unser
 Design einer Architektur zusammen.
 
 Es sei noch angemerkt, dass wie bei RISC-V bestimmte Extensions einen speziellen
-Sonderstatus (\emph{vollständig} bzw. im RISC-V Jargon
-\emph{Base-Extension}) haben können. Ein Modul ist dann vollständig, wenn es alle
+Sonderstatus haben können, wenn sie \emph{vollständig} bzw. im RISC-V Jargon
+\emph{Base-Extensions} sind. Ein Modul ist dann vollständig, wenn es alle
 nötigen Attribute und Eigenschaften besitzt, um eine eigenständige und
-funktionsfähige Architektur zu bilden. Genauer definieren wir drei Anforderungen:
+funktionsfähige Architektur zu bilden. Genauer definieren wir drei
+Anforderungen:
 \begin{enumerate}
   \item Die Extension hat mindestens eine Instruktion,
   \item Die Extension hat mindestens eine nicht leere Unit (also ein Register),
   \item Die Extension definiert sämtliche Attribute wie Endianness oder Wortgröße.
 \end{enumerate}
 
-Ist eine Erweiterung selbst noch nicht vollständig, so muss sie mit weiteren 
+Ist eine Erweiterung selbst noch nicht vollständig, so muss sie mit weiteren
 Extensions vereinigt werden, was durch die \texttt{merge}
 Methode der \texttt{ExtensionInformation} Klasse leicht zu realisieren ist.
 Schlussendlich ist eine \texttt{Architecture} Instanz nur dann gültig, wenn sie

@@ -5,6 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \input{../../template/preamble.tex}
+\input{../../template/standalone-preamble.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DOCUMENT BEGIN                                       %
@@ -37,11 +38,17 @@
 
 \input{introduction.tex}
 
-\chapter{Benutzeranleitung}
-\subimport*{../user-manual/}{all.tex}
+\texttt{}
+\begin{lstlisting}[language=bash, keywords={}]
+\end{lstlisting}
+\begin{lstlisting}[language={[x86masm]Assembler}]
+\end{lstlisting}
 
 \chapter{Entwickleranleitung}
 \subimport*{../dev-manual/}{all.tex}
+
+\chapter{Benutzeranleitung}
+\subimport*{../user-manual/}{all.tex}
 
 \chapter{Team Bericht}
 \subimport*{../team-report/}{all.tex}
