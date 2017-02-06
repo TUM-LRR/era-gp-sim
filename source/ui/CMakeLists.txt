@@ -58,8 +58,10 @@ if (ERA_SIM_BUILD_GUI)
     ${UI_SOURCES}
     ${UI_RESOURCES}
     ${UI_HEADERS_WRAPPED}
+	# The icon resource for windows
+	${WIN_RES_FILE}
   )
-  target_link_libraries(era-sim era-sim-core)
 
-  qt5_use_modules(era-sim Widgets Qml Quick)
+  target_link_libraries(era-sim era-sim-core)
+  target_link_libraries(era-sim Qt5::Widgets Qt5::Qml Qt5::Quick Qt5::Svg)
 endif ()

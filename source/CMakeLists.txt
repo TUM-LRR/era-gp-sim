@@ -4,8 +4,6 @@
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/std:c++latest /bigobj)
-else()
-    add_compile_options(-Os -O2 -g -Werror -DDEBUG)
 endif()
 
 ########################################

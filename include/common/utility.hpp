@@ -418,7 +418,7 @@ bool contains(const Range &range, T &&element) {
   return iterator != end(range);
 }
 
-const std::string &rootPath();
+std::string rootPath();
 
 std::string joinPaths(const std::string &single);
 
