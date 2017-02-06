@@ -6,114 +6,114 @@ dieses Modul größtenteils dem eigentlichen Assemblierer.
 
 \subsubsection{Submodule}
 
-Bei Erscheinen der Version 1.0 besteht das Parser-Modul aus vier verschiedenen
-Untermodulen:
+Momentan besteht das Parser-Modul aus vier verschiedenen Untermodulen:
+\begin{senumerate}{-0.3cm}
 
-\begin{itemize}
+  \item Das \emph{Common Untermodul} stellt Klassen bereit, die zur öffentlichen
+  Schnittstelle des Parsers zu anderen Modulen dienen. Dieses Submodul ist frei
+  von Abhängigkeiten zu jeglichen konkreten Parser-Implementierungen.
 
-\item Das \emph{Common-Submodul} stellt Klassen bereit, die zur öffentlichen
-Schnittstelle des Parsers zu anderen Modulen dienen. Dieses Submodul ist frei
-von Abhängigkeiten zu jeglichen konkreten Parser-Implementierungen.
+  \item Mit dem \emph{Factory Untermodul} können neue, spezifische Parser
+  erzeugt werden.
 
-\item Mit dem \emph{Factory-Submodul} können neue, spezifische Parser erzeugt
-werden.
+  \item Das \emph{RISC-V Untermodul} stellt eine konkrete Implementierung eines
+  Assemblierers für die RISC-V-Architektur zur Verfügung.
 
-\item Das \emph{RISC-V-Submodul} stellt eine konkrete Implementierung eines
-Assemblierers für die RISC-V-Architektur zur Verfügung.
+  \item Im \emph{Independent Untermodul} sind viele Hilfsklassen (zum Beispiel
+  Symboltabellen, Compiler für arithmetische Ausdrücke) bereitgestellt, welche
+  von dem RISC-V-Parser verwendet, genauso gut aber auch gerne von zukünftigen
+  Parser eingebunden werden können.
 
-\item Im \emph{Independent-Submodul} sind viele Hilfsklassen (zum Beispiel
-Symboltabellen, Compiler für arithmetische Ausdrücke) bereitgestellt, welche von
-dem RISC-V-Parser verwendet, genauso gut aber auch gerne von zukünftigen Parser
-eingebunden werden können.
+\end{senumerate}
 
-\end{itemize}
+Im Folgenden werden diese Submodule genauer erläutert.
 
-Im Folgenden werden diese Submodule genauer erläutert:
-
-\paragraph{Common-Submodul}
+\paragraph{Common Untermodul}
 
 Das Kernstück des gesamten Moduls bildet die (abstrakte) Klasse \texttt{Parser}.
-Diese bietet hauptsächlich zwei Funktionen: Anbieten von Syntax-Informationen
+Diese hat hauptsächlich zwei Funktionen: Anbieten von Syntax-Informationen
 mittels der Methode \texttt{getSyntaxInformation} (für das Syntax-Highlighting
 in der Benutzeroberfläche), sowie dem Assemblieren eines gegebenen
-Assemblerprogrammes mithilfe der Methode \texttt{parse}, die als
-Eingabeparameter einen C++-Standard-String erwartet.
+Assemblerprogramms mithilfe der Methode \texttt{parse}, die als Eingabeparameter
+einen String erwartet.
 
 \subparagraph{Syntax-Highlighting}
 
 Beim Aufruf der Methode \texttt{getSyntaxInformation} soll ein Objekt der Klasse
 \texttt{SyntaxInformation} erstellt und zurückgegeben werden. Dieses Objekt
-enthält Informationen zum Syntax-Highlighting.
+enthält Informationen zum Syntax-Highlighting. Zur Bestimmung der
+hervorzuhebenden Teile des Textes werden reguläre Ausdrücke verwendet. Um
+unterschiedliche Formatierungen zu ermöglichen, wird jeder Ausdruck einem Token
+(siehe \texttt{SyntaxInformation::Token}) zugeordnet. Um einem
+\texttt{SyntaxInformation}-Objekt einen regulären Ausdruck hinzuzufügen, kann
+die Methode \texttt{addSyntaxRegex} verwendet werden.
 
-Zur Bestimmung der hervorzuhebenden Teile des Textes werden reguläre Ausdrücke
-verwendet. Um unterschiedliche Formatierungen zu ermöglichen, wird jeder
-Ausdruck einem Token (siehe \texttt{SyntaxInformation::Token}) zugeordnet.
-
-Um einem \texttt{SyntaxInformation}-Objekt einen regulären Ausdruck
-hinzuzufügen, kann die Methode \texttt{addSyntaxRegex} verwendet werden.
-
+\pagebreak
 \subparagraph{Das Assemblieren}
+\vspace{-0.2cm}
 
-Beim Aufruf der Methode \texttt{parse} soll das Assembler-Programm kompiliert
-und in einer \texttt{FinalRepresentation}-Datenstruktur zurückgegeben werden.
-Diese enthält notwendige Informationen für die Ausführung des
+Beim Aufruf der Methode \texttt{parse} soll das Assembler-Programm vollständig
+kompiliert und in einer \texttt{FinalRepresentation}-Datenstruktur zurückgegeben
+werden. Diese enthält notwendige Informationen für die Ausführung des
 Assemblerprogrammes sowie dessen Darstellung in der Benutzeroberfläche. Die
 \texttt{FinalRepresentation} besteht dabei aus folgenden Einzelheiten:
+\begin{sitemize}{-1cm}
+  \item \texttt{CommandList}: Die fertig assemblierten Assemblerbefehle,
+  aneinandergereiht. Jeder der Befehle (des Typs \texttt{FinalCommand}) enthält
+  einen fertig assemblierten \texttt{InstructionNode}, das
+  \texttt{CodePositionInterval}, an welchem der Befehl im Text auftritt, sowie
+  die Speicheradresse, an der der Befehl assembliert werden soll.
 
-\begin{itemize} \item \texttt{CommandList}: Die fertig assemblierten
-Assemblerbefehle, aneinandergereiht. Jeder der Befehle (des Typs
-\texttt{FinalCommand}) enthält einen fertig assemblierten
-\texttt{InstructionNode}, das \texttt{CodePositionInterval}, an welchem der
-Befehl im Text auftritt, sowie die Speicheradresse, an der der Befehl
-assembliert werden soll. \item \texttt{MacroInformationList}: Beinhaltet alle
-Makros, welche im Code vorkommen, mit eingesetzten Parametern und Position des
-Auftretens. \item \texttt{CompileErrorList}: Eine Liste von allen Fehlern,
-Warnungen und Hinweisen, die während des Assembliervorgangs aufgetreten sind.
-Wenn diese keine Fehler enthält (sehrwohl aber eventuell Warnungen oder
-Hinweise), so ist das Assemblieren erfolgreich gewesen und das Assemblerprogramm
-kann ausgeführt werden. \end{itemize}
+  \item \texttt{MacroInformationList}: Beinhaltet alle Makros, welche im Code
+  vorkommen, mit eingesetzten Parametern und Position des Auftretens.
 
-Gehen wir noch auf ein paar Feinheiten ein:
+  \item \texttt{CompileErrorList}: Eine Liste von allen Fehlern, Warnungen und
+  Hinweisen, die während des Assembliervorgangs aufgetreten sind. Wenn diese
+  keine Fehler enthält (sehrwohl aber eventuell Warnungen oder Hinweise), so ist
+  das Assemblieren erfolgreich gewesen und das Assemblerprogramm kann ausgeführt
+  werden.
+  \vspace{-0.5cm}
+\end{sitemize}
 
-Koordinaten im Assemblertext werden in der Datenstruktur \texttt{CodePosition}
-als zweidimensionaler Punkt gespeichert, ein Intervall davon entsprechend in der
-\texttt{CodePositionInterval}-Klasse. Ein Intervall ist genau dann leer, wenn
-sein Startpunkt vor seinem Endpunkt liegt. In diesem Fall also, wenn die
-Y-Koordinate des Endpunktes strikt kleiner als die des Startpunktes oder die
-Y-Koordinaten identisch aber die X-Koordinate des Endpunktes strikt kleiner ist.
-Ein \texttt{CodePositionInterval} wird beidseitig inklusiv gesehen (d.h. beide
-Randpunkte liegen noch im Intervall).
+Koordinaten im Assemblertext werden hierbei in der Datenstruktur
+\texttt{CodePosition} als zweidimensionaler Punkt gespeichert, ein Intervall
+davon entsprechend in der \texttt{CodePositionInterval}-Klasse. Ein Intervall
+ist genau dann leer, wenn sein Startpunkt vor seinem Endpunkt liegt. In diesem
+Fall also, wenn die $y$-Koordinate des Endpunktes strikt kleiner als die des
+Startpunktes oder die $y$-Koordinaten identisch aber die $x$-Koordinate des
+Endpunktes kleiner ist. Ein \texttt{CodePositionInterval} wird beidseitig
+inklusiv gesehen (d.h. beide Randpunkte liegen noch im Intervall).
 
-Ein \texttt{CompileError} kapselt eine Fehlermeldung (bzw. eine Warnung oder
-einen Hinweis). Dabei wird die Position und die Schwere der Meldung (Fehler,
-Warnung, Hinweis, vgl. \texttt{Compile\-Error\-Severity}) festgehalten. Der
-Begriff „Error“ ist deswegen etwas überladen. Die Meldung selbst wird als
-\texttt{Translateable} gespeichert, sodass diese später in verschiedene Sprachen
-übersetzt werden könnte. Dabei werden Argumente separat vom eigentlichen Text
-kodiert.
+Des Weiteren kapselt ein \texttt{CompileError} eine Fehlermeldung (bzw. eine
+Warnung oder einen Hinweis). Dabei wird die Position und die Schwere der Meldung
+(Fehler, Warnung, Hinweis) festgehalten. Der Begriff "Error" ist deswegen etwas
+überladen. Die Meldung selbst wird als \texttt{Translateable} gespeichert,
+sodass diese später in verschiedene Sprachen übersetzt werden könnte. Dabei
+werden Argumente separat vom eigentlichen Text kodiert.
 
-Eine \texttt{CompileErrorList} kapselt die \texttt{CompileError}s und stellt
-Möglichkeiten zur Erweiterung der Liste bereit. Dies erfolgt über den Aufruf von
-Makros. Der Grund hierfür ist, dass so die Fehlermeldungen automatisch von einem
-Qt-Programm gefunden und für das Übersetzen markiert werden können. Die
-Meldungen müssen dabei ein C-String sein (\texttt{const char*}). Ebenso lassen
-sich über die \texttt{CompileErrorList} einfache Abfragen stellen, ob jeweils
-Fehler, Warnungen oder Hinweise vorhanden sind und wenn ja, wie viele.
+Letztlich enthält eine \texttt{CompileErrorList} die \texttt{CompileError}s und
+stellt Möglichkeiten zur Erweiterung der Liste bereit. Dies erfolgt über den
+Aufruf von Makros. Der Grund hierfür ist, dass so die Fehlermeldungen
+automatisch von einem Qt-Programm gefunden und für das Übersetzen markiert
+werden können. Die Meldungen müssen dabei ein C-String sein (\texttt{const
+char*}). Ebenso lassen sich über die \texttt{CompileErrorList} einfache Abfragen
+stellen, ob jeweils Fehler, Warnungen oder Hinweise vorhanden sind und wenn ja,
+wie viele.
 
-\textbf{Factory-Submodul}
+\textbf{Factory Untermodul}
+\vspace{-0.2cm}
 
-Kommen wir zum Factory-Submodul: Dieses besteht lediglich aus einer einzigen
+Kommen wir zum Factory Untermodul: Dieses besteht lediglich aus einer einzigen
 Klasse, der \texttt{ParserFactory}. Bei jener werden alle
 Parserimplementierungen unter einem Namen zur Auswahl gestellt, sodass sie mit
 Architektur und Speicherzugriff kombiniert einen Parser erzeugen können. Diese
 Abhängigkeit zu den einzelnen Implementierungsmodulen ist auch der Grund, wieso
-das Factory-Submodul aus dem Common-Submodul herausgenommen wurde.
-
-Mit der Methode \texttt{ParserFactory::createParser} kann dabei ein Parser mit
-den angegebenen Voraussetzungen generiert werden. Die Map
+das Factory Untermodul aus dem Common Untermodul herausgenommen wurde. Mit der
+Methode \texttt{ParserFactory::createParser} kann dabei ein Parser mit den
+angegebenen Voraussetzungen generiert werden. Die Map
 \texttt{ParserFactory::mapping} enthält alle registrierten Parser.
 
-\paragraph{Independent-Submodul}
+\paragraph{Independent Untermodul}
 
 Kommen wir nun zum wohl größten Submodul des Parsers, dem
 \emph{Independent}-Modul, welches eine Sammlung von Hilfsklassen darstellt,
@@ -123,7 +123,7 @@ Assemblierer gehalten werden.
 
 \subparagraph{Intermediate-Darstellung für Befehle}
 
-Das Independent-Submodul stellt Klassen zur Verfügung, die als
+Das Independent Untermodul stellt Klassen zur Verfügung, die als
 Übergangsdarstellung zwischen Text und assemblierten Syntaxbaum eines
 Assembler-Programms dienen. Eine Übersicht der wichtigsten Klassen bietet
 \autoref{fig:parser-intermediate}.
@@ -143,7 +143,7 @@ Assembler-Programms dienen. Eine Übersicht der wichtigsten Klassen bietet
 		\draw[inheritance-arrow] (instr.north) -- (super);
 		\draw[inheritance-arrow] (sub.north) ++(-1.0cm,0) -- (dir);
 		\end{tikzpicture}
-	\end{center} \caption{Klassendiagramm Intermediate-Darstellung}
+	\end{center} \caption{Das Klassendiagramm der Intermediate-Darstellung.}
 	\label{fig:parser-intermediate}
 \end{figure}
 
@@ -164,6 +164,7 @@ Die Klasse \texttt{IntermediateRepresentator} enthält eine Liste mehrerer diese
 Operationen und stellt eine Methode bereit, um diese Operationen in eine
 \texttt{FinalRepresentation} umzuwandeln.
 
+\pagebreak
 \subparagraph{Assemblierung der Intermediate-Darstellung}
 \label{dev:dev_parser_assem_inter} Um die Operationen aus der
 Intermediate-Darstellung in ein Objekt der Klasse \texttt{FinalRepresentation}
@@ -177,7 +178,7 @@ Diese Methode führt nacheinander folgende Schritte aus:
 	Makro-Instruktionen. \item Reservieren von Speicher für alle Befehle mit
 	Hilfe der \texttt{allocateMemory} Funktion. \item Einlesen aller
 	Labels/Konstanten und deren Werte mit der \texttt{enhanceSymbolTable}
-	Funktion. \item "`Ausführen"' aller Operationen mit der
+	Funktion. \item "Ausführen" aller Operationen mit der
 	\texttt{execute}-Funktion, d.h. meistens Erzeugen eines Syntaxknotens und
 	Einfügen dieses Knotens in die \texttt{FinalRepresentation}.
 \end{enumerate}
@@ -229,42 +230,49 @@ haben): Wir überprüfen hierzu, ob unser nicht zwingend zusammenhängende Digra
 (gerichteter Graph) kreisfrei ist. Dazu lassen wir über jede
 Zusammenhangskomponente eine Tiefensuche laufen und merken uns den Pfad zu
 unserem Startknoten. Wenn wir nun auf einen Knoten stoßen, der in unserem Pfad
-bereits vorhanden ist, so haben wir einen Kreis entdeckt und geben das so weiter. Kommen wir ohne
-Kreise durch, so geben wir noch die topologische Sortierung unserer Knoten
-zurück (diese entspricht der umgedrehten Reihenfolge, in der wir die Knoten
-abgeschlossen haben). Die topologische Sortierung ist in unserem Fall genau eine
-Anordnung der Symbole, sodass das Symbol an Position $i$ nur von allen
-Symbolen im Bereich $\{0,\dots,i-1\}$ abhängt. Damit können wir nun unsere
-Symbole insgesamt vereinfachen: Wir iterieren vorwärts über alle Symbole und
-setzen in Symbol $s_i$ alle Symbole ein, von denen $s_i$ abhängt. Wir wissen
-dabei, wegen der topologischen Sortierung, dass $$s_i$$ nur von
-$s_0,\dots,s_{i-1}$ abhängt und diese Symbole haben wir schon so weit wie möglich
-ersetzt. Damit erhalten wir am Ende eine Darstellung, in der die Symbole
+bereits vorhanden ist, so haben wir einen Kreis entdeckt und geben das so
+weiter. Kommen wir ohne Kreise durch, so geben wir noch die topologische
+Sortierung unserer Knoten zurück (diese entspricht der umgedrehten Reihenfolge,
+in der wir die Knoten abgeschlossen haben). Die topologische Sortierung ist in
+unserem Fall genau eine Anordnung der Symbole, sodass das Symbol an Position $i$
+nur von allen Symbolen im Bereich $\{0,\dots,i-1\}$ abhängt. Damit können wir
+nun unsere Symbole insgesamt vereinfachen: Wir iterieren vorwärts über alle
+Symbole und setzen in Symbol $s_i$ alle Symbole ein, von denen $s_i$ abhängt.
+Wir wissen dabei, wegen der topologischen Sortierung, dass $$s_i$$ nur von
+$s_0,\dots,s_{i-1}$ abhängt und diese Symbole haben wir schon so weit wie
+möglich ersetzt. Damit erhalten wir am Ende eine Darstellung, in der die Symbole
 weitestmöglich ersetzt sind. Diese können wir dann weitergeben an das
 Ersetzungssystem. Wir unterscheiden dabei noch zwischen statischen und
 dynamischen Symbolen: Statische Symbole haben dabei einen unveränderlichen Wert
 und werden daher wie geplant ersetzt. Für dynamische Symbole ist der Wert jedoch
-erst beim Ersetzen des Symbols im Programm bekannt, nicht, wenn der
-Symbolgraph ausgewertet wird. Daher werden diese Symbole \emph{nicht ersetzt}
-(sehr wohl aber auf wohlgeformte Namen und Duplikate geprüft), sondern verbleiben
-mit ihrem Namen in den weitestmöglich ersetzten Symbolen. Ein Einsatzzweck für
-solche dynamischen Symbole sind zum Beispiel relative Adressen: Da beim
-Generieren des Graphen nicht bekannt ist, bei welchen Befehlen das Symbol zum
-Einsatz kommt, kann es nicht ersetzt werden. All dies erfolgt, wenn man
-\texttt{evaluate} beim Symbolgraphen aufruft. Würden wir nun parametrisierte
-Symbole zulassen, so hätten wir das Problem, dass wir hier selbst bei statischen
-Symbolen nicht feststellen können, ob ein Ersetzungsvorgang irgendwann beendet
-ist (vgl. Halteproblem, das ist sogar \emph{beweisbar} nicht möglich), also
-müssten wir ab irgendeiner Ersetzungstiefe abbrechen. Dennoch stünde es
-zukünftigen Projekten frei, dies zu implementieren.
+erst beim Ersetzen des Symbols im Programm bekannt, nicht, wenn der Symbolgraph
+ausgewertet wird. Daher werden diese Symbole \emph{nicht ersetzt} (sehr wohl
+aber auf wohlgeformte Namen und Duplikate geprüft), sondern verbleiben mit ihrem
+Namen in den weitestmöglich ersetzten Symbolen. Ein Einsatzzweck für solche
+dynamischen Symbole sind zum Beispiel relative Adressen: Da beim Generieren des
+Graphen nicht bekannt ist, bei welchen Befehlen das Symbol zum Einsatz kommt,
+kann es nicht ersetzt werden. All dies erfolgt, wenn man \texttt{evaluate} beim
+Symbolgraphen aufruft. Würden wir nun parametrisierte Symbole zulassen, so
+hätten wir das Problem, dass wir hier selbst bei statischen Symbolen nicht
+feststellen können, ob ein Ersetzungsvorgang irgendwann beendet ist (vgl.
+Halteproblem, das ist sogar \emph{beweisbar} nicht möglich), also müssten wir ab
+irgendeiner Ersetzungstiefe abbrechen. Dennoch stünde es zukünftigen Projekten
+frei, dies zu implementieren.
 
-Laufzeiten (Worst-Case, sei $n$ die Anzahl an Symbolen): \begin{itemize} \item
-Namen überprüfen: $\mathcal{O}(n)$ \item Duplikate finden:
-$\mathcal{O}(n*f(n))$ (mit $f(m)$ als maximale Zeit, um in die Map mit $m$
-Elementen einzufügen) \item Zyklenfreiheit überprüfen und topologische
-Sortierung ermitteln: $\mathcal{O}(n^2)$ (dennoch, sehr unwahrscheinlich im
-normalen Gebrauch; Worst-Case wäre die transitive Hülle eines zusammenhängenden
-Symbolgraphen) \end{itemize}
+\pagebreak
+Die Laufzeiten im Worst-Case lässt sich wie folgt analysieren, wobei $N$ die
+Anzahl an Symbolen darstellt:
+
+\begin{itemize}
+    \item Namen überprüfen: $\mathcal{O}(N)$
+
+    \item Duplikate finden: $\mathcal{O}(N \cdot f(N))$ (mit $f(M)$ als maximale
+    Zeit, um in die Map mit $M$ Elementen einzufügen)
+
+    \item Zyklenfreiheit überprüfen und topologische Sortierung ermitteln:
+    $\mathcal{O}(N^2)$ (dennoch, sehr unwahrscheinlich im normalen Gebrauch;
+    Worst-Case wäre die transitive Hülle eines zusammenhängenden Symbolgraphen)
+\end{itemize}
 
 Die Evaluierung (Klasse \texttt{SymbolGraphEvaluation}) wird anschließend an den
 SymbolReplacer weitergegeben. Dieser ersetzt textuell bei einem gegebenen
@@ -324,21 +332,31 @@ Element auf dem Stack zu diesem Zeitpunkt haben, so ist ein Fehler aufgetreten).
 
 Es ist dabei möglich, einen \texttt{ExpressionCompiler} mit eigenen Operatoren
 zu definieren, mittels der Datenstruktur \texttt{ExpressionCompilerDefinition}.
-Folgende Punkte werden dabei spezifiziert: \begin{itemize} \item Binäre
-Operatoren mit Regex und einer Auswertungsfunktion, sowie Präzedenz \item Unäre
-Operatoren, ebenfalls mit Regex und Auswertungsfunktion; die Präzedenz muss
-nicht angegeben werden, da unäre Operatoren (wg. der Natur des
-Shunting-Yard-Algorithmus) immer vor allen binären Operatoren von links nach
-rechts abgearbeitet werden (d.h. unäre Operatoren sind nur als Präfix erlaubt).
-\item Literaldecoder mit Erkennungsregex und Dekodierfunktion. Unter Literale
-fällt in diesem Fall alles, was kein Symbol ist; also z.B. Zahlen, Strings oder
-Register (vgl. z.B. X86-Speicherzugriffe). \item Weitere Hilfsregexes, wie
-Klammern (öffnend, schließend) und das Format für Symbole, welche separat von
-Literalen behandelt ersetzt werden. \end{itemize} Ein Beispiel, wie dies
-definiert werden kann, findet sich bei den \texttt{CLikeExpressionCompiler}s,
-welche der aktuelle RISC-V-Parser benutzt (mit $$int64_t$$ als Typ). Diese
-führen C-artige Operatoren (alle, die direkt und unverändernd auf Zahlen
-operieren) auf den Standard-Zahlentypen ein.
+Folgende Punkte werden dabei spezifiziert:
+
+\begin{itemize}
+  \item Binäre Operatoren mit Regex und einer Auswertungsfunktion, sowie
+  Präzedenz.
+
+  \item Unäre Operatoren, ebenfalls mit Regex und Auswertungsfunktion; die
+  Präzedenz muss nicht angegeben werden, da unäre Operatoren (wg. der Natur des
+  Shunting-Yard-Algorithmus) immer vor allen binären Operatoren von links nach
+  rechts abgearbeitet werden (d.h. unäre Operatoren sind nur als Präfix
+  erlaubt).
+
+  \item Literaldecoder mit Erkennungsregex und Dekodierfunktion. Unter Literale
+  fällt in diesem Fall alles, was kein Symbol ist; also z.B. Zahlen, Strings
+  oder Register (vgl. z.B. X86-Speicherzugriffe).
+
+  \item Weitere Hilfsregexes, wie Klammern (öffnend, schließend) und das Format
+  für Symbole, welche separat von Literalen behandelt ersetzt werden.
+
+\end{itemize}
+
+Ein Beispiel, wie dies definiert werden kann, findet sich bei den
+\texttt{CLikeExpressionCompiler}s, welche der aktuelle RISC-V-Parser benutzt
+(mit \texttt{int64\_t} als Typ). Diese führen C-artige Operatoren (alle, die
+direkt und unverändernd auf Zahlen operieren) auf den Standard-Zahlentypen ein.
 
 Statt Zahlen ist es auch möglich – obwohl dies noch nicht entwickelt ist – einen
 Syntaxbaum auf dem Ausgabe-Stack aufzubauen, ohne Änderungen an der
@@ -348,9 +366,9 @@ weitestmöglich ausgewertete Bäume erwartet, z.B. erlaubt RISC-V keine
 Operator-Knoten), welcher mit Assoziativität und Kommutativität (vielleicht auch
 Distributivität o.ä.) vereinfachen kann. Das Prinzip wäre wie folgt möglich:
 Literale erhalten einen eigenen Knoten – eventuelle Register würde man hier auch
-als Literal sehen. Wenn ein Operator auf $$n\in\{1,2\}$$ Syntaxbäume angewandt
+als Literal sehen. Wenn ein Operator auf $n\in\{1,2\}$ Syntaxbäume angewandt
 wird, so wird ein neuer Syntaxbaum erzeugt, welcher als Wurzel den Operator und
-als Kinder die $$n$$ eingegebenen Knoten besitzt. Würde man dies für den
+als Kinder die $n$ eingegebenen Knoten besitzt. Würde man dies für den
 \texttt{CLikeExpressionCompiler} machen wollen, so müsste entsprechende Semantik
 für Infix-Operatoren und Implizier Konvertierung von Zahltypen implementiert
 werden – der Typ des Compilers selber kann mit Templates flexibel ausgewechselt
@@ -362,7 +380,7 @@ verständlichen Syntaxbaum übersetzt werden, dies kann knotenweise geschehen.
 
 Es sei angemerkt, dass der Shunting-Yard-Algorithmus nur für einfache (hier:
 Klammern, binäre und unäre Operatoren, sowie Literale) arithmetische Ausdrücke
-verwendet werden kann. So ist z.B. der X86-Ausdruck $$[eax+4*ebx+16]$$ nur
+verwendet werden kann. So ist z.B. der X86-Ausdruck \texttt{[eax+4*ebx+16]} nur
 auswertbar (unter Annahme, dass das eigentliche Auswerten mit Syntaxbäumen
 geschieht; sonst käme das Problem auf, wie die Register „geparst“ werden
 sollen), wenn die äußeren Klammern erkannt, dann der innere Ausdruck ausgewertet
@@ -400,11 +418,12 @@ voneinander entfernt im Speicher stehen, was das ganze einfacher zum Betrachten
 macht, gleichzeitig wird dadurch auch aber ein weiterer Assemblerpass benötigt
 (Pass zwei von vier).
 
-\paragraph{RISC-V-Submodul}
+\pagebreak
+\paragraph{RISC-V Untermodul}
 
-Für RISC-V existiert ein korrespondierendes Parser-Submodul, welches in der
+Für RISC-V existiert ein korrespondierendes Parser Untermodul, welches in der
 \texttt{ParserFactory} über den Namen \texttt{riscv} aufgerufen werden kann. Es
-verwendet dabei größtenteils die Klassen, die im Independent-Submodul definiert
+verwendet dabei größtenteils die Klassen, die im Independent Untermodul definiert
 sind.
 
 Der RISC-V-Parser liest zuerst zeilenweise den Programm-Code ein und speichert
@@ -429,9 +448,8 @@ werden. Hier erzeugt man mit Name, Speicherzugriff und gegebener Architektur
 einen gewünschten Parser und erhält einen Unique-Pointer darauf. Anschließend
 kann man bereits die \texttt{parse}- und \texttt{getSyntaxHighliting}-Methoden
 des Parsers selber aufrufen und Text assemblieren lassen. Das Deinitialisieren
-erfolgt ebenfalls über den eingebauten Destruktor automatisch.
-
-Eine Übersicht über diesen Prozess bietet \autoref{fig:parser-overview}.
+erfolgt ebenfalls über den eingebauten Destruktor automatisch. Eine Übersicht
+über diesen Prozess bietet \autoref{fig:parser-overview}.
 
 \begin{figure}[H]
 	\begin{center}
@@ -463,38 +481,47 @@ Eine Übersicht über diesen Prozess bietet \autoref{fig:parser-overview}.
 	\label{fig:parser-overview}
 \end{figure}
 
+\pagebreak
 \subsubsection{Einschränkungen}
 
 Trotz der aktuellen Fähigkeiten des Parser-Moduls existieren noch folgende
-Einschränkungen:
+bekannte Einschränkungen:
 
-\begin{itemize} \item \emph{Compiler für arithmetische Ausdrücke}: Momentan
-unterstützt der Parser bereits, wie erklärt, das Compilen von arithmetischen
-Ausdrücken – aber auch nicht mehr. Eine Vision wäre, z.B. einen SLR-Parser zu
-implementieren, welcher langfristig komplette Operanden parsen können soll. Dies
-könnte zum Beispiel realisiert werden, indem ein Python-Skript (fremde Module
-wie Bison sind leider nicht erlaubt!) aus einer gegebenen Grammatik (z.B. mit
-Regexes für die einzelnen Terminalsymbole, sodass Literale usw. erkannt werden
-können) eine Zustandsgraphen-Tabelle erzeugt, welche dann vom Programm verwendet
-wird. Zum Beispiel könnte dann pro Anwendung einer Regel aus der Grammatik eine
-Transformation des Syntaxbaumes erfolgen. \item \emph{Symbol-Tabelle}: Wie
-bereits erwähnt unterstützt die Symboltabelle momentan keine parametrisierten
-Einträge. Eventuell wäre es aber zukünftig wünschenswert, solche zu
-unterstützen, da so einige Ausdrücke (z.B. RISC-V: Pseudo-Instruktion für Laden
-eines 32-Bit-Immediates) schöner geschrieben werden können. \item
-\emph{Segment-Darstellung}: Zwar werden momentan Daten- und Codesegment
-unterschieden – aber eben nicht mehr. Möglich wäre noch, beispielsweise
-\texttt{bss-} und \texttt{stack}-Segment (momentan muss der Stack „reingehackt“
-werden, indem einfach auf eine hohe Speicheradresse zugegriffen wird), wenn
-nicht mehr, einzuführen. Die neuen Segmente sollten einfach bei der
-\texttt{MemorySectionDefinition} jeder Architektur angegeben werden, wo sie sich
-relativ gesehen befinden. Viel weiter gedacht, könnte man auch Semantik von
-einfachen Linker-Skripten implementieren, wobei hier ebenfalls ein SLR-Parser
-nützlich sein könnte. \item \emph{Gleitkommazahl-Unterstützung}: Unterstützung
-für Gleitkommazahlen wurde während der Entwicklung aufgegeben, kann aber bei
-Bedarf in den Parser integriert werden. Die wahrscheinlich größte Schwierigkeit
-würde das Auswerten der arithmetischen Ausdrücke mit Gleitkomma- und Ganzzahlen
-darstellen. \end{itemize}
+\begin{itemize}
+
+  \item \emph{Compiler für arithmetische Ausdrücke}: Momentan unterstützt der
+  Parser bereits, wie erklärt, das Compilen von arithmetischen Ausdrücken – aber
+  auch nicht mehr. Eine Vision wäre, z.B. einen SLR-Parser zu implementieren,
+  welcher langfristig komplette Operanden parsen können soll. Dies könnte zum
+  Beispiel realisiert werden, indem ein Python-Skript (fremde Module wie Bison
+  sind leider nicht erlaubt!) aus einer gegebenen Grammatik (z.B. mit Regexes
+  für die einzelnen Terminalsymbole, sodass Literale usw. erkannt werden können)
+  eine Zustandsgraphen-Tabelle erzeugt, welche dann vom Programm verwendet wird.
+  Zum Beispiel könnte dann pro Anwendung einer Regel aus der Grammatik eine
+  Transformation des Syntaxbaumes erfolgen.
+
+  \item \emph{Symbol-Tabelle}: Wie bereits erwähnt unterstützt die Symboltabelle
+  momentan keine parametrisierten Einträge. Eventuell wäre es aber zukünftig
+  wünschenswert, solche zu unterstützen, da so einige Ausdrücke (z.B. RISC-V:
+  Pseudo-Instruktion für Laden eines 32-Bit-Immediates) schöner geschrieben
+  werden können.
+
+  \item \emph{Segment-Darstellung}: Zwar werden momentan Daten- und Codesegment
+  unterschieden – aber eben nicht mehr. Möglich wäre noch, beispielsweise
+  \texttt{bss-} und \texttt{stack}-Segment (momentan muss der Stack
+  „reingehackt“ werden, indem einfach auf eine hohe Speicheradresse zugegriffen
+  wird), wenn nicht mehr, einzuführen. Die neuen Segmente sollten einfach bei
+  der \texttt{MemorySectionDefinition} jeder Architektur angegeben werden, wo
+  sie sich relativ gesehen befinden. Viel weiter gedacht, könnte man auch
+  Semantik von einfachen Linker-Skripten implementieren, wobei hier ebenfalls
+  ein SLR-Parser nützlich sein könnte.
+
+  \item \emph{Gleitkommazahl-Unterstützung}: Unterstützung für Gleitkommazahlen
+  wurde während der Entwicklung aufgegeben, kann aber bei Bedarf in den Parser
+  integriert werden. Die wahrscheinlich größte Schwierigkeit würde das Auswerten
+  der arithmetischen Ausdrücke mit Gleitkomma- und Ganzzahlen darstellen.
+
+\end{itemize}
 
 In den Anfangsphasen des Projekts kam kurzzeitig in Betracht, einen möglichst
 unabhängigen Parser zu schreiben, sodass jeder denkbare Parser das gleiche
@@ -503,28 +530,3 @@ Ausdrücke in Syntaxbäume umformt. Da dies einiges mehr an Arbeit erfordert
 hätte, wurde die Idee gestrichen. Stattdessen entschieden wir uns, einen
 monolithischen Parser pro Dialekt anzubieten und außerdem häufig verwendete
 Funktionen in eine Bibliothek auszulagern.
-
-\subsubsection{Weiterführende Dokumentation}
-
-Weiterführende Dokumentation findet sich in den für den Parser relevanten
-Dateien, welche in \autoref{fig:parser-further} aufgelistet sind.
-
-\begin{figure}[H]
-	\begin{center} \begin{tikzpicture}[%
-	grow via three points={one child at (0.8,-0.8) and
-		two children at (0.8,-0.8) and (0.8,-1.7)},
-	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |-
-	(\tikzchildnode\tikzchildanchor)}, growth parent anchor=west, parent
-	anchor=south west] \tikzstyle{every node}=[draw=black,anchor=west] \node
-	{\erasim{}} child { node {$\{\text{tests/}, \text{include/},
-	\text{source/}\}$}
-		child { node {parser/}
-			child { node {common/} } child { node {factory/} } child { node
-			{independent/} } child { node {riscv/} }
-		}
-	}
-	child [missing] {} child [missing] {} child [missing] {}; \end{tikzpicture}
-	\end{center}
-
-	\caption{Relevante Dateien des Parsermoduls} \label{fig:parser-further}
-\end{figure}
