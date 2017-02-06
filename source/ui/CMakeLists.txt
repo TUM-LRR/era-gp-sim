@@ -21,6 +21,7 @@ set(UI_SOURCES
   translateable-processing.cpp
   theme.cpp
   settings.cpp
+  project-settings.cpp
 )
 
 set(UI_HEADERS
@@ -40,6 +41,7 @@ set(UI_HEADERS
   ${CMAKE_SOURCE_DIR}/include/ui/console-component.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/theme.hpp
   ${CMAKE_SOURCE_DIR}/include/ui/settings.hpp
+  ${CMAKE_SOURCE_DIR}/include/ui/project-settings.hpp
 )
 
 

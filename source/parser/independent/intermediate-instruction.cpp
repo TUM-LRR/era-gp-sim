@@ -18,6 +18,7 @@
 
 #include "parser/independent/intermediate-instruction.hpp"
 
+#include <cctype>
 #include <cstddef>
 #include <memory>
 #include <string>

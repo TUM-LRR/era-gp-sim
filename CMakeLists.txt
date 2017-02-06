@@ -11,12 +11,19 @@ project(era-sim)
 
 include(CheckCXXCompilerFlag)
 
-check_cxx_compiler_flag("-std=c++14" COMPILER_SUPPORTS_CXX_14)
-
-if (COMPILER_SUPPORTS_CXX_14)
-    set(CMAKE_CXX_STANDARD 14)
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    # enable sth like this when cmake knows about Visual Studio 2017...
+    #if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 1910)
+    #    message(FATAL_ERROR "21st century, anyone?")
+    #endif()
 else()
-    message(FATAL_ERROR "21st century, anyone?")
+    check_cxx_compiler_flag("-std=c++14" COMPILER_SUPPORTS_CXX_14)
+
+    if (COMPILER_SUPPORTS_CXX_14)
+        set(CMAKE_CXX_STANDARD 14)
+    else()
+        message(FATAL_ERROR "21st century, anyone?")
+    endif()
 endif()
 
 ########################################
@@ -51,6 +58,10 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Svg REQUIRED)
+
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
 
 ########################################
 # INCLUDES

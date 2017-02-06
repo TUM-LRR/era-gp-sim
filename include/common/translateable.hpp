@@ -75,9 +75,11 @@ class Translateable {
 
   Translateable();
 
-  Translateable(Translateable& copy) = default;
+  Translateable(Translateable&& copy) = default;
 
   Translateable(const Translateable& copy) = default;
+
+  Translateable& operator=(const Translateable& copy) = default;
 
   Translateable(const char* base,
                 const std::initializer_list<std::string> arguments);

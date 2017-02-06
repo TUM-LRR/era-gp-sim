@@ -1,4 +1,14 @@
 ########################################
+# CONFIG
+########################################
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    add_compile_options(/std:c++latest /bigobj)
+else()
+    add_compile_options(-g -Werror -DDEBUG)
+endif()
+
+########################################
 # SUBDIRECTORIES
 ########################################
 

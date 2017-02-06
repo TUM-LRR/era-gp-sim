@@ -27,7 +27,8 @@ Item {
     anchors.right: parent.right
 
     property alias text: macroTextEdit.text
-    property alias fontPointSize: macroTextEdit.font.pointSize
+    property alias fontPixelSize: macroTextEdit.font.pixelSize
+    property alias fontFamily: macroTextEdit.font.family
     property var expandedHeight: 0
     height: 0
     clip: true

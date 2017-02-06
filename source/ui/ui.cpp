@@ -19,6 +19,7 @@
 
 #include "ui/ui.hpp"
 
+#include <QByteArray>
 #include <QUrl>
 #include <string>
 
@@ -60,7 +61,8 @@ Ui::id_t Ui::addProject(QQuickItem* tabItem,
                         const QVariant& memorySizeQVariant,
                         const QString& architecture,
                         const QString& optionName,
-                        const QString& parser) {
+                        const QString& parser,
+                        const QString& projectName) {
   // create ArchitectureFormula
   ArchitectureFormula architectureFormula(architecture.toStdString());
 
@@ -72,123 +74,149 @@ Ui::id_t Ui::addProject(QQuickItem* tabItem,
   // Get the memory size from the qvariant object.
   auto memorySize = memorySizeQVariant.value<std::size_t>();
 
-  // Parent is tabItem, so it gets destroyed at the same time
-  auto context = new QQmlContext(qmlContext(tabItem), tabItem);
-
-  // save the project pointer in a vector, the object is deleted by qml when
-  // tabItem is deleted
-  auto projectId = _rollingProjectId;
-  auto project = new GuiProject(context,
-                                architectureFormula,
-                                memorySize,
-                                parser.toStdString(),
-                                _snapshots,
-                                tabItem);
-  _projects.emplace(_rollingProjectId++, project);
-
-  // instantiate the qml project item with the prepared context
-  auto projectItem =
-      qobject_cast<QQuickItem*>(projectComponent->create(context));
-
-  // set the parent of projectItem, so its deletion is handled by qml
-  projectItem->setParent(tabItem);
-
-  // set visual parent of the projectItem
-  projectItem->setParentItem(tabItem);
-
-  return projectId;
+  return _createProject(tabItem,
+                        projectComponent,
+                        architectureFormula,
+                        memorySize,
+                        parser.toStdString(),
+                        projectName.toStdString());
 }
 
 QStringList Ui::getArchitectures() const {
   return _architectureMap.keys();
 }
 
-QStringList Ui::getOptionNames(QString architectureName) const {
+QStringList Ui::getOptionNames(const QString& architectureName) const {
   auto formulaMap =
       std::get<0>(_architectureMap.find(architectureName).value());
   return formulaMap.keys();
 }
 
-QStringList Ui::getParsers(QString architectureName) const {
+QStringList Ui::getParsers(const QString& architectureName) const {
   return std::get<1>(_architectureMap.find(architectureName).value());
 }
 
-void Ui::removeProject(int id) {
+void Ui::removeProject(id_t id) {
   _projects.erase(id);
 }
 
-void Ui::changeSystem(int id, QString base) {
+void Ui::changeSystem(id_t id, const QString& base) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->changeSystem(base.toStdString());
 }
 
-void Ui::parse(int id) {
+void Ui::parse(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->parse();
 }
 
-void Ui::run(int id) {
+void Ui::run(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->run();
 }
 
-void Ui::runLine(int id) {
+void Ui::runLine(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->runLine();
 }
 
-void Ui::runBreakpoint(int id) {
+void Ui::runBreakpoint(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->runBreakpoint();
 }
 
-void Ui::stop(int id) {
+void Ui::stop(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->stop();
 }
 
-void Ui::reset(int id) {
+void Ui::reset(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->reset();
 }
 
 
-void Ui::saveText(int id) {
+void Ui::saveText(id_t id) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->saveText();
 }
 
-void Ui::saveTextAs(int id, QUrl path) {
+void Ui::saveTextAs(id_t id, const QUrl& path) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->saveTextAs(path);
 }
 
-void Ui::loadText(int id, QUrl path) {
+void Ui::loadText(id_t id, const QUrl& path) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->loadText(path);
 }
 
-void Ui::saveSnapshot(int id, QString name) {
+void Ui::saveSnapshot(id_t id, const QString& name) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->saveSnapshot(name);
 }
 
-void Ui::loadSnapshot(int id, QString name) {
+void Ui::loadSnapshot(id_t id, const QString& name) {
   auto iterator = _projects.find(id);
   assert::that(iterator != _projects.end());
   iterator->second->loadSnapshot(name);
 }
+
+void Ui::saveProject(id_t id) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->saveProject();
+}
+
+void Ui::saveProjectAs(id_t id, const QUrl& path) {
+  auto iterator = _projects.find(id);
+  assert::that(iterator != _projects.end());
+  iterator->second->saveProjectAs(path);
+}
+
+Ui::id_t Ui::loadProject(QQuickItem* tabItem,
+                         QQmlComponent* projectComponent,
+                         const QUrl& url,
+                         int newTab) {
+  auto projectSnapshot = _loadProjectFile(url, newTab);
+
+  if (!projectSnapshot.isValidProject()) {
+    _sendCreationFailedSignal(
+        Translateable(QT_TRANSLATE_NOOP(
+            "GUI error messages", "This snapshot is not a project file!")),
+        newTab);
+    return -1;
+  }
+
+  auto projectId = _createProject(tabItem,
+                                  projectComponent,
+                                  projectSnapshot.getArchitectureFormula(),
+                                  projectSnapshot.getMemorySize(),
+                                  projectSnapshot.getParserName(),
+                                  projectSnapshot.getProjectName());
+  auto iterator = _projects.find(projectId);
+  assert::that(iterator != _projects.end());
+  iterator->second->projectNameChanged(
+      QString::fromStdString(projectSnapshot.getProjectName()));
+  iterator->second->setText(QString::fromStdString(projectSnapshot.getCode()));
+  iterator->second->loadSnapshot(projectSnapshot);
+  iterator->second->loadProjectSettings(projectSnapshot.getProjectSettings());
+  iterator->second->setDefaultProjectPath(url);
+
+  return projectId;
+}
+
 
 QString Ui::translate(const Translateable& translateable) {
   QString translation = QObject::tr(translateable.getBaseString().c_str());
@@ -299,4 +327,77 @@ void Ui::_setupSnapshots(const QString& snapshotLocation) {
                      this->_snapshots->snapshotDirectory(path);
                    });
   // clang-format on
+}
+
+Ui::id_t Ui::_createProject(QQuickItem* tabItem,
+                            QQmlComponent* projectComponent,
+                            const ArchitectureFormula& architectureFormula,
+                            size_t memorySize,
+                            const std::string& parserName,
+                            const std::string& projectName) {
+  // Parent is tabItem, so it gets destroyed at the same time
+  auto context = new QQmlContext(qmlContext(tabItem), tabItem);
+
+  // save the project pointer in a vector, the object is deleted by qml when
+  // tabItem is deleted
+  auto projectId = _rollingProjectId;
+  auto project = new GuiProject(context,
+                                architectureFormula,
+                                memorySize,
+                                parserName,
+                                projectName,
+                                _snapshots,
+                                tabItem);
+  _projects.emplace(_rollingProjectId++, project);
+
+  // instantiate the qml project item with the prepared context
+  auto projectItem =
+      qobject_cast<QQuickItem*>(projectComponent->create(context));
+
+  // set the parent of projectItem, so its deletion is handled by qml
+  projectItem->setParent(tabItem);
+
+  // set visual parent of the projectItem
+  projectItem->setParentItem(tabItem);
+
+  return projectId;
+}
+
+void Ui::_sendCreationFailedSignal(const Translateable& message, int index) {
+  auto translatedMessage = translate(message);
+  emit projectCreationFailed(translatedMessage, index);
+}
+
+Snapshot Ui::_loadProjectFile(const QUrl& url, int newTab) {
+  auto path = url.toLocalFile();
+  QFile file(path);
+  if (!file.open(QIODevice::ReadOnly)) {
+    _sendCreationFailedSignal(
+        Translateable(QT_TRANSLATE_NOOP("GUI error messages",
+                                        "Could not load project file!")),
+        newTab);
+    return Snapshot();
+  }
+
+  QString contents = file.readAll();
+
+  if (contents.isEmpty()) {
+    _sendCreationFailedSignal(
+        Translateable(
+            QT_TRANSLATE_NOOP("GUI error messages", "Project file is empty!")),
+        newTab);
+    return Snapshot();
+  }
+
+  Json json;
+  try {
+    json = Json::parse(contents.toStdString());
+  } catch (const std::exception& exception) {
+    _sendCreationFailedSignal(
+        Translateable(QT_TRANSLATE_NOOP("GUI error messages",
+                                        "Project file is corrupt!")),
+        newTab);
+    return Snapshot();
+  }
+  return Snapshot(json);
 }

@@ -22,13 +22,20 @@ import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.2
 
 SplitView {
+  id: splitviewRoot
   orientation: Qt.Horizontal
 
+  // Height and width are still 0 when the component is completed.
+  // Because of this, the inner splitviews have to be resized when the size
+  // changes for the first time. Somehow bindings don't work here.
+  property bool widthInitialized: false
+
   InnerSplitviews {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView1
-    faktor: 2
+    Layout.minimumWidth: 5
+    Layout.fillWidth: false
+    settingsKey: "splitview-left"
+    factor: 2
     quotient: 3
     usual1: "snapshots"
     usual2: "inputoutput"
@@ -36,41 +43,56 @@ SplitView {
   }
 
   InnerSplitviewsEditor {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView2
-    faktor: 2
+    Layout.minimumWidth: 5
+    Layout.fillWidth: false
+    implicitWidth: width
+    settingsKey: "splitview-editor"
+    factor: 2
     quotient: 3
     usual2: "inputoutput"
   }
 
   InnerSplitviews {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView3
-    faktor: 1
+    Layout.minimumWidth: 5
+    Layout.fillWidth: false
+    settingsKey: "splitview-middle"
+    factor: 1
     quotient: 2
     usual1: "register"
     usual2: "register"
   }
 
   InnerSplitviews {
-    Layout.minimumWidth: 10
-    width: parent.width/4
     id: splitView4
-    faktor: 1
+    Layout.minimumWidth: 5
+    Layout.fillWidth: true
+    settingsKey: "splitview-right"
+    factor: 1
     quotient: 2
     usual1: "memory"
     usual2: "help"
   }
 
-  /*Sets the widht at the beginning, because else the columns are too small*/
   onWidthChanged: {
-    splitView1.width = 3*(width/20);
-    splitView2.width = 9*(width/20);
-    splitView3.width = 4*(width/20);
-    splitView4.width = 4*(width/20);
+    splitView1.width = 4 * (splitviewRoot.width / 20);
+    splitView2.width = 9 * (splitviewRoot.width / 20);
+    splitView3.width = 4 * (splitviewRoot.width / 20);
+    splitView4.width = 4 * (splitviewRoot.width / 20);
   }
 
+  function collectSettings() {
+    for (var index = 0; index < splitviewRoot.children.length; ++index) {
+      var child = splitviewRoot.children[index];
+      // The children of the splitview are not the real objects, there is a nested structure.
+      for (var innerIndex = 0; innerIndex < child.children.length; ++innerIndex) {
+        var innerChild = child.children[innerIndex];
+        if (innerChild.isSplitView) {
+          innerChild.storeSettings();
+        }
+      }
+    }
+  }
 
 }
