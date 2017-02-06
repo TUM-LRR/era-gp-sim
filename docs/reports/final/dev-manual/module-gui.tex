@@ -30,7 +30,8 @@ Komponenten-Header enthält, über den zum einen die angezeigte Komponente gewä
 wird und zum anderen die Komponenteneinstellungen aufgerufen werden können.
 
 \begin{figure}[H]
-	\begin{center}
+	\centering
+  \scalebox{0.88}{
     \begin{tikzpicture}
       \tikzset{font=\small,
         edge from parent fork down,
@@ -49,27 +50,27 @@ wird und zum anderen die Komponenteneinstellungen aufgerufen werden können.
           draw=black!50,
           thick
           }}
-\Tree [.{ApplicationWindow\\(main.qml)}
-        [.MenuBar ]
-        [.Toolbar ]
-        [.ProjectTabView
-            [.Splitview
-                 [.InnerSplitviews
-                     [.SplitViewItem
-                         [.Snapshots ]
-                         [.Help ]
-                         [.Registers ]
-                         [.Memory ]
-                         [.Inputs ]
-                         [.Outputs ] ] ]
-                 [.{InnerSplitviews-\\Editor}
-                     [.SplitViewItem ]
-                     [.Editor ] ] ] ] ]
-\end{tikzpicture}
-	\end{center}
+  \Tree [.{ApplicationWindow\\(main.qml)}
+          [.MenuBar ]
+          [.Toolbar ]
+          [.ProjectTabView
+              [.Splitview
+                   [.InnerSplitviews
+                       [.SplitViewItem
+                           [.Snapshots ]
+                           [.Help ]
+                           [.Registers ]
+                           [.Memory ]
+                           [.Inputs ]
+                           [.Outputs ] ] ]
+                   [.{InnerSplitviews-\\Editor}
+                       [.SplitViewItem ]
+                       [.Editor ] ] ] ] ]
+  \end{tikzpicture}
+  }
 	\caption{Grundlegende Zusammensetzung der GUI-Komponenten. Die Knotentitel im
 	Diagramm entsprechen nicht notwendigerweise den Namen der assoziierten
-	Komponente.}
+	Komponenten.}
 	\label{fig:gui-composition}
 \end{figure}
 
@@ -94,21 +95,20 @@ von Cache-Zwecken halten diese Modelle selbst keine veränderbaren Daten
 (Registerwerte, Speicherwerte etc.), sondern holen diese über das zugehörige
 Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
 
+\vspace{-0.1cm}
 \subsubsection{Kommunikation}
 \label{gui-kommunikation}
+\vspace{-0.1cm}
 
 Der Simulator unterstützt das gleichzeitige Laden mehrerer unabhängiger
 Projekte. Diese werden jeweils durch eine \texttt{GUIProject}-Instanz
 repräsentiert, welche Komponenten-über\-grei\-fen\-de Funktionalitäten für ein
-Projekt zur Verfügung stellt.
-
-Im \texttt{GUIProject} werden mitunter die C++-Klassen der QML-Komponente
-gehalten, initialisiert und deren Kommunikation mit dem Core koordiniert.
-Dieses übernimmt also die Rolle des Mittelsmann zwischen dem Core, der keine
-Qt-Mechanismen verwendet, und der GUI.
-
-Bei der Initialisierung der C++-Klassen übergibt das \texttt{GUIProject} diesen
-die benötigten Instanzen der Interface-Klassen (\texttt{MemoryAccess} und
+Projekt zur Verfügung stellt. Im \texttt{GUIProject} werden mitunter die
+C++-Klassen der QML-Komponente gehalten, initialisiert und deren Kommunikation
+mit dem Core koordiniert. Dieses übernimmt also die Rolle des Mittelsmann
+zwischen dem Core, der keine Qt-Mechanismen verwendet, und der GUI. Bei der
+Initialisierung der C++-Klassen übergibt das \texttt{GUIProject} diesen dann die
+benötigten Instanzen der Interface-Klassen (\texttt{MemoryAccess},
 \texttt{ArchitectureAccess} etc.).
 
 Datenaustausch ausgehend vom Core hin zu den QML-Komponenten in der GUI hat
@@ -125,66 +125,78 @@ der GUI verwendet wird.
 
 \begin{figure}
 	\centering
-	\begin{tikzpicture}[auto, node distance=2cm]
-	% NODE DEFINITIONS
-	\tikzstyle{module} = [draw, rectangle,
-	text width=4cm]
-	\tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, text width=4cm, align=center]
-	\tikzstyle{modulearrow} = [->, thick]
-	\tikzstyle{extension} = [dashed]
+  \scalebox{1.4}{
+  \begin{tikzpicture}[thick, font=\scriptsize, node distance=0.75cm and 1.75cm]
 
-	\node (guiproject) [class] {GUIProject};
+  \tikzstyle{module} = [draw, rectangle,
+  text width=4cm]
+  \tikzstyle{class} = [rectangle, rounded corners=1pt, draw=black, fill=white, text width=2cm, align=center]
+  \tikzstyle{modulearrow} = [->, thick]
 
-	\node (callbackarrow) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow, shape border rotate=180] at (3.15,0) {};
-	\node[above = 0.2cm of callbackarrow, xshift=-0.1cm] {Callback};
+  \node (guiproject) [class] {\texttt{GUIProject}};
 
-	\node (signalarrow) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow, shape border rotate=180] at (-2.85,0) {};
-	\node[above = 0.2cm of signalarrow, xshift=0.1cm] {Signal};
+  \node (registermodel) [class, left = of guiproject] {\texttt{RegisterModel}};
 
-	\node (interfacearrow1) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow] at (2.85,-2.67) {};
+  \node (memorycomponentpresenter) [class, above = of registermodel]
+        {\texttt{MemoryPresenter}};
 
-	\node (interfacearrow2) [draw=black, single arrow,minimum height=1.6cm, minimum width=2.0cm, single arrow] at (-3.15,-2.67) {};
+  \node (editorcomponent) [class, below = of registermodel]
+        {\texttt{EditorComponent}};
 
-	\node (registermodel) [class, left = of guiproject] {RegisterModel};
-	\node (memorycomponentpresenter) [class, above = of registermodel] {MemoryComponent-\\Presenter};
-	\node (editorcomponent) [class, below = of registermodel] {EditorComponent};
-	\node (guiecetera) [below = of editorcomponent, text width=4cm, align=center] {\dots};
-	\node (guipackage) [above = 0.5cm of memorycomponentpresenter] {GUI};
-	\node (guiext1) [above left = 0.2cm of memorycomponentpresenter] {};
-	\node (guiext2) [above right = 0.2cm of memorycomponentpresenter] {};
-	\node (guiext3) [below right = 0.2cm of guiecetera] {};
-	\node (guiext4) [below left = 0.2cm of guiecetera] {};
-	\draw [extension] (guiext1) -- (guiext2) -- (guiext3) -- (guiext4) -- (guiext1);
+  \node (guiecetera) [below = of editorcomponent, text width=2cm, align=center]
+        {\large\dots};
 
-	\node (register) [class, right = of guiproject] {Register};
-	\node (memory) [class, above = of register] {Memory};
-	\node (parsingandexecutionunit) [class, below = of register] {ParsingAnd-\\ExecutionUnit};
-	\node (coreecetera) [below = of parsingandexecutionunit, text width=4cm, align=center] {\dots};
-	\node (corepackage) [above = 0.5cm of memory] {Core-Instanz};
-	\node (coreext1) [above left = 0.2cm of memory] {};
-	\node (coreext2) [above right = 0.2cm of memory] {};
-	\node (coreext3) [below right = 0.2cm of coreecetera] {};
-	\node (coreext4) [below left = 0.2cm of coreecetera] {};
-	\draw [extension] (coreext1) -- (coreext2) -- (coreext3) -- (coreext4) -- (coreext1);
+  \node (guipackage) [above = 0.5cm of memorycomponentpresenter] {\small\textbf{GUI}};
 
-	\node (interfaces) [class, below = of guiproject] {Interfaces (Proxies)};
+  \node (guitopleft) [above left = 0.2cm of memorycomponentpresenter] {};
+  \node (guibottomright) [below right = 0.2cm of guiecetera] {};
 
-	\end{tikzpicture}
-	\caption{Kommunikation der GUI mit dem Core}
+  \draw [rounded corners=1pt] (guitopleft) rectangle (guibottomright);
+
+  \node (register) [class, right = of guiproject] {\texttt{Register}};
+  \node (memory) [class, above = of register] {\texttt{Memory}};
+
+  \node (parsingandexecutionunit) [class, below = of register] {\texttt{ParsingAnd}-\\\texttt{ExecutionUnit}};
+
+  \node (coreecetera) [below = of parsingandexecutionunit, text width=2cm, align=center] {
+    \vspace{-1cm}
+    \large\dots
+  };
+  \node (corepackage) [above = 0.5cm of memory] {\small\textbf{Core-Instanz}};
+
+  \node (coretopleft) [above left = 0.2cm of memory] {};
+  \node (corebottomright) [below right = 0.2cm of coreecetera] {};
+
+  \draw [rounded corners=1pt] (coretopleft) rectangle (corebottomright);
+
+  \node (interfaces) [class, below = of guiproject] {Interfaces (Proxies)};
+
+  \draw [->, shorten >= 2pt] (2.5, 0) -- (guiproject)
+        node [midway, above] {\texttt{Callback}};
+
+  \draw [->, shorten >= 2pt] (guiproject) -- (-2.55, 0)
+        node [midway, above] {\texttt{Signal}};
+
+  \draw [->, shorten >= 1pt] (-2.55, -1.45) -- (interfaces);
+
+  \draw [->] (interfaces) -- (2.55, -1.45);
+
+  \end{tikzpicture}
+  }
+	\caption{Kommunikation der GUI mit dem Core.}
 	\label{fig:dev-manual-gui-communication}
 \end{figure}
 
 Nachrichten, die von einer der C++-Klassen der Komponenten an den Core gesendet
 werden sollen, können mit Hilfe der Interface-Klassen in den Scheduler eingefügt
-werden, der diese an das korrespondierende Core-Objekt weiterleitet.
-
-Damit die QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen
-können, werden deren Instanzen im \texttt{GUIProject} zum projektspezifischen
+werden, der diese an das korrespondierende Core-Objekt weiterleitet. Damit die
+QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen können, werden
+deren Instanzen im \texttt{GUIProject} zum projektspezifischen
 \texttt{QQMLContext} hinzugefügt, beispielsweise die Klasse
 \texttt{RegisterModel} als Context-Property \texttt{registerModel}. Auf die
-Properties dieses Kontexts kann über die zugehörige Bezeichnung (im vorigen Beispiel:
-\texttt{registerModel}) global in jeder QML-Datei zugegriffen werden. Die
-Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes
+Properties dieses Kontexts kann über die zugehörige Bezeichnung (im vorigen
+Beispiel: \texttt{registerModel}) global in jeder QML-Datei zugegriffen werden.
+Die Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes
 \texttt{GUIProject} seinen eigenen Kontext erhält.
 
 Neben den projektspezifischen Kontexten existiert zusätzlich ein
@@ -194,6 +206,6 @@ QML-Komponenten genutzt, die keinem einzelnen Projekt zugeordnet sind, um auf
 Methoden der C++-Komponenten zuzugreifen. Die Toolbar beispielsweise nutzt die
 \texttt{ui} Context-Property, um die Methode \texttt{run} aufzurufen, wenn der
 Ausführungsbutton gedrückt wurde. Zielen diese Methoden auf einzelne Projekte
-ab, wie es bei \texttt{run} der Fall ist, so muss zudem der Index des aktiven Projekts
-mit angegeben werden, damit in der \texttt{Ui}-Klasse das richtige Projekt
-gewählt werden kann.
+ab, wie es bei \texttt{run} der Fall ist, so muss zudem der Index des aktiven
+Projekts mit angegeben werden, damit in der \texttt{Ui}-Klasse das richtige
+Projekt gewählt werden kann.
