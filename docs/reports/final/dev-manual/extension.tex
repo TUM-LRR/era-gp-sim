@@ -1,84 +1,156 @@
+% !TEX root = dev-manual.tex
 % ERA-Großpraktikum: Entwickleranleitung -- Erweiterung
 
 \section{Erweiterung}
-\label{sec:extension}
+\label{dev:extension}
 
 Der folgende Abschnitt soll Anhaltspunkte zur Erweiterung des Simulators bieten.
 Eine Erweiterung kann entweder ein neues Assembler-Paket (also die Unterstützung
-einer neuen Assembler-Sprache, z.B. Intel-386\todo{Stimmt der Name?}) oder ein
-neues Modul (''Extension'') für das bereits vorhandene Assembler-Paket RISC-V
-(z.B. das Modul RV32F) sein. Des Weiteren ist es auch möglich, weitere
-Komponenten in der GUI zu ergänzen.\\
+einer neuen Assembler-Sprache, z.B. Intel-x86\_64) oder ein neues Modul bzw.
+\emph{Extension} für das bereits vorhandene Assembler-Paket RISC-V (z.B. das
+Modul RVF) sein. Des Weiteren ist es auch möglich, weitere Komponenten oder
+Themes in der GUI zu ergänzen.
 
 Da der Simulator für mehrere Assembler-Pakete konzipiert worden ist, müssen
 große Teile der Benutzeroberfläche und auch der Grundstruktur nicht neu
 geschrieben bzw. verändert werden. Vielmehr kommt es darauf an, das Konzept der
-bereits vorhandenen Teile zu verstehen und anzuwenden.\\
+bereits vorhandenen Teile zu verstehen und anzuwenden.
 
-\subsection{Übersicht zur Architektur}
+\subsection{Übersicht}
 
 Um zu verstehen, wo die Erweiterung im Konzept einzuordnen ist, und welche
-Klassen zu implementieren sind, sollte man den Prozess verstehen, wie genau ein
+Klassen zu implementieren sind, sollte man den Prozess verstehen, wie ein
 Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet
-folgendes Diagramm. Die Namen der Komponenten finden sich so nicht im Code
-wieder, sie dienen lediglich als Oberbegriff für eine ganze Reihe von Klassen
-und -strukturen die grob die selbe Aufgabe haben.
+\autoref{dev-manual-extension-overview}. Die Namen der Komponenten finden sich
+so nicht im Code wieder, sie dienen lediglich als Oberbegriff für eine ganze
+Reihe von Klassenstrukturen die grob dieselbe Aufgabe haben.
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.5]{charts/extension-overview.png}
+	\begin{tikzpicture}[auto, node distance=2cm]
+	% NODE DEFINITIONS
+	\tikzstyle{module} = [draw, rectangle,
+	text width=3cm]
+	\tikzstyle{modulearrow} = [->, thick]
+	\tikzstyle{extension} = [dashed]
+
+
+	\node (core) [module] {Core};
+	\node (gui) [module, left = of core] {GUI};
+	\node (arch-common) [module, above= of core] {Arch Common};
+	\node (arch-riscv) [module, right = of arch-common] {Arch RISC-V};
+	\node (parser-common) [module, below = of core] {Parser Factory \& Parser-Common};
+	\node (parser-riscv) [module, right = of parser-common] {RISC-V Parser};
+
+	\node (ext1) [above left = 0.2cm of arch-riscv]{};
+	\node (ext2) [above right = 0.2cm of arch-riscv]{};
+	\node (ext3) [below right = 0.2cm of parser-riscv]{};
+	\node (ext4) [below left = 0.2cm of parser-riscv]{};
+	\node (package) [below = of arch-riscv, above = of parser-riscv, xshift=3.6cm]{Assembler Paket};
+
+	\draw[modulearrow] (core) edge node [xshift=-1.3cm, yshift=-0.3cm, text width=3cm] {Anzeige abstrahierter Informationen} (gui);
+
+	\draw[modulearrow] (arch-common) edge node [xshift=-4cm, text width=4cm]{Abstrahierte, geladene Assembler Architektur} (core);
+
+	\draw[modulearrow] (arch-riscv) edge node [yshift=1.5cm, text width=6cm]{konkrete Instruktionen \& Register, Speicherausrichtung, \dots} (arch-common);
+
+	\draw[modulearrow] (parser-common) edge node [text width=5cm, xshift=5.5cm]{Lesen/Umwandeln von Quelltext in abstrahierte, ausführbare Form} (core);
+
+	\draw[modulearrow] (parser-riscv) edge node [text width=5cm, yshift=-0.5cm]{Parser zum Übersetzen konkreter Instruktionen} (parser-common);
+
+	\draw [extension] (ext1) -- (ext2) -- (ext3) -- (ext4) -- (ext1);
+	\end{tikzpicture}
+	\caption{Zusammenspiel Assembler Paket}
 	\label{dev-manual-extension-overview}
 \end{figure}
-
-\todo[inline]{Besseres Bild kommt noch (Erik)}
 
 Nach der Auswahl des Assembler-Pakets durch den Benutzer in der
 Benutzeroberfläche werden ausgewählter Architekturname, gewählte Extensions und
 der gewählte Parser an den Core übergeben. Dieser lädt über Arch-Common Daten
 des Pakets und seinen Extensions, anschließend wird der passende Parser über die
-Parser-Factory erzeugt. Die Daten von Arch-Common enthalten zum Einen
+Parser-Factory erzeugt. Die Daten von Arch-Common enthalten zum einen
 standardisierte, abstrahierte Informationen zum geladenen Paket (z.B. Länge,
-Anzahl, Funktion und Name von Registern, Speicher-Ausrichtung, Endianness, ...)
-und zum Anderen Zugriff auf Factories zur Erzeugung von Instruktionsknoten.\\
-Soll jetzt ein Quelltext eingelesen und ausgeführt werden, bekommt der Core den
-Text und gibt diesen an die geladene Parser-Implementierung weiter. Diese
+Anzahl, Funktion und Name von Registern, Speicher-Ausrichtung, Endianness, \dots)
+und zum anderen Zugriff auf Factories zur Erzeugung von Instruktionsknoten. Soll
+jetzt ein Quelltext eingelesen und ausgeführt werden, bekommt der Core den Text
+und gibt diesen an die geladene Parser-Implementierung weiter. Diese
 Implementierung wandelt das Programm in eine paket-unabhängige Darstellung
-mithilfe eines Syntaxbaumes um. Die Knoten des Syntaxbaums kann der Parser dabei
-über die Knoten-Factories der geladenen Architektur beziehen. Die
-paket-unabhängige Darstellung wird daraufhin vom Core ausgeführt. Alle Effekte
-auf Register und Speicher passieren in einer abstrahierten Art, so dass die
-Benutzeroberfläche Veränderungen anzeigen kann, ohne die konkrete
-Implementierung der Architektur zu kennen.\\
+in Form eines Syntaxbaumes um. Die Knoten des Syntaxbaums kann der Parser dabei
+über die NodeFactories der geladenen Architektur beziehen. Die paket-unabhängige
+Darstellung wird daraufhin von der Ausführungseinheit des Core-Moduls
+ausgeführt. Alle Effekte auf Register und Speicher passieren in einer
+abstrahierten Art, so dass die Benutzeroberfläche Veränderungen anzeigen kann,
+ohne die konkrete Implementierung der Architektur zu kennen.
 
 Es sind also nur diejenigen Teile zu implementieren, die im Diagramm gestrichelt
 umrandet sind. Es muss eine Architekturdefinition inklusive Implementierungen
 der einzelnen Instruktionen und ein Parser für diese geschrieben werden.
 
-\subsection{Implementierung des Architektur-Teils}
+\subsection{Erweiterung um eine neue Architektur}
 
-Wie schon in \autoref{dev-manual-extension-overview} zu sehen, gibt es einen
+Wie schon in \autoref{dev-manual-extension-overview} zu sehen ist, gibt es einen
 Teil, der bei jedem Paket existiert und die entsprechende Abstraktion nach außen
 (also Core und GUI) aufbaut. Der Architektur-Teil lässt sich weiter
 untergliedern in Definition und Eigenschaften des Assembler-Pakets,
 Implementierung des Verhaltens der Instruktionen und das Bereitstellen dieser
 für den Parser zum Bau eines Syntaxbaumes.
 
+\subsubsection{Definition und Eigenschaften des Assembler-Pakets}
+
 \begin{figure}[ht]
 	\centering
-	\includegraphics[scale=0.45]{charts/extension-arch.png}
-\end{figure}
+	\begin{tikzpicture}[auto, node distance=2cm]
+	\tikzstyle{files} = [draw, minimum height=4em, minimum width=3em, fill=white, double copy shadow={shadow xshift=4pt, shadow yshift=4pt, fill=white, draw}]
 
-\subsubsection{Definition und Eigenschaften des Assembler-Pakets}
+	\tikzstyle{arrow} = [thick, ->]
+
+	\node (data-classes) [class, rectangle split, rectangle split parts=2, text width=5cm] {
+		Datenklassen zur Beschreibung der Architektur
+		\nodepart{second}
+		\begin{tabular}{l}
+		architecture-properties.hpp\\
+		architecture.hpp\\
+		constituent-information.hpp\\
+		datatype-information.hpp\\
+		extension-information.hpp\\
+		instruction-information.hpp\\
+		register-information.hpp\\
+		unit-information.hpp\\
+		\end{tabular}
+	};
+
+	\node (isa-parser) [right = of data-classes, class, rectangle split, rectangle split parts=2, text width=5cm] {
+		ISA-Parser
+		\nodepart{second}
+		\begin{tabular}{l}
+		architecture-brewery.hpp\\
+		architecture-formula.hpp\\
+		\end{tabular}
+	};
+
+	\node (line1) [below = 0.5cm of data-classes, xshift=-5cm]{};
+	\node (line2) [right = 15cm of line1]{};
+	\node [above = 0.3cm of line1] {Arch Common};
+	\node [below = 0.3cm of line1] {Assembler Paket};
+	\node (isa-file)[files, below = 3cm of isa-parser]{.isa Dateien};
+
+	\draw[dashed] (line1) -- (line2);
+	\draw[arrow] (isa-parser) edge node[]{liest} (isa-file);
+	\draw[arrow] (isa-parser) edge node[]{erzeugt} (data-classes);
+	\end{tikzpicture}
+	\caption{Definition der Eigenschaften in .isa Dateien}
+	\label{dev-manual-extension-isa}
+\end{figure}
 
 Für diesen Bereich ist keine Zeile Code nötig. Da eine Implementierung von
 Datenklassen zur Beschreibung der Eigenschaften sich inhaltlich, aber nicht
 strukturell unterscheiden wird, muss für eine Erweiterung lediglich eine
-Beschreibungsdatei im ISA-Format\todo{Verweis zur Beschreibung der ISA-Sprache}
+Beschreibungsdatei im ISA-Format (siehe \autoref{dev:arch-yaml})
 erstellt werden. Die Datei wird in YAML geschrieben, dann per Script nach JSON
-übersetzt und in den \texttt{isa} Ordner des Simulators abgelegt. Dort wird dann
+übersetzt und in Ordner mit \texttt{isa}-Suffix abgelegt. Dort wird dann
 bei Programmstart und entsprechender Auswahl die JSON Datei eingelesen und
 bereits vorhandene Datenklassen mit Werten befüllt. Speicherort und Name der
-ISA-Dateien wird so erwartet: Innerhalb des ISA Ordners liegt ein Ordner mit
+ISA-Dateien werden wie folgt erwartet: Innerhalb des ISA Ordners liegt ein Ordner mit
 Namen der Architektur. Innerhalb dieses Ordners liegen Ordner mit Namen der
 Extensions (auch die Basis bzw. Grundversion ist eine Extension), in denen
 wiederum befindet sich die JSON Datei \texttt{config.json} (und der
@@ -86,18 +158,40 @@ Bequemlichkeit halber auch das YAML Gegenstück). Beispiel: Die
 Assembler-Architektur \texttt{myArch} hat ein Basismodul \texttt{arch\_base} und
 eine Erweiterung \texttt{arch\_fancy}:
 
-\begin{lstlisting}
-era-gp-sim -- isa -- riscv.isa -- ...
-                  |- test.isa  -- ...
-                  |- myArch.isa   -- arch_base -- config.json
-                                  |          \- config.yaml
-                                  \- arch_fancy -- config.json
-                                                \- config.yaml
-\end{lstlisting}
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[%
+	grow via three points={one child at (0.8,-0.8) and
+		two children at (0.8,-0.8) and (0.8,-1.7)},
+	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |- (\tikzchildnode\tikzchildanchor)},
+	growth parent anchor=west,
+	parent anchor=south west]
+	\tikzstyle{every node}=[draw=black,anchor=west]
+	\node {\erasim{}}
+	child { node {isa/}
+		child { node {riscv.isa/} }
+		child {node {test.isa/} }
+		child {node {myArch.isa/}
+			child {node{arch\_base/}
+				child{node{config.json}}
+				child{node{config.yaml}}
+			}
+			child [missing] {}
+			child [missing] {}
+			child {node{arch\_fancy/}
+				child{node{config.json}}
+				child{node{config.yaml}}
+			}
+		}
+	};
+	\end{tikzpicture}
+
+	\caption{Notwendiger Aufbau der .isa Struktur}
+\end{figure}
 In den ISA-Files werden folgende Eigenschaften definiert:
 
 \begin{itemize}
-	\item Name, Wortgröße, Endiannes des Pakets
+	\item Name, Wortgröße, Endianness des Pakets
 	\item Name, Größe, Funktion (Programmzähler, Flag, etc.) und Startwert der Register
 	\item Name, Format der Assemblierung, Opcode jeder Instruktion
 	\item (Optional) Definition von Makros (sofern Makros vom Parser unterstützt werden), die der Benutzer verwenden kann
@@ -106,14 +200,48 @@ In den ISA-Files werden folgende Eigenschaften definiert:
 \subsubsection{Implementierung der Instruktionen}
 \label{extension-arch-ast}
 
-Der zentrale und auch für den Nutzer sichtbare Teil einer neuen Architektur sind
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[auto, node distance=2cm]
+		\node (superclasses) [class, rectangle split, rectangle split parts=2, text width=6cm] {
+			Abstrahierte Instruktionen
+			\nodepart{second}
+			\begin{tabular}{l}
+			abstract-syntax-tree-node.hpp\\
+			abstract-instruction-node.hpp\\
+			\end{tabular}
+		};
+
+		\node(line1) [below =0.5cm of superclasses, xshift=-10cm]{};
+		\node(line2) [right= 13cm of line1]{};
+		\node [above= 0.5cm of line1]{Arch Common};
+		\node [below= 0.5cm of line1]{Assembler Paket};
+
+		\draw[dashed](line1) -- (line2);
+
+		\node (extension-classes) [class, below = of superclasses, rectangle split, rectangle split parts=2, text width=6cm] {
+			Konkrete Implementierungen
+			\nodepart{second}
+			\begin{tabular}{l}
+			z.B.:\\
+			my-add-isntruction.hpp\\
+			my-sub-instruction.hpp\\
+			\end{tabular}
+		};
+
+		\draw[inheritance-arrow] (extension-classes) edge node[]{erben} (superclasses);
+	\end{tikzpicture}
+	\caption{Implementierung von konkreten Instruktionen}
+\end{figure}
+
+Der zentrale -- und auch für den Nutzer sichtbare -- Teil einer neuen Architektur sind
 die neuen Instruktionen. Eine konkrete Instruktion also z.B. \texttt{addi x1,
 x0, 0x45 (riscv)} wird intern als Syntaxbaum dargestellt. Der Parser verwandelt
 jede Zeile Quelltext in einen Baum. Diese Liste an Bäumen repräsentiert dann das
 ausführbare Programm. Alle Knoten des Baumes erben von einer Oberklasse, der
 \texttt{AbstractSyntaxTreeNode}.\\ Die grundlegende Idee ist, dass die
 Ausführungseinheit nur eine bestimmte Methode (nämlich
-\texttt{AbstractSyntaxTreeNode::getValue(...)}) zur Ausführung der, durch den
+\texttt{AbstractSyntaxTreeNode::getValue(\dots)}) zur Ausführung der, durch den
 Baum repräsentierten, Instruktion aufruft. Die Wurzel macht dementsprechend
 rekursive Aufrufe an die Kind- bzw. Operandenknoten. Das hat den Vorteil, dass
 eine Instruktion mit selbem Verhalten, die z.B. einmal ein Register und einmal
@@ -128,40 +256,7 @@ erreichbar gemacht werden müssen, gibt es die \texttt{AbstractInstructionNode}.
 Dieses Kind von \texttt{AbstractSyntaxTreeNode} muss zwingend von der Fabrik für
 Instruktionen zurückgegeben werden. Sie bildet außerdem immer die Wurzel des
 Syntaxbaumes pro Befehl.\\
-
-Zuerst betrachten wir die für jeden Knotentyp zu implementierenden Methoden der
-Oberklasse \texttt{AbstractSyntaxTreeNode}. Danach wird noch auf die speziellen
-Anforderungen zu Implementierungen von \texttt{AbstractInstructionNode}
-eingegangen.
-
-\begin{itemize}
-
-  \item \texttt{MemoryValue} \textbf{getValue} \texttt{(MemoryAccess)} \\ Wird
-  zur Ausführung des Syntaxbaumes aufgerufen. Die verschiedenen Knotentypen
-  geben dann ihrer Rolle entsprechende Werte zurück. Beispielsweise gibt ein
-  Registerknoten den Inhalt des Registers, ein Konstantenknoten die Konstante
-  zurück.
-
-	\item \texttt{ValidationResult} \textbf{validate}\texttt{(MemoryAccess)} \\
-	Wird aufgerufen, um zur Übersetzungszeit zu überprüfen, ob die aktuelle
-	Konstellation dieses Syntaxbaums eine gültige Instruktion darstellt.
-
-	\item \texttt{ValidationResult}
-	\textbf{validateRuntime}\texttt{(MemoryAccess)} \\ Wird aufgerufen, um zur
-	Laufzeit (also direkt vor der Ausführung der Instruktion) zu überprüfen, ob
-	dieser Syntaxbaum gültig ist. Eine Sprunginstruktion überprüft hier
-	beispielsweise, ob die Sprungadresse zusammengesetzt aus Registerwert und
-	Marke gültig, d.h. ins Textsegement zeigt und richtig angeordnet ist.
-
-	\item \texttt{MemoryValue} \textbf{assemble}\texttt{()} \\ Gibt den Knoten in
-	assemblierter Form zurück. Ein Registerknoten x5 gibt z.B. \texttt{00101}
-	(also 5 als Binärzahl der Länge n), ein Konstantenknoten gibt seinen Wert
-	zurück. Der Instruktionsknoten (die Wurzel) gibt anschließend die
-	zusammengefügte, komplette assemblierte Instruktion zurück.
-
-\end{itemize}
-
-Anforderungen an \texttt{AbstractInstructionNode}
+Die Bestimmung der Methoden eines Kindes von \texttt{AbstractSyntaxTree} sind bereits in \autoref{dev-manual-arch-node-functions} beschrieben. Die besonderen Anforderungen an die Implementierung einer \texttt{AbstractInstructionNode} ist im Folgenden aufgelistet.
 
 \begin{itemize}
 
@@ -170,10 +265,10 @@ Anforderungen an \texttt{AbstractInstructionNode}
   Als Rückgabewert erwartet die Ausführungseinheit die Adresse des als nächstes
   auszuführenden Befehls. Da die Ausführungseinheit nicht weiß, welches Register
   den Programmzähler repräsentiert, muss dieses Register zusätzlich aktualisiert
-  werden. \\ Beispielsweise könnte in Pseudocode eine Additionsinstruktion
-  \texttt{add rd, rs1, rs2} wie folgt implementiert werden:
+  werden. \\ Beispielsweise könnte eine Additionsinstruktion
+  \texttt{add rd, rs1, rs2} mit folgendem Konzept implementiert werden:
 
-\begin{lstlisting}{style=c++}
+\begin{c++}
 MemoryValue getValue(MemoryAccess memoryAccess) {
 	assert::that (_children.count == 3)
 	Value rs1 = _children[1].getValue(memoryAccess);
@@ -185,9 +280,9 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 	Value pc = memoryAccess.getRegisterValue("pc");
 	return pc;
 	}
-\end{lstlisting}
+\end{c++}
 
-	Durch die allgemein gehaltenen Operanden, kann der selbe Code auch für
+	Durch die allgemein gehaltenen Operanden, kann der gleiche Code auch für
 	\texttt{add rd, rs1, immediate}, für \texttt{add rd, rs1, [rs2]} oder
 	\texttt{add rd, rs1, [k*rs2+d]} verwendet werden\footnote{Der []-Operator
 	deutet einen Speicherzugriff änhlich zur Intel 386 Syntax an}.
@@ -204,16 +299,54 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 \subsubsection{Bereitstellen der Instruktionen für den Parser}
 \label{extension-arch-factories}
 
-Der Parser baut beim Übersetzen aus jedem Befehl einen Syntaxbaum. Der Parser
-kennt aber die genauen Signaturen und damit die Implementierungen der
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[auto, node distance=2cm]
+		\node (superclasses) [class, rectangle split, rectangle split parts=2, text width=7.5cm] {
+			Bereitstellung der Instruktionen für den Parser
+			\nodepart{second}
+			\begin{tabular}{l}
+			abstract-arithmetic-node-factory.hpp\\
+			abstract-data-node-factory.hpp\\
+			abstract-immediate-node-factory.hpp\\
+			abstract-instruction-node-factory.hpp\\
+			abstract-memory-access-node-factory.hpp\\
+			abstract-register-node-factory.hpp\\
+			node-factory-collection.hpp\\
+			\end{tabular}
+		};
+
+		\node(line1) [below =0.5cm of superclasses, xshift=-10cm]{};
+		\node(line2) [right= 13cm of line1]{};
+		\node [above= 0.5cm of line1]{Arch Common};
+		\node [below= 0.5cm of line1]{Assembler Paket};
+
+		\draw[dashed](line1) -- (line2);
+
+		\node (extension-classes) [class, below = of superclasses, rectangle split, rectangle split parts=2, text width=6cm] {
+			Konkrete Implementierungen der Fabriken
+			\nodepart{second}
+			\begin{tabular}{l}
+			z.B.:\\
+			my-instruction-node-factory.hpp\\
+			my-immediate-node-factory.hpp\\
+			\dots
+			\end{tabular}
+		};
+
+		\draw[inheritance-arrow] (extension-classes) edge node[]{erben} (superclasses);
+	\end{tikzpicture}
+\end{figure}
+
+Der Parser baut beim Übersetzen aus jedem Befehl einen Syntaxbaum. Dabei kennt er jedoch die genauen Signaturen und damit die Implementierungen der
 Syntaxbaumknoten nicht. Um zur Laufzeit trotzdem die richtige
 Knotenimplementierung zu erzeugen, verwenden wir hier das
-Factory-Design-Pattern\footnote{https://de.wikipedia.org/wiki/Fabrikmethode}. Da
+AbstractFactory Design Pattern\footnote{\url{https://de.wikipedia.org/wiki/Fabrikmethode}}. Da
 der Parser nur die syntaktische Bedeutung eines Symbols kennt, nicht aber seine
 Semantik (also das Verhalten, die Implementierung), ruft der Parser die passende
 Fabrik auf, die dann eine semantisch passende Implementierung instanziiert und
 zurückgibt. Der Parser kann aufgrund z.B. der Position des Symbols auf seine
-syntaktische Rolle schließen. Das erste Word, das keine Direktive oder Marke
+syntaktische Rolle schließen. Der erste Ausdruck, der keine Direktive oder Marke
 ist, muss der mnemotechnische Befehl sein; der Ausdruck danach muss der erste
 Operand sein, usw. \\
 Welche Arten von Knoten-Fabriken es gibt wurde bereits in
@@ -251,9 +384,107 @@ Für RISC-V haben wir im riscv-namespace eine NodeFactoryCollection mit den
 RISC-V Implementierungen der benötigten Fabriken definiert (siehe
 \texttt{arch/riscv/factory-types.hpp}).
 
+\subsection{Implementierung des Parser-Teils}
+
+\subsubsection{Implementierung eines neuen Parsers}
+
+Grundsätzlich sind zum Bereitstellen eines neuen Parsers nur zwei Schritte
+nötig: Das Implementieren einer neuen Parser-Klasse, die von der Oberklasse
+\texttt{Parser} erbt, und das Eintragen dieser Klasse in die
+\texttt{Parser\-Factory}, genauer gesagt in die Variable
+\texttt{ParserFactory::\allowbreak{}mapping} in
+\texttt{source/\allowbreak{}parser/\allowbreak{}factory/\allowbreak{}parser-factory.cpp}.
+
+Um sich bei der Entwicklung eines neuen Parsers Zeit zu sparen, empfehlen wir
+auf die bereits existierenden Klassen des Independent-Submoduls zurückzugreifen
+bzw. diese gegebenenfalls zu erweitern. Entscheidet man sich für dieses
+Vorgehen, muss die neue Klasse folgendes Bereitstellen:
+
+\begin{itemize}
+\item Einen \texttt{Memory\-Allocator}, der die verfügbaren
+Speichersektionen definiert.
+
+Das folgende Beispiel definiert eine \texttt{data}-Sektion gefolgt von einer
+\texttt{text}-Sektion. Beide Sektionen sind mit 4 Bytes im Speicher ausgerichtet,
+die möglichen Daten in diesen Sektionen sind unausgerichtet.
+
+\begin{c++}
+MemoryAllocator allocator({MemorySectionDefinition("data", 4u, 1),
+                              MemorySectionDefinition("text", 4u, 1)});
+\end{c++}
+
+\item Ein Funktionsobjekt vom Typ
+\texttt{Syntax\-Tree\-Generator::\allowbreak{}Argument\-Node\-Generator}, das
+Argumente in Textform zu Syntaxknoten der Architektur umwandelt. Hier muss
+entschieden werden, ob ein Argument zum Beispiel zu einem Register-Knoten oder
+einem Immediate-Knoten werden soll.
+
+Im Folgenden ein vereinfachtes Beispiel, bei dem alle Argumente nur
+Registernamen sind:
+
+\begin{c++}
+const SyntaxTreeGenerator::ArgumentNodeGenerator
+    MeinParser::argumentGeneratorFunction = [](
+        const PositionedString& operandPositional,
+        const SymbolReplacer& replacer,
+        const NodeFactoryCollection& nodeFactories,
+        CompileErrorList& errors) -> std::shared_ptr<AbstractSyntaxTreeNode> {
+  // Der replacer dient dem Ersetzen von Marken und Konstanten
+  PositionedString operandReplaced =
+      replacer.replace(operandPositional, errors);
+  const auto& operand = operandReplaced.string();
+  return nodeFactories.createRegisterNode(operand);
+};
+\end{c++}
+
+\item Objekte vom Type \texttt{Architecture} und
+\texttt{Node\-Factory\-Collection}. Das Architekturobjekt sollte meistens beim
+Initialisieren des Parsers übergeben worden sein. In diesem Fall kann mithilfe der
+Funktion \texttt{Node\-Factory\-Collection\-Maker::\allowbreak{}Create\-For} das
+entsprechende andere Objekt erstellt werden.
+
+\item Eine Funktion, die ein Programm in die Intermediate-Darstellung einliest.
+
+\end{itemize}
+
+Ist all dies gegeben, kann die notwendige Funktion \texttt{parse} einfach
+implementiert werden:
+
+\begin{c++}
+FinalRepresentation MeinParser::parse(const std::string& text) {
+  IntermediateRepresentator intermediate;
+  CompileErrorList errors;
+  MemoryAllocator allocator({MemorySectionDefinition("data", 4u, 1),
+                             MemorySectionDefinition("text", 4u, 1)});
+  TransformationParameters parameters(
+      _architecture,
+      allocator,
+      SyntaxTreeGenerator(_factoryCollection, argumentGeneratorFunction));
+
+  readText(text, errors, intermediate);
+  return intermediate.transform(parameters, errors, _memoryAccess);
+}
+\end{c++}
+
+Für ein detaillierteres Beispiel, das auch die Verwendung des Compilers für
+arithmetische Ausdrücke umfasst, siehe die \texttt{RiscvParser}-Klasse.
+
+\subsubsection{Implementierung einer neuen Direktive}
+
+Um eine neue Parser-Direktive zu implementieren, muss eine neue Klasse erstellt
+werden, die von \texttt{Intermediate\-Directive} erbt. Um der Direktive eine
+Funktion zu geben, müssen nun die benötigten Funktionen, die beim Assemblieren
+verwendet werden (siehe \autoref{dev:dev_parser_assem_inter}), überschrieben
+werden.
+
+Damit eine Direktive verwendet wird, muss diese aber auch vom Parser unterstützt
+und initialisiert werden. Der RISCV-Parser benutzt dazu eine Factory
+(\texttt{RiscV\-Directive\-Factory}). Diese Vorgehensweise empfehlen wir auch
+für neue Parser, aber natürlich kann man dies auch anders implementieren.
+
 \subsection{Erweiterung der GUI}
 Soll eine neue Komponente zur GUI hinzugefügt werden, gibt es mehrere
-Entscheidungen zu treffen. Die Komponente kann etwas bestehendes, wie die
+Entscheidungen zu treffen. Die Komponente kann etwas Bestehendes, wie die
 Ausgabe, erweitern oder komplett neu sein. in diesem Fall gilt es noch zu
 klären, ob sie Projektspezifisch, wie Speicher oder Register, ist oder auf das
 ganze Programm, also außerhalb der TabView wie die Menubar, bezogen werden soll.
@@ -261,13 +492,13 @@ ganze Programm, also außerhalb der TabView wie die Menubar, bezogen werden soll
 \subsubsection{Erweiterung bestehender Komponenten}
 Das Erweitern bestehender Komponenten ist vergleichsweise einfach. Hier gilt es,
 in der entsprechenden C++-Datei nachzuschlagen. Ist, wie bei der Ausgabe, nur
-eine für die gesamte Komponente angelegt, müssen hier etwaige Attribute und
+eine für die gesamte Komponente vorhanden, müssen hier etwaige Attribute und
 Methoden ergänzt werden. Ist dagegen für jeden einzelnen Teil eine eigene Datei
 angelegt, so sollte auch für die Erweiterung eine ergänzt werden. Man beachte,
 dass es wahrscheinlich nötig sein wird, die Instanzen zum \texttt{QQMLContext}
 hinzuzufügen.\\
 In QML sind Komponenten, die mehrere eigene Module besitzen, üblicherweise in
-einer TabView dargestellt. Es muss also nur ein Tab in der Hauptdatei der zu
+einem TabView dargestellt. Es muss also nur ein Tab in der Hauptdatei der zu
 erweiternden Komponente ergänzt werden. Die eigentliche Definition sollte in
 einer eigenen Datei in einem neuen Unterverzeichnis erfolgen. Im Allgemeinen
 sollte auch auf ein Einstellungsfenster, die entsprechende Funktion und die
@@ -277,13 +508,13 @@ anderen Module.
 \subsubsection{Neue Komponenten}
 
 Auch das Hinzufügen neuer Komponenten gestaltet sich nicht besonders schwierig.
-Für den QML-Teil ist Folgendes zu tun: Im Ordner \texttt{ui/Components} ein
+Für den QML-Teil ist Folgendes zu tun: Im Ordner \texttt{ui/Components/} sollte ein
 neuer Ordner angelegt werden. Dort werden alle neuen Dateien der Erweiterung
 abgelegt. Außerhalb dieses Ordners muss nur die Datei
 \texttt{ui/SplitviewItem.qml} modifiziert werden. Hier muss in der ComboBox der
 entsprechende Name eingetragen werden, in den Variablen \texttt{model} und
 \texttt{usualList}. Außerdem muss unten im Loader der Pfad der Hauptdatei
-hinzugefügt werden, am gleichen Index wie der Name in der ComboBox. Des weiteren
+hinzugefügt werden, am gleichen Index wie der Name in der ComboBox. Des Weiteren
 sei bemerkt, dass jede neue Komponente eine Variable
 \texttt{hasComponentSettings} benötigt.\\
 Der C++-Teil wird einfach unter \texttt{ui} abgelegt. Auch ein Header sollte im
@@ -295,19 +526,111 @@ QML auf die C++ Instanz zugegriffen werden soll. Ist die neue Komponente dagegen
 für alle Projekte gleich, so verwende man die \texttt{Ui} Klasse. Bei der
 Programmierung der neuen C++-Klasse sollte der Abschnitt zur Kommunikation der
 Module beachtet werden, siehe \autoref{gui-kommunikation}.
+\vspace{-0.4cm}
 
- \subsection{Weitere Anmerkungen}
+\subsubsection{Erstellen neuer Themes}
+\vspace{-0.2cm}
 
- \subsubsection{Konzept zur Lokalisierung (Übersetzbarkeit von angezeigten Texten)}
+Eine Stärke von \erasim{} ist die Möglichkeit, fast alle Oberflächen,
+Schriftarten und -größen sowie Komponentenhöhen und -breiten via Themes anpassen
+zu können. Ein \emph{Theme} ist hierbei eine Gruppe von Dateien, die in einem
+Unterordner des in der Wurzel des Projekts liegenden \texttt{themes/}
+Verzeichnisses dem Simulator zur Verfügung stehen. Ein Theme-Ordner muss hierfür
+auch eine entsprechende \texttt{.theme} Endung aufweisen. Die Spezifikation von
+Farben und Dimensionen ist im Weiteren zunächst über \emph{SASS}-Dateien
+realisiert. SASS steht hierbei für \emph{Syntactically Awesome
+Stylesheets}\footnote{\url{http://sass-lang.com}} und benennt sowohl eine
+CSS-ähnliche Sprache zur Spezifikation kaskadierender Formatierungsregeln als
+auch einen ausführbaren Präprozessor, der SASS-Dateien in CSS umwandelt. Die
+Vorteile von SASS gegenüber reinem CSS, welche diesen Zwischenschritt von SASS
+auf CSS lohnenswert machen, sind unter anderem eine vereinfache Syntax sowie die
+Möglichkeit, Variablen und Funktionen deklarieren und sogar objektorientierte
+Konzepte wie Vererbung (auf entfernte Weise) in CSS nutzen zu können.
+\autoref{lst:sass-css} zeigt einen Vergleich zweier funktional
+identischer Codestücke sowohl in SASS- als auch CSS-Syntax.
+\begin{figure}[h!]
+  \begin{minipage}{0.5\textwidth}
+    \begin{lstlisting}[%
+        keywords={body, div, hover},%
+        emph={background, border, color}%
+      ]
+      $purple: #ff00ff
+      body
+        color: $purple
+        &:hover
+          background: $purple
+
+      div
+        @extends body
+        border: 2px lighten($purple, 10%)
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \begin{lstlisting}[%
+        keywords={body, div, hover},%
+        emph={background, border, color}%
+      ]
+      body, div {
+        color: #ff00ff;
+      }
+      body:hover, div:hover {
+        background: #ff00ff;
+      }
+      div {
+        border: 2px #fd00fd;
+      }
+    \end{lstlisting}
+  \end{minipage}
+  \begin{lstlisting}[label={lst:sass-css}, caption={Diese beiden Codebeispiele geben einen Vergleich eines kurzen Codeausschnitts,
+  links in SASS- und rechts in CSS-Syntax. Das SASS Beispiel profitiert klar von
+  der Verwendung von Variablen, Funktionen und der Möglichkeit, Selektoren
+  voneinander "erben" zu lassen.}]
+  \end{lstlisting}
+  \vspace{-1cm}
+\end{figure}
+
+Da die SASS-Sprache lediglich ein Vorstadium für CSS ist, muss ein
+entsprechender Präprozessor verwendet werden, um für die weitere Integration mit
+dem Simulator die SASS-Dateien in reines CSS zu überführen. Ein solcher
+Präprozessor kann von der offiziellen Website des SASS Projekts heruntergeladen.
+
+Zumal der Simulator jedoch nicht in der Lage ist, CSS direkt zu verstehen, muss
+nach Konvertierung von SASS in CSS noch eine weitere Transformation von CSS in
+reines JSON geschehen. Hierfür kann unser selbstentwickelter CSS $\rightarrow$
+JSON Konvertierer, \texttt{theme2json.py}, genutzt werden. Dieser befindet sich
+im \texttt{scripts/} Verzeichnis und lässt sich wie folgt ausführen:
+
+\begin{lstlisting}[emph={python3}]
+python3 scripts/theme2json.py ~/.erasim/themes/<theme>.theme/theme.css
+\end{lstlisting}
+
+wobei \texttt{<theme>} mit dem konkreten Namen des zu konvertierenden Themes
+auszutauschen ist. Es sei angemerkt, dass dieser Konvertierer keinen Wert auf
+Selektivität nimmt, da dieses Konzept von JSON nicht unterstützt wird. Damit ist
+gemeint, dass \texttt{\#ID}s die selbe Priorität haben wie \texttt{.Klassen},
+was bei regulärem CSS natürlich nicht der Fall ist. Auch beachte man, dass Qt,
+im Gegensatz zu einem Webbrowser, Styles nicht kaskadieren lässt. Das bedeutet
+schlussendlich, dass jede Komponente in der GUI einzeln und isoliert gestyled
+werden muss.
+
+Ist ein SASS-Präprozessor installiert, so kann das \texttt{theme2json.py} Skript
+diesen im Übrigen auch selbst gleich ausführen und im selben Schritt das
+"Kompilat" in JSON umwandeln. Dies ist mit folgendem Kommando möglich:
+
+\begin{lstlisting}[emph={python3}]
+python3 scripts/theme2json.py ~/.erasim/themes/<theme>.theme
+\end{lstlisting}
+
+ \subsection{Lokalisierung}
 
  Eine Anforderung an den Simulator ist die Möglichkeit, jeden angezeigten Text
- zu lokalisieren. Zum Zeitpunkt der ersten Version des Simulators existiert
- lediglich eine englische Version der Hilfetexte. Damit der Simulator auch in
- Zukunft vollständig übersetzbar bleibt, muss auch die Erweiterung um eine neue
- Architektur einige Maßnahmen treffen.\\
+ übersetzbar zu machen. Zum Zeitpunkt der ersten Version des Simulators
+ existiert lediglich eine englische Version der Hilfetexte. Damit der Simulator
+ auch in Zukunft vollständig übersetzbar bleibt, muss auch die Erweiterung um
+ eine neue Architektur einige Maßnahmen treffen.
 
  Wir haben uns dazu entschieden die Übersetzungsfunktionalitäten von Qt zu
- verwenden\footnote{http://doc.qt.io/qt-5/i18n-source-translation.html}. Kurze
+ verwenden\footnote{\url{http://doc.qt.io/qt-5/i18n-source-translation.html}}. Kurze
  Zusammenfassung über das Konzept von Qt:\\
  Diejenigen Nachrichten und Texte, die zu irgendeinem Zeitpunkt (sei es
  Initialisierung einer GUI-Komponente oder z.B. generierte Hilfetexte) dem
@@ -320,26 +643,22 @@ Module beachtet werden, siehe \autoref{gui-kommunikation}.
 
  Die obigen Maßnahmen müssen zwingend durchgeführt werden, denn sollte eine
  Lokalisierung aller Texte vorgenommen werden wollen, wird das wie folgt
- ablaufen:\\
+ ablaufen:
 
  Ein Unterprogramm von QtLinguist (lupdate) sucht im \textbf{Quelltext} des
- Simulators nach allen zur Übersetzung markierten Stringliteralen und fügt diese
- in eine Tabelle ein. Diese Tabelle wird anschließend mit QtLinguist übersetzt
- und erzeugt sogenannte Translateable Source-Dateien. Diese Dateien, z.B. die TS
- für deutsche Lokalisierung, müssen dann mit dem Simulator ausgeliefert werden
- und werden beim Start durch die Qt-Library geladen und angewendet.\\
-
- Findet die Qt-Library aber keine solche TS-Dateien (wie zum Zeitpunkt der
- ersten Version der Fall), dann greift sie auf die Rückfalllösung -- die
+ Simulators nach allen zur Übersetzung markierten Stringliteralen und erzeugt
+ daraus Translateable Source-Dateien. Diese werden anschließend mit QtLinguist
+ übersetzt und in QM-Dateien (gepackt, für schnellen Zugriff) mit dem Simulator
+ ausgeliefert. Die Qt-Library lädt die QM Dateien bei Start des Programms.
+ Findet die Qt-Library aber keine Dateien für die Übersetzung (wie zum Zeitpunkt
+ der ersten Version der Fall), dann greift sie auf die Rückfalllösung -- die
  Stringliterale im Quellcode -- zurück\footnote{Für ausfühlichere Informationen
- siehe http://doc.qt.io/qt-5/qtlinguist-index.html}.\\
-
- Jetzt ist klar, wieso keine Texte des Typs \texttt{std::string} oder zur
- Laufzeit zusammengebaute Texte verwendet werden dürfen. lupdate könnte sonst
- den Text nicht (vollständig) in die Übersetzungstabelle einfügen und die
- Übersetzung klappt nicht mehr.\\
-
- Zur Kapselung eines potentiell übersetzbaren Texts gibt es die Klasse
- \texttt{Translateable} (zu finden in \texttt{commons/translateable.hpp}). Sie
- enthält Methoden zum Qt-konformen Zusammenfügen von Texten und kann nur durch
- Stringliterale erzeugt werden, um Fehler vorzubeugen.
+ siehe \url{http://doc.qt.io/qt-5/qtlinguist-index.html}}. Jetzt ist klar, wieso
+ keine Texte des Typs \texttt{std::string} oder zur Laufzeit zusammengebaute
+ Texte verwendet werden dürfen. lupdate könnte sonst den Text nicht
+ (vollständig) in die Übersetzungstabelle einfügen und die Übersetzung klappt
+ nicht mehr. Zur Kapselung eines potentiell übersetzbaren Texts gibt es die
+ Klasse \texttt{Translateable} (zu finden in
+ \texttt{commons/translateable.hpp}). Sie enthält Methoden zum Qt-konformen
+ Zusammenfügen von Texten und kann nur durch Stringliterale erzeugt werden, um
+ Fehler vorzubeugen.

@@ -19,10 +19,6 @@
 \usepackage[ngerman]{babel} % This is needed for umlauts
 \usepackage[T1]{fontenc}    % This is needed for umlauts in PDFs
 
-% English
-
-%\usepackage[american]{babel}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TYPOGRAPHY                                           %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,12 +45,15 @@
 \usepackage[usenames, dvipsnames]{xcolor}
 
 \usepackage{tikz}
+\usepackage{tikz-qtree}
 \usetikzlibrary{3d}
 \usetikzlibrary{shapes}
 \usetikzlibrary{shadings}
 \usetikzlibrary{shadows}
 \usetikzlibrary{positioning}
-\usetikzlibrary{arrows}
+\usetikzlibrary{arrows, arrows.meta}
+\usetikzlibrary{trees}
+\usetikzlibrary{calc}
 
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
@@ -67,6 +66,8 @@
 \pgfsetlayers{background,main,foreground}
 \tikzstyle{class} = [rectangle, rounded corners, draw=black, fill=white, drop shadow]
 \tikzstyle{inheritance-arrow} = [->, thick,>=open triangle 90,every node/.style={font=\sffamily\small}]
+\tikzstyle{composition-arrow} = [{Diamond}-,every node/.style={font=\sffamily\small}]
+\tikzstyle{dashed-arrow} = [->, dashed]
 \tikzstyle{empty} = [draw=none,fill=none]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,17 +77,108 @@
 \usepackage{listings}
 \usepackage{zi4}
 
-\definecolor{stringgreen}{RGB}{50,220,15}
+\definecolor{stringgreen}{RGB}{50,210,15}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
 \lstdefinelanguage [riscv]{Assembler}{
-  morekeywords={ADD, ADDI, SLTI, SLTU, SLTIU, AND, ANDI, OR, ORI, XOR, XORI, SLLI, SRLI, SRAI, SLAI, LUI, AUIPC, SLT, SLL, SRL, SRA, SLA, JAL, JALR, BEQ, BNE, BLT, BLTU, BGE, BGEU, LW, LH, LB, SW, SH, SB, LHU, LBU, SHU, SBU, MUL, MULH, MULHU, MULHSU, DIV, DIVU, REM, REMU, .RESB},
+  morekeywords={
+  	EQU,
+  	SECTION,
+  	WORD,
+  	HALF,
+  	BYTE,
+  	MACRO,
+  	ENDM,
+	 RESB,
+	 RESH,
+	 RESW,
+	 RESD,
+	 ADDI,
+	 AND,
+	 ANDI,
+	 AUIPC,
+	 BEQ,
+	 BGE,
+	 BGEU,
+	 BLT,
+	 BLTU,
+	 BNE,
+	 DIV,
+	 DIVU,
+	 JAL,
+	 JALR,
+	 LB,
+	 LBU,
+	 LH,
+	 LHU,
+	 LUI,
+	 LW,
+	 MUL,
+	 MULH,
+	 MULHSU,
+	 MULHU,
+	 OR,
+	 ORI,
+	 REM,
+	 REMU,
+	 SB,
+	 SBU,
+	 SH,
+	 SHU,
+	 SLA,
+	 SLAI,
+	 SLL,
+	 SLLI,
+	 SLT,
+	 SLTI,
+	 SLTIU,
+	 SLTU,
+	 SRA,
+	 SRAI,
+	 SRL,
+	 SRLI,
+	 SW,
+	 XOR,
+	 XORI,
+   ADD,
+  },
   sensitive=false,
   morecomment=[l]{;},
 }
 
-\lstnewenvironment{c++}{\lstset{language=C++}}{}
+\lstdefinelanguage{ISA}{
+  alsoletter=-,
+  morekeywords={
+    alignment-behavior,
+    builtin-macros,
+    byte-size,
+    endianness,
+    extends,
+    format,
+    funct,
+    funct3,
+    funct7,
+    id,
+    instructions,
+    key,
+    length,
+    mnemonic,
+    name,
+    opcode,
+    operand,
+    registers,
+    signed-representation,
+    size,
+    type,
+    units,
+    word-size,
+  },
+  sensitive=false,
+  morecomment=[l]{\#}
+}
+
+\lstnewenvironment{c++}{\lstset{language={C++}}}{}
 \lstnewenvironment{riscv}{\lstset{language={[riscv]Assembler}}}{}
 \lstnewenvironment{x86}{\lstset{language={[x86masm]Assembler}}}{}
 
@@ -97,6 +189,7 @@
   showstringspaces=false,
   columns=flexible,
   numbers=none,
+  emphstyle=\color{orange},
   numberstyle=\tiny\color{red},
   keywordstyle=\color{magenta},
   commentstyle=\color{gray},
@@ -125,7 +218,6 @@
 % OTHER                                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage[autostyle=true]{csquotes}
 \usepackage{caption}
 \usepackage{cancel}
 \usepackage{hyperref}
@@ -133,6 +225,10 @@
 \usepackage{import}
 \usepackage{todonotes}
 \usepackage{url}
+\usepackage{array}
+
+\usepackage{csquotes}
+\MakeOuterQuote{"}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % HEADERS + FOOTERS                                    %
@@ -174,11 +270,82 @@
 
 \newcommand{\erasim}{{\fontfamily{zi4}\selectfont ERASIM}}
 
-\newcommand{\link}[1]{{\small\url{#1}}}
+\newcommand{\smallurl}[1]{{\small\url{#1}}}
+
+\newcommand{\cyclearrow}{
+  \hspace{-0.5cm}
+  \scalebox{0.8}{
+  \tikz[thick, yshift=-0.2cm]{
+    \node (a) at (0, -0.15) {};
+    \node (b) at (0.8, -0.15) {};
+    \draw [->] (a) .. controls (0.38, 0) and (0.42, 0) .. (b);
+    \draw [<-] (a) .. controls (0.38, -0.3) and (0.42, -0.3) .. (b);
+  }
+  }
+  \hspace{-0.4cm}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RENEW COMMANDS                                       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \renewcommand\thechapter{\Roman{chapter}}
+% \renewcommand\thesection{\roman{section}}
+
+\makeatletter
+\renewcommand{\subsection}{%
+  \@startsection{subsection}{2}%
+  {\z@}{0.1cm}{0.1cm}%
+  {\normalfont\fontsize{16}{18}\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\renewcommand{\subsubsection}{%
+  \@startsection{subsubsection}{3}%
+  {\z@}{0.08cm}{0.08cm}%
+  {\normalfont\large\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}%
+  {\z@}{0.1cm}{0.1cm}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\renewcommand{\subparagraph}{%
+  \@startsection{paragraph}{5}%
+  {\z@}{0.1cm}{0.1cm}%
+  {\normalfont\normalsize\em}%
+}
+\makeatother
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % NEW ENVIRONMENTS                                     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{senumerate}[1]
+{
+  \vspace{#1}
+  \begin{enumerate}
+}
+{
+  \end{enumerate}
+}
+
+\newenvironment{sitemize}[1]
+{
+  \vspace{#1}
+  \begin{itemize}
+}
+{
+  \end{itemize}
+}
+
 
 \newenvironment{plot}[1][h]
 {
@@ -208,7 +375,7 @@
 {
     \tcolorbox[%
       title filled,%
-      colback=Green,%
+      colback=SkyBlue!40!white,%
       noparskip,%
       breakable,%
       title={\large\fontfamily{zi4}\selectfont #1}
@@ -222,7 +389,7 @@
 {
     \tcolorbox[%
       title filled,%
-      colback=Red,%
+      colback=Dandelion!40!white,%
       noparskip,%
       breakable,%
       title={\large\fontfamily{zi4}\selectfont Vorsicht}

@@ -30,7 +30,8 @@ END {
 }
 EOF
 
+
 cloc source include tests scripts docs themes isa \
-  --not-match-f=".*\.json$" \
-  | awk 'NR>8 && NR < 19' \
+  --not-match-f=".*\.(json|css|md)$" \
+  | awk 'NR>8 && NR < 21' \
   | awk -F'[[:space:]]{2,}' "$process_counts"

@@ -1,0 +1,215 @@
+% !TEX root = dev-manual.tex
+% ERA-Großpraktikum: Entwickleranleitung -- Architekturmodul (ISA Dateien)
+
+\paragraph{Beschreibung einer Architektur in YAML}
+\label{dev:arch-yaml}
+
+Um die Flexibilität, Wartbarkeit und Sauberkeit unserer
+Architekturimplementierung zu gewährleisten, haben wir uns entschieden, die
+konkrete Beschreibung einer Architektur (die "Daten") von der abstrakten
+Repräsentation im Code zu trennen. Die eben
+beschriebenen Informationsklassen im Architekturmodul geben also lediglich die Struktur
+eines Befehlssatzes vor. Weitere Klassen wie \texttt{RegisterInformation} oder
+\texttt{InstructionInformation} agieren als Platzhalter für konkrete Architekturen.
+Die eigentliche Spezifikation von Registernamen und -größen,
+Instruktionsformaten und -operanden sowie Wortgröße, Endianness oder
+Vorzeichenrepräsentation einer Architektur erfolgen in unserer Implementierung
+über externe \emph{ISA}-Dateien. Diese werden aufgrund der intuitiven
+und menschenlesbaren Syntax im YAML\footnote{\url{yaml.org}} Format definiert
+und von diesem für die eigentliche Verarbeitung des Simulators schlussendlich
+nach JSON konvertiert\footnote{Für die YAML $\rightarrow$ JSON Konvertierung kann das \texttt{y2j.py} Skript im \texttt{scripts/} Verzeichnis genutzt werden.}.
+
+Eine Architekturbeschreibung folgt bezüglich seiner Struktur im Dateisystem
+einem einfachen Schema: Eine Architektur ist ein Ordner mit einer \texttt{.isa}
+Endung, beispielsweise \texttt{riscv.isa}. Dieser Ordner enthält für jede
+definierte \emph{Extension}, sei es \texttt{rv32f} oder \texttt{rv64a}, einen
+entsprechend benannten Unterordner. Jeder dieser Unterordner besteht dann aus
+zwei weiteren Dateien: \texttt{config.yaml} und \texttt{config.json}. Ersteres
+ist die Datei, welche Entwickler bearbeiten sollten, um die entsprechende
+Extension zu definieren; letzteres sollte lediglich das Resultat einer
+maschinellen Konvertierung sein. \autoref{lst:isa} zeigt die Definition zweier
+Extensions einer fiktiven Architektur.
+
+\begin{figure}[h!]
+  \begin{minipage}{0.5\textwidth}
+    \begin{lstlisting}[language=ISA]
+      # Base Extension
+
+      name: base
+      word-size: 32
+      endianness: mixed
+      signed-representation: sign-bit
+
+      units:
+        - name: cpu
+          registers:
+            - name: r1
+              id: 1
+              size: 31
+              type: float
+    \end{lstlisting}
+    \vspace{2.3cm}
+  \end{minipage}
+  \begin{minipage}{0.5\textwidth}
+    \begin{lstlisting}[language=ISA, frame=l]
+      # Derived Extension
+
+      name: derived
+      extends: base
+      alignment-behavior: relaxed
+
+      instructions:
+        - mnemonic: add
+          length: 32
+          format: R
+          key:
+            opcode: 42
+            funct: 6
+
+      builtin-macros:
+        - |
+          .macro nop
+          add x0, x0, 0
+          .endm
+    \end{lstlisting}
+  \end{minipage}
+  \begin{lstlisting}[label={lst:isa}, caption={Zwei Beispiele einer ISA-Definition in YAML Syntax. Die linke Definition zeigt eine \emph{unvollständige} Extension, welche lediglich eine Unit, aber keine Instruktionen definiert. Die rechte Definition erbt von dieser und erweitert sie durch einen Instruktionssatz und einem Alignment-Attribut. Die rechte Extension ist somit vollständig.}]
+  \end{lstlisting}
+  \vspace{-0.8cm}
+\end{figure}
+
+Grundsätzlich entsprechen die Namen der Schlüssel in diesen Dateien genau den
+Attributen der Informationsklassen der Architektur. Beispielsweise hat jede
+Extension einen Namen, welcher dann über die \texttt{name()} Methode einer
+\texttt{ExtensionInformation} Instanz abgerufen werden kann. Eine vollständige
+Auflistung aller möglichen Schlüsselnamen und erlaubter Werte findet sich in
+Tabellen \ref{tbl:isa-top-keys}, \ref{tbl:isa-reg} und \ref{tbl:isa-inst}. Die
+folgenden zwei Absätze beleuchten die Schlüssel \texttt{extends} und
+\texttt{builtin-macros} näher.
+
+\begin{table}[p]
+  \centering
+  \fontsize{10}{12}
+  \begin{tabular}{>{\ttfamily}l >{\small}p{7.8cm} >{\ttfamily}p{3.6cm}}
+    {\normalfont\bfseries Schlüssel} & \textbf{Beschreibung} & \textbf{Erlaubte Werte}\\
+    \toprule
+    name & Name der Extension & <string> \\
+
+    extends & Nam(en) der Basis-Extension(s) & <string>/list<string>\\
+
+    reset-units & Setzt vererbte Register zurück & true/false\\
+
+    reset-instructions & Setzt vererbte Instruktionen zurück & true/false\\
+
+    word-size & Die Wortgröße & <number>\\
+
+    byte-size & Die Anzahl Bits im Byte & <number>\\
+
+    alignment-behavior & Verhalten bei unausgerichteten Speicherzugriffen & \texttt{relaxed/strict}\\
+
+    signed-representation & Vorzeichendarstellung & \texttt{ones-complement/} \texttt{twos-complement/} sign-bit \\
+
+    endianness & Speicherausrichtung & bi/big/little/mixed \\
+
+    builtin-macros & Liste vordefinierter Makros & list<string> \\
+
+    units & Die Units der Extension & list<unit> \\
+
+    instructions & Der Instruktionssatz der Extension & list<instruction>
+  \end{tabular}
+  \caption{Die erlaubten Schlüssel und Werte zur Beschreibung einer Extension im YAML Format. Die erste Spalte nennt den jeweiligen Schlüsselnamen, die zweite Spalte beschreibt diesen und die dritte Spalte gibt die erlaubten Werte an. Mit \texttt{<string>} ist eine beliebige Zeichenkette gemeint, mit \texttt{<number>} eine beliebige Ganzzahl und mit \texttt{list<type>} eine Liste mit Elementen vom Typ \texttt{type}.}
+  \label{tbl:isa-top-keys}
+
+  \vspace{0.9cm}
+
+  \begin{tabular}{>{\ttfamily}l >{\small}l >{\ttfamily}l}
+    {\normalfont\bfseries Schlüssel} & \textbf{Beschreibung} & \textbf{Erlaubte Werte}\\
+    \toprule
+
+    name & Name des Registers & <string>\\
+
+    id & Eindeutiger Schlüssel des Registers & <number>\\
+
+    alias & Mögliche Aliase des Registers & <string>/list<string>\\
+
+    size & Größe des Registers & <number> \\
+
+    constant & Fixer Wert des Registers (Optional) & <string> (0x0)
+  \end{tabular}
+  \caption{Die Schlüssel und erlaubten Werte zur Spezifikation von Registern in ISA-Dateien. Das Format folgt jenem von \autoref{tbl:isa-top-keys}.}
+  \label{tbl:isa-reg}
+
+  \vspace{0.9cm}
+
+  \begin{tabular}{>{\ttfamily}l >{\small}l >{\ttfamily}l}
+    {\normalfont\bfseries Schlüssel} & \textbf{Beschreibung} & \textbf{Erlaubte Werte}\\
+    \toprule
+    mnemonic & Kürzel der Instruktion & <string>\\
+
+    length & Länge der Instruktion in Bits & <number>\\
+
+    format & Format der Instruktion & <string> \\
+
+    operand length & Länge der Operanden in Bits & list<number>\\
+
+    key & Instruktionsschlüssel (Generalisierung des Opcodes) & map<key, number>
+
+  \end{tabular}
+  \caption{Die Schlüssel und erlaubten Werte zur Spezifikation von Instruktionen in ISA-Dateien. Das Format folgt jenem von \autoref{tbl:isa-top-keys}, bis auf \texttt{key}, welches eine Abbildung von Teilen des Instruktionsschlüssels auf die konkreten Werte dieser Teile ist.}
+  \label{tbl:isa-inst}
+\end{table}
+
+Das Schlüsselwort \texttt{extends} stellt die mächtigste Funktionalität der
+ISA-Spezifikationssprache dar: die Möglichkeit, Extensions voneinander erben zu
+lassen. Das Konzept der Attributvererbung ist in vielen Situationen nicht nur
+intuitiv, sondern schützt insbesondere vor Duplikation und spart Schreibarbeit.
+Als anschauliches Beispiel lässt sich die Beziehung zwischen den \emph{RV32I}
+und \emph{RV64I} Extensions des RISC-V Befehlssatzes betrachten. Letztere
+Extension basiert laut Spezifikation auf der ersteren. Das bedeutet, dass RV64I
+sämtliche Instruktionen und Registersätze besitzt, die in RV32I spezifiziert
+sind. Zusätzlich erhöht RV64I jedoch noch die Wortgröße von 32 auf 64 Bit und
+fügt weitere Instruktionen hinzu, die auf 32-Bit Werten operieren (da die
+"geerbten" Instruktionen in RV64I implizit mit Wortgröße, also 64 Bit,
+arbeiten). Diese Beziehung lässt sich in ISA-Dateien exakt spezifizieren. Ein
+Ausschnitt der RV64I Spezifikation wird hierzu in \autoref{lst:rv64i} gezeigt.
+
+Neben dieser einfachen Vererbungshierarchie zwischen RV64I und RV32I sind noch
+weitere beliebig komplexe Beziehungen möglich, sofern diese sich in einem
+\emph{azyklischen} Graphen darstellen lassen. Beim Laden einer Architektur über
+eine \texttt{ArchitectureFormula}, also einer Liste der Namen aller Extensions,
+wird über einen Graphalgorithmus die transitive Hülle sämtlicher benötigter
+Erweiterungen berechnet. Steht diese Menge von Extensions fest, kann sie in eine
+einzige vereint werden, wobei einfach die Vereinigung sämtlicher Attribute,
+Register- und Instruktionssätze gebildet wird. Sofern im Beziehungsgraphen keine
+Zyklen gefunden wurden und die resultierende Extension vollständig ist, entsteht
+so eine fertige Architektur.
+
+\begin{table}
+\begin{lstlisting}[language=ISA]
+                                    # RISC-V: RV64I
+
+                                    name: rv64i
+                                    extends: rv32i
+                                    word-size: 64
+
+                                    instructions:
+                                      - mnemonic: addiw
+                                        length: 32
+                                        format: I
+                                        operand length: [0, 0, 12]
+                                        key:
+                                          opcode: 27
+                                          funct3: 0
+\end{lstlisting}
+\begin{lstlisting}[caption={Ein Ausschnitt der Definition der RV64I-Extension des RISC-V Befehlssatzes. Zur Vererbung der Attribute von RV32I benötigt es lediglich der Spezifikation der \texttt{extends} Klausel. Zusätzlich wird die Wortgröße sowie eine Hand voll weiterer Befehle neu definiert.}, label={lst:rv64i}]
+\end{lstlisting}
+\vspace{-0.8cm}
+\end{table}
+
+Neben dem \texttt{extends} Schlüssel ist letztlich noch \texttt{builtin-macros}
+hervorzuheben. Dieser Schlüssel erwartet eine Liste von Strings, welche jeweils
+ein Makro definieren, das für eine Architektur schon vordefiniert ist. Ein
+solches vordefiniertes Makro kann hierbei auch \emph{Pseudoinstruktion} genannt
+werden, da es dem Benutzer wie eine "eingebaute" Instruktion erscheint, jedoch
+nicht standardmäßig zum Befehlssatz gehört und auch nicht in C++ implementiert
+wird. Das Format eines solchen eingebauten Makros ist identisch zu einem benutzerdefinierten Makro.

@@ -1,6 +1,7 @@
 # RISC-V: RV64D
 
 name: rv64d
+extends: rv32d
 
 instructions:
   - mnemonic: fcvtld

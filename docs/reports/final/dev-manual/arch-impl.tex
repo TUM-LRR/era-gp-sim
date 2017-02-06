@@ -1,0 +1,50 @@
+% !TEX root = dev-manual.tex
+% ERA-Großpraktikum: Entwickleranleitung -- Architekturmodul (Architektur Implementierung)
+
+\paragraph{Implementierungdetails der Architekturrepräsentation}
+\label{dev:arch-impl}
+
+Für die Implementierung von Architektur und Extensions wird intern das
+\emph{Builder} Pattern\ zum sukzessivem Aufbau eines Objekts verwendet. Als
+Oberklasse dient dazu das \texttt{BuilderInterface}, von dem alle Komponenten
+abgeleitet werden. Da eine Architektur lediglich aus strukturierten
+Informationen besteht, existiert eine weitere Oberklasse
+\texttt{InformationInterface}. Von ihr sind wiederum die konkreten
+Informationsklassen abgeleitet, welche Register, Instruktionen oder Datentypen
+beschreiben. Nennenswert dabei ist die \texttt{ExtensionInformation} Klasse, die
+in unserer modularen Auffassung eine Erweiterung einer Architektur
+widerspiegelt. Eine finale \texttt{Architecture} Klasse besteht schließlich aus
+einem \texttt{ExtensionInformation} Objekt, welches mit allen Erweiterungen
+vereint wurde (also \texttt{vollständig} ist). \autoref{fig:arch-impl} zeigt die
+Vererbungshierarchie für Informationsobjekte in der Architektur.
+
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[thick, node distance=1cm and 0.5cm]
+    % Classes
+    \node [class] (builder) {\texttt{BuilderInterface}};
+    \node [class] (info) [below = of builder] {\texttt{InformationInterface}};
+    \node [class] (inst) [below = of info] {\texttt{InstructionInformation}};
+    \node [class] (reg) [left = of inst] {\texttt{RegisterInformation}};
+    \node [class] (ext) [right = of inst] {\texttt{ExtensionInformation}};
+    \coordinate (center) at ($ (inst) !.5! (info) $);
+
+    % Edges
+    \draw [inheritance-arrow] (info) -- (builder);
+    \draw [inheritance-arrow] (inst) -- (info);
+    \draw (reg) -- (reg |- center) -- (center);
+    \draw (ext) -- (ext |- center) -- (center);
+
+  \end{tikzpicture}
+  \caption{Ein Ausschnitt der Vererbungshierarchie sämtlicher Informationsklassen der Architektur. Als Oberklasse dient das \texttt{BuilderInterface} sowie darunter das \texttt{InformationInterface}, von welchem weitere Informationsklassen wie \texttt{RegisterInformation} oder \texttt{Instructioninformation} erben.}
+  \label{fig:arch-impl}
+  \vspace{-0.5cm}
+\end{figure}
+
+Es ist zu beachten, dass das \texttt{Architecture} Objekt lediglich die
+Eigenschaften einer Architektur beschreibt, d.h. es stellt Informationen wie die
+Byte-Reihenfolge, Wortgröße, Speicherausrichtung oder die Eigenschaften der
+Register bereit. Es beschreibt auch, welche Instruktionen zur Verfügung stehen,
+definiert aber nicht, wie diese konkret implementiert sind, da dies für eine
+Konfigurationsdatei zu komplex wäre. Die Implementierung der einzelnen
+Instruktionen wird deshalb in C++ Code übernommen.

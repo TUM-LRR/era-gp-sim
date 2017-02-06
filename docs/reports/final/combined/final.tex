@@ -37,13 +37,24 @@
 
 \input{introduction.tex}
 
-\chapter{Benutzeranleitung}
-\subimport*{../user-manual/}{all.tex}
+\texttt{}
+\begin{lstlisting}[language=bash, keywords={}]
+\end{lstlisting}
+\begin{lstlisting}[language={[x86masm]Assembler}]
+\end{lstlisting}
+\begin{lstlisting}[language=C++]
+\end{lstlisting}
 
 \chapter{Entwickleranleitung}
+\label{dev}
 \subimport*{../dev-manual/}{all.tex}
 
+\chapter{Benutzeranleitung}
+\label{user}
+\subimport*{../user-manual/}{all.tex}
+
 \chapter{Team Bericht}
+\label{team}
 \subimport*{../team-report/}{all.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

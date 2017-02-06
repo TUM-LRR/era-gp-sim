@@ -1,92 +1,211 @@
+\subsection{GUI}
+
 \subsubsection{Aufbau}
 
 Die grafische Benutzeroberfläche des Simulators besteht aus einer Reihe von
 Komponenten, die sich innerhalb des gegebenen Rasters nahezu beliebig anordnen
 lassen. Diese Aufteilung in Komponenten spiegelt sich auch in der
-Implementierung der GUI wieder, indem jede Komponente einer QML-Komponente
-entspricht, die gegebenenfalls andere Teilkomponenten, nicht zuletzt elementare
-Qt-Quick-Komponenten, benutzen. Die Komponenten umfassen den Editor, die sechs
-frei wählbaren Komponenten Snapshots, Output, Input, Register, Speicher und
-Hilfe, sowie übergeordnete Elemente wie den Split-View, die Projekt-Tabbar, die
-Toolbar, die Menubar und den Einstellungsdialog.
+Implementierung der GUI wieder, da jede der wählbaren Komponente einer
+QML-Komponente entspricht. Dazu gehören Snapshots, Hilfe, Register, Speicher,
+Input und Output (siehe auch Abbildung \ref{fig:gui-composition}).
+
+Ihnen übergeordnet ist eine Organisationsstruktur mit dem eigentlichen Fenster
+(\texttt{ApplicationWindow}) an der Spitze, welches unterteilt wird in die
+Menubar mit Editor- und Projekt-Untermenü, die Toolbar mit den Ausführungsbutton
+und schließlich den Projekt-Tabview, welcher die geöffneten Projekte enthält.
+Bei letzterem gilt zu beachten, dass der Tabview sowohl die Tabbar als auch die
+Tab-Inhalte, also die eigentlichen Projekte, repräsentiert.
+
+Jedes Projekt weist, wie bereits erwähnt, eine gerasterte Struktur auf, die
+durch die Splitview-Komponente mit vier nebeneinander angeordneten Teilbereichen
+voller Höhe realisiert ist. Jeder dieser Teilbereiche ist wiederum in zwei
+übereinander angeordnete Bereiche unterteilt, verwirklicht durch die
+InnerSplitviews bzw. die InnerSplitviewsEditor. Letztere QML-Komponente ist eine
+spezielle Ausprägung, die im oberen Teilbereich den Editor anzeigt, der,
+anders als alle anderen Komponenten, nicht variabel positionierbar ist.
+
+Die inneren Splitviews bestehen schließlich aus einem SplitViewItem, welches
+neben der frei wählbaren Komponente (Snapshots, Hilfe etc.) auch den
+Komponenten-Header enthält, über den zum einen die angezeigte Komponente gewählt
+wird und zum anderen die Komponenteneinstellungen aufgerufen werden können.
+
+\begin{figure}[H]
+	\centering
+  \scalebox{0.88}{
+    \begin{tikzpicture}
+      \tikzset{font=\small,
+        edge from parent fork down,
+        level distance=1.75cm,
+        every node/.style=
+          {rectangle,rounded corners,
+          minimum height=8mm,
+          fill=white,
+          draw=black!50,
+          drop shadow,
+          align=center,
+          text depth = 0pt
+          },
+        edge from parent/.style=
+          {{Diamond}-,
+          draw=black!50,
+          thick
+          }}
+  \Tree [.{ApplicationWindow\\(main.qml)}
+          [.MenuBar ]
+          [.Toolbar ]
+          [.ProjectTabView
+              [.Splitview
+                   [.InnerSplitviews
+                       [.SplitViewItem
+                           [.Snapshots ]
+                           [.Help ]
+                           [.Registers ]
+                           [.Memory ]
+                           [.Inputs ]
+                           [.Outputs ] ] ]
+                   [.{InnerSplitviews-\\Editor}
+                       [.SplitViewItem ]
+                       [.Editor ] ] ] ] ]
+  \end{tikzpicture}
+  }
+	\caption{Grundlegende Zusammensetzung der GUI-Komponenten. Die Knotentitel im
+	Diagramm entsprechen nicht notwendigerweise den Namen der assoziierten
+	Komponenten.}
+	\label{fig:gui-composition}
+\end{figure}
+
+\subsubsection{C++-Komponenten}
 
 QML-Komponenten, die Zugriff auf das vom Core zur Verfügung gestellte Modell
 benötigen, werden zusätzlich mit einer C++-Klasse assoziiert. Diese Klassen
-halten in der Regel Instanzen der Interface-Klassen \texttt{MemoryAccess},
+halten Instanzen der Interface-Klassen \texttt{MemoryAccess},
 \texttt{MemoryManager}, \texttt{ArchitectureAccess}, \texttt{ParserInterface}
-oder \texttt{CommandInterface}  über die der Zugriff auf den Core unter
+oder \texttt{CommandInterface}, über die der Zugriff auf den Core unter
 Verwendung des Schedulers erfolgt.
 
 Da das Qt-Framework einen in sich stark abgeschlossenen Aufbau besitzt, werden
-für QML-Komponenten mit komplexen Modellen, wie etwa der Speicher oder die
+für QML-Komponenten mit komplexen Modellen, wie etwa den Speicher oder die
 Register, von Qt-Klassen abgeleitete Modelle benötigt. Da keine Abhängigkeiten
-vom Qt-Framework innerhalb der GUI-fernen Module Core, Parser, Arch entstehen
-sollen, kann diese Funktion nicht von Klassen des Cores übernommen werden. Aus
-diesem Grund übernehmen einige der zu den QML-Komponenten gehörigen C++-Klassen
-der GUI die Aufgabe des Modells und werden folglich von Qt-Modell-Klassen wie
-etwa \texttt{QAbstractItemModel} abgeleitet. Ausgenommen von Cache-Zwecken
-halten diese Modelle selbst keine Daten, sondern holen diese über das zugehörige
+vom Qt-Framework innerhalb der GUI-fernen Module Core, Parser und Architektur
+entstehen sollen, kann diese Funktion nicht von Klassen des Cores übernommen
+werden. Aus diesem Grund übernehmen einige der zu den QML-Komponenten gehörigen
+C++-Klassen der GUI die Aufgabe des Modells und werden folglich von
+Qt-Modell-Klassen wie etwa \texttt{QAbstractItemModel} abgeleitet. Mit Ausnahme
+von Cache-Zwecken halten diese Modelle selbst keine veränderbaren Daten
+(Registerwerte, Speicherwerte etc.), sondern holen diese über das zugehörige
 Interface-Objekt, sobald Daten seitens der QML-Komponente angefordert werden.
 
+\vspace{-0.1cm}
 \subsubsection{Kommunikation}
 \label{gui-kommunikation}
+\vspace{-0.1cm}
 
 Der Simulator unterstützt das gleichzeitige Laden mehrerer unabhängiger
 Projekte. Diese werden jeweils durch eine \texttt{GUIProject}-Instanz
-repräsentiert, welches Komponenten-übergreifende Funktionalität für ein Projekt
-zur Verfügung stellt.
-
-Im \texttt{GUIProject} werden mitunter die C++-Klassen der QML-Komponente
-gehalten, initialisiert und deren Kommunikation mit dem Core koordiniert. Dieses
-übernimmt also die Rolle des Mittelsmann zwischen dem Core, der keine
-Qt-Mechanismen verwendet, und der GUI.
-
-Bei der Initialisierung der C++-Klassen übergibt das \texttt{GUIProject}
-Instanzen der Interface-Klassen (bspw. \texttt{MemoryAccess} und
-\texttt{ArchitectureAccess}).
+repräsentiert, welche Komponenten-über\-grei\-fen\-de Funktionalitäten für ein
+Projekt zur Verfügung stellt. Im \texttt{GUIProject} werden mitunter die
+C++-Klassen der QML-Komponente gehalten, initialisiert und deren Kommunikation
+mit dem Core koordiniert. Dieses übernimmt also die Rolle des Mittelsmann
+zwischen dem Core, der keine Qt-Mechanismen verwendet, und der GUI. Bei der
+Initialisierung der C++-Klassen übergibt das \texttt{GUIProject} diesen dann die
+benötigten Instanzen der Interface-Klassen (\texttt{MemoryAccess},
+\texttt{ArchitectureAccess} etc.).
 
 Datenaustausch ausgehend vom Core hin zu den QML-Komponenten in der GUI hat
 nicht den Scheduler zwischengeschaltet, sondern verläuft über das
-\texttt{GUIProject} in zwei Schritten. Dabei ruft der Core im Schritt einen
-Callback auf, der im \texttt{ProjectModule} gesetzt werden (näher Informationen
-im Abschnitt /Core/). Das \texttt{GUIProject} leitet im zweiten Schritt den im
-\texttt{GUIProject} eingehenden Callback mit Hilfe des Qt-eigenen
+\texttt{GUIProject} in zwei Schritten (siehe auch Abbildung
+\ref{fig:dev-manual-gui-communication}). Im ersten Schritt ruft der Core einen
+Callback auf, der im \texttt{ProjectModule} gesetzt wird (näher Informationen im
+Abschnitt \ref{Dev-Kapitel: Core}). Das \texttt{GUIProject} leitet im zweiten
+Schritt den im \texttt{GUIProject} eingehenden Callback mit Hilfe des Qt-eigenen
 Signal-Slot-Mechanismus an die Instanzen der C++-Klassen der QML-Komponenten
-weiter. Diese Umleitung ist mitunter deshalb notwendig, um die eingehende
-Nachricht, die im Thread des Cores gesendet wird, in den Main-Thread zu
-übertragen, der von der GUI verwendet wird.
+weiter. Diese Umleitung ist auch deshalb notwendig, um die eingehende Nachricht,
+die im Thread des Cores gesendet wird, in den Main-Thread zu übertragen, der von
+der GUI verwendet wird.
+
+\begin{figure}
+	\centering
+  \scalebox{1.4}{
+  \begin{tikzpicture}[thick, font=\scriptsize, node distance=0.75cm and 1.75cm]
+
+  \tikzstyle{module} = [draw, rectangle,
+  text width=4cm]
+  \tikzstyle{class} = [rectangle, rounded corners=1pt, draw=black, fill=white, text width=2cm, align=center]
+  \tikzstyle{modulearrow} = [->, thick]
+
+  \node (guiproject) [class] {\texttt{GUIProject}};
+
+  \node (registermodel) [class, left = of guiproject] {\texttt{RegisterModel}};
+
+  \node (memorycomponentpresenter) [class, above = of registermodel]
+        {\texttt{MemoryPresenter}};
+
+  \node (editorcomponent) [class, below = of registermodel]
+        {\texttt{EditorComponent}};
+
+  \node (guiecetera) [below = of editorcomponent, text width=2cm, align=center]
+        {\large\dots};
+
+  \node (guipackage) [above = 0.5cm of memorycomponentpresenter] {\small\textbf{GUI}};
+
+  \node (guitopleft) [above left = 0.2cm of memorycomponentpresenter] {};
+  \node (guibottomright) [below right = 0.2cm of guiecetera] {};
+
+  \draw [rounded corners=1pt] (guitopleft) rectangle (guibottomright);
+
+  \node (register) [class, right = of guiproject] {\texttt{Register}};
+  \node (memory) [class, above = of register] {\texttt{Memory}};
+
+  \node (parsingandexecutionunit) [class, below = of register] {\texttt{ParsingAnd}-\\\texttt{ExecutionUnit}};
+
+  \node (coreecetera) [below = of parsingandexecutionunit, text width=2cm, align=center] {
+    \vspace{-1cm}
+    \large\dots
+  };
+  \node (corepackage) [above = 0.5cm of memory] {\small\textbf{Core-Instanz}};
+
+  \node (coretopleft) [above left = 0.2cm of memory] {};
+  \node (corebottomright) [below right = 0.2cm of coreecetera] {};
+
+  \draw [rounded corners=1pt] (coretopleft) rectangle (corebottomright);
+
+  \node (interfaces) [class, below = of guiproject] {Interfaces (Proxies)};
+
+  \draw [->, shorten >= 2pt] (2.5, 0) -- (guiproject)
+        node [midway, above] {\texttt{Callback}};
+
+  \draw [->, shorten >= 1pt] (guiproject) -- (-2.55, 0)
+        node [midway, above] {\texttt{Signal}};
+
+  \draw [->, shorten >= 1pt] (-2.55, -1.45) -- (interfaces);
+
+  \draw [->] (interfaces) -- (2.55, -1.45);
+
+  \end{tikzpicture}
+  }
+	\caption{Kommunikation der GUI mit dem Core.}
+	\label{fig:dev-manual-gui-communication}
+\end{figure}
 
 Nachrichten, die von einer der C++-Klassen der Komponenten an den Core gesendet
 werden sollen, können mit Hilfe der Interface-Klassen in den Scheduler eingefügt
-werden, der diese an das korrespondierende Core-Objekt weiterleitet.
-
-Damit die QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen
-können, werden deren Instanzen im \texttt{GUIProject} zum projektspezifischen
+werden, der diese an das korrespondierende Core-Objekt weiterleitet. Damit die
+QML-Komponenten auf Methoden der zugehörigen C++-Klasse zugreifen können, werden
+deren Instanzen im \texttt{GUIProject} zum projektspezifischen
 \texttt{QQMLContext} hinzugefügt, beispielsweise die Klasse
 \texttt{RegisterModel} als Context-Property \texttt{registerModel}. Auf die
-Properties dieses Kontexts kann über die zugehörige Bezeichnung (bspw.
-\texttt{registerModel}) global in jeder QML-Datei zugegriffen werden. Die
-Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes
+Properties dieses Kontexts kann über die zugehörige Bezeichnung (im vorigen
+Beispiel: \texttt{registerModel}) global in jeder QML-Datei zugegriffen werden.
+Die Trennung der Daten verschiedener Projekte wird gewährleistet, indem jedes
 \texttt{GUIProject} seinen eigenen Kontext erhält.
 
-Eine Ausnahme von der regulären Kommunikation bildet die Toolbar, die anders als
-die übrigen QML-Komponenten, die als Kommunikationspartner auftreten, nicht für
-jedes Projekt einzeln existiert, sondern übergeordnet ist. Der Datenaustausch
-erfolgt deshalb nicht über das \texttt{GUIProject}, sondern über die
-\texttt{Ui}-Klasse, die den QML-Dateien über die Context-Property \texttt{ui}
-zur Verfügung gestellt wird. Da die \texttt{Ui}-Instanz Kenntnis über das aktive
-Projekt hat, können auch projektspezifische Informationen, etwa über den
-aktuellen Ausführungszustand, ausgetauscht werden.
-
-\subsubsection{Initialisierung}
-
-\todo{Ggf. entfernen, da nicht besonders nützlich} Nachdem das Programm in der
-main-Methode der Klasse \texttt{main.cpp} gestartet ist, wird eine Instanz der
-Klasse \texttt{Ui} erstellt. Durch den Aufruf von \texttt{runUi} wird die
-graphische Oberfläche erstellt und gestartet. Das QML-Wurzelelement des
-Programms ist ein \texttt{ApplicationWindow}, welches in der Datei
-\texttt{main.qml} zu finden ist. Da anfänglich noch keine Projekte geöffnet
-sind, zeigt die GUI ein Fenster an, in dem ein neues Projekt angelegt werden
-kann. Wurde ein neues Projekt erstellt, so wird die Methode \texttt{addProject}
-der \texttt{Ui}-Klasse aufgerufen, in welcher eine \texttt{GUIProject}-Instanz
-erstellt und mit gegebener Konfiguration initialisiert wird.
+Neben den projektspezifischen Kontexten existiert zusätzlich ein
+programmübergreifender Kontext, der die Context-Property \texttt{ui} enthält,
+die mit der Instanz der Klasse \texttt{Ui} assoziiert ist. Diese wird von
+QML-Komponenten genutzt, die keinem einzelnen Projekt zugeordnet sind, um auf
+Methoden der C++-Komponenten zuzugreifen. Die Toolbar beispielsweise nutzt die
+\texttt{ui} Context-Property, um die Methode \texttt{run} aufzurufen, wenn der
+Ausführungsbutton gedrückt wurde. Zielen diese Methoden auf einzelne Projekte
+ab, wie es bei \texttt{run} der Fall ist, so muss zudem der Index des aktiven
+Projekts mit angegeben werden, damit in der \texttt{Ui}-Klasse das richtige
+Projekt gewählt werden kann.
