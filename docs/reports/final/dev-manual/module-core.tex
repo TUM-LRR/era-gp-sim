@@ -52,7 +52,7 @@ werden.
             \draw [<->] (parser) -- ($(core.east)+(1.0, -1.5)$);
         \end{tikzpicture}
     \end{center}
-    \caption{Grundlegende Funktionen des Cores.}
+    \caption{Einordnung des Cores in das Projekt.}
     \label{fig:core-overview}
 \end{figure}
 
@@ -68,7 +68,7 @@ dargestellt sind, sicheren Zugriff auf die anderen Komponenten des Simulators.
 Eine zentrale Anforderung an den Simulator war, dass die Ausführung der Befehle
 nicht die Ansprechbarkeit der GUI beeinflusst. Daher ist es notwendig den
 GUI-Thread, in dem ein Event-Loop der Qt-Engine läuft, von der Ausführung
-unabhängig zu machen. Daher werden pro Core-Instanz weitere Threads erstellt.
+unabhängig zu machen. Daher werden pro Core-Instanz weitere Threads erstellt. Das Konzept dazu ist in \autoref{dev:threading} beschrieben.
 
 \begin{figure}[H]
     \begin{center}
@@ -97,11 +97,12 @@ unabhängig zu machen. Daher werden pro Core-Instanz weitere Threads erstellt.
 
         \end{tikzpicture}
     \end{center}
-    \caption{Core Modul von außen}
+    \caption{Darstellung des Interfaces des Core-Moduls}
     \label{fig:core-interface}
 \end{figure}
 
 \subsubsection{Threading}
+\label{dev:threading}
 
 Bei der Verwendung mehrerer Threads ist erhöhter Programmieraufwand
 notwendig, um Probleme wie Race-Conditions zu vermeiden. Daher verwenden wir das
@@ -219,7 +220,7 @@ also pro Projekt (Tab in der GUI) zwei Threads im Core.
         \end{tikzpicture}
 
     \end{center}
-    \caption{Aufteilung des Interfaces auf verschiedene Core-Komponenten}
+    \caption{Aufteilung des Interfaces auf verschiedene Core-Komponenten. Project und ParsingAndExecutionUnit stellen jeweils ein Active Object dar.}
     \label{fig:core-proxies}
 \end{figure}
 
