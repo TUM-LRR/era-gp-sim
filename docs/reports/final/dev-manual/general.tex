@@ -8,7 +8,7 @@ Diese Sektion ist eine Einführung in die von uns genutzten Werkzeuge, welche f�
 die Entwicklung des Simulators benötigt werden. Das Ziel dieser Sektion ist es,
 dass Leser am Ende in der Lage sind, eigenständig einen Build des Projekts
 durchzuführen und somit am Projekt arbeiten können. Auch wird erläutert, welche
-Beweggründe hinter der Auswahl an Werkzeugen steckt, von der wir uns erhoffen,
+Beweggründe hinter der Auswahl an Werkzeugen stehen, von der wir uns erhoffen,
 dass zukünftige Entwickler diese fortsetzen.
 
 \subsection{Git}
@@ -131,6 +131,7 @@ wechselt man in das \texttt{docs/} Verzeichnis und führt den Befehl
 \texttt{doxygen} aus, welcher anschließend die Dokumentation generiert.
 
 \subsection{Build-Umgebung}
+\label{sec:build-env}
 
 Möchte man den Simulator selbst kompilieren, so wird eine \emph{Build-Umgebung}
 vorausgesetzt. Da unser besonders Augenmerk auf Portabilität zwischen
@@ -209,7 +210,7 @@ Erfahrungen mit MinGW\footnote{\url{http://www.mingw.org/}} gemacht, da der Qt
 Installer anbietet, dies automatisch zu installieren. Schließlich wird noch
 CMake benötigt, was man sich von der offiziellen Website herunterladen kann. Mit
 QtCreator ist der Einrichtungsaufwand am geringsten, da etwaige Pfade zu
-Bibliotheken automatisch eingerichtet werden. Die Einrichtung entspricht den
+Bibliotheken automatisch gesetzt werden. Die Einrichtung entspricht den
 gleichen Schritten, wie im Kapitel für Linux.
 
 Unter Windows gibt es zugegebenermaßen die meisten Probleme, da viele kleine
@@ -218,6 +219,7 @@ eine virtuelle Maschine mit einem Linux für die Entwicklung verwendet werden.
 
 \pagebreak
 \subsection{CMake und Make}
+\label{sec:cmake-make}
 
 Um auch den Build Prozess unabhängig vom Betriebssystem durchzuführen, haben wir
 uns für \emph{CMake}\footnote{\url{https://cmake.org/}} entschieden. CMake kann
@@ -226,9 +228,9 @@ die benötigten \texttt{Makefiles} (wenn gewünscht auch \emph{Ninja}-Files oder
 \emph{Make}\footnote{\url{https://www.gnu.org/software/make/}} ausgeführt werden
 können.
 
-Um einen Build des Projekts durchzuführen, sollte vorher einen entsprechende
-Build-Umgebung aufgesetzt werden. Anschließend kann man mit den Folgenden
-Befehlen einen neuer Build erzeugt werden:
+Um einen Build des Projekts durchzuführen, sollte vorher eine entsprechende
+Build-Umgebung aufgesetzt werden (siehe \autoref{sec:build-env}). Anschließend
+kann mit den Folgenden Befehlen ein neuer Build erzeugt werden:
 
 \begin{lstlisting}[language=bash, keywords={}]
 # Projekt herunterladen
@@ -268,7 +270,7 @@ Alternativ ist es auch möglich, mit QtCreator zu arbeiten. Dabei öffnet man da
 \texttt{CMakeLists.txt} als Projekt, und hat so eine grafische Oberfläche für
 die Entwicklung am Simulator. Auch CMake/Make muss so nicht mehr manuell über
 die Kommandozeile bedient werden, ein Build kann über die grafische Oberfläche
-von QtCreator erzeugt werden.
+von QtCreator erzeugt werden (siehe \autoref{para:setup-qtcreator}).
 
 \subsection{Tests}
 
@@ -282,7 +284,7 @@ wird.
 
 Um ein einheitliches Ergebnis bei den Tests zu erzielen, nutzen wir das
 Continuous Integration Tool \emph{Travis
-CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hoch geladenen
+CI}\footnote{\url{https://travis-ci.org/}}. Dabei wird nach jedem hochgeladenen
 Commit ein Clean Build angefertigt, der alle verfügbaren Tests durchführt. Das
 Ergebnis dieses Tests wird auf Github veröffentlicht und ist bindend. Die Tests
 werden sowohl mit gcc, als auch mit clang durchgeführt. Die Konfiguration von
@@ -309,6 +311,8 @@ mit folgenden Verzeichnissen:
 	\item \textbf{\texttt{include/}} enthält alle C++ Header Dateien, gruppiert
 	nach ihrem Modul. Wir haben uns um die strikte Trennung zwischen Header- und
 	Source Dateien bemüht.
+	\item \textbf{\texttt{installer/}} enthält die Konfigurationsdateien für
+	den Installer von \erasim{}.
 	\item \textbf{\texttt{isa/}} enthält die Architekturdefinitionen in YAML und
 	JSON Konfigurationsdateien.
 	\item \textbf{\texttt{scripts/}} enthält für die Entwicklung nützliche
@@ -409,8 +413,8 @@ Das Framework besteht aus mehreren Tools, die zum Erzeugen notwendig sind.
 \texttt{binarycreator} erzeugt den Installer aus den Archivdaten und der
 Konfiguration. Die genauen Schritte bis zum fertigen Installer variieren je nach
 Betriebssystem, die Grundvorgehensweise ist jedoch gleich. Genaue Instruktionen
-für jedes Betriebssystem sind im \texttt{README} im \texttt{installer} Ordner
-des Repositorys zu finden. Die Grundschritte sind
+für jedes Betriebssystem sind im \texttt{README} des \texttt{installer} Ordners
+zu finden. Die Grundschritte sind
 \begin{itemize}
 	\item Saubere Version mit Optimierung und ohne Debug-Symbole bauen;
 
