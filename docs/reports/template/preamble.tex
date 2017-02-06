@@ -281,13 +281,38 @@
 % RENEW COMMANDS                                       %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\renewcommand\thechapter{\Roman{chapter}}
+% \renewcommand\thechapter{\Roman{chapter}}
+% \renewcommand\thesection{\roman{section}}
+
+\makeatletter
+\renewcommand{\subsection}{%
+  \@startsection{subsection}{2}%
+  {\z@}{0.1cm}{0.1cm}%
+  {\normalfont\large\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\renewcommand{\subsubsection}{%
+  \@startsection{subsubsection}{3}%
+  {\z@}{0.08cm}{0.08cm}%
+  {\normalfont\normalsize\bfseries}%
+}
+\makeatother
 
 \makeatletter
 \renewcommand{\paragraph}{%
   \@startsection{paragraph}{4}%
-  {\z@}{3.25ex \@plus 1ex \@minus 2ex}{0.2cm}%
+  {\z@}{0.1cm}{0.1cm}%
   {\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+\makeatletter
+\renewcommand{\subparagraph}{%
+  \@startsection{paragraph}{5}%
+  {\z@}{0.1cm}{0.1cm}%
+  {\normalfont\normalsize\em}%
 }
 \makeatother
 

@@ -106,7 +106,7 @@ für unseren Code Style zu nutzen. Folgende Ausnahmen haben wir dabei festgelegt
 \begin{itemize}
   \item Präfix \texttt{\_}, anstatt Suffix \texttt{\_} für private Klassenattribute,
   \item \texttt{.hpp} und \texttt{.cpp} als Dateiendungen für C++
-  Header/Klassen,
+  Header und Implementierungen,
   \item Parameternamen werden im Header immer angegeben.
 \end{itemize}
 
@@ -117,6 +117,7 @@ entnimmt dem Programmier beispielsweise die Mühe, Parameternamen in langen
 Funktionsaufrufen selbst einrücken zu müssen. Die Konfiguration von
 \texttt{clang-format} liegt im YAML-Format in der Datei \texttt{.clang-format},
 welche in der Wurzel des Projekts liegt.
+\vspace{0.3cm}
 
 \subsubsection{Dokumentation}
 
@@ -149,33 +150,41 @@ sind die benötigten Versionen erst ab Debian Stretch (Debian 9) verfügbar, unt
 Ubuntu erst ab Version 16.10.
 
 \begin{itemize}
-	\item Debian basierte Betriebssysteme: 
+	\item Debian basierte Betriebssysteme:
 	\begin{lstlisting}
 apt install build-essential cmake git qtdeclarative5-dev
 	\end{lstlisting}
 
-	\item Arch Linux: 
+	\item Arch Linux:
 	\begin{lstlisting}
 pacman -S base-devel cmake git qt5-declarative \
- qt5-graphicaleffects qt5-quickcontrols
+  qt5-graphicaleffects qt5-quickcontrols
 	\end{lstlisting}
 \end{itemize}
+\vspace{-0.2cm}
+Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt
+manuell zu
+installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}. Dafür
+lädt man sich von der offiziellen Website einen Installer runter, der nach dem
+Start einen Installationsort erfragt. Dieser muss später beim Bauen des Projekts
+angegeben werden.
+\vspace{0.4cm}
 
-Ist eine Installation über die Paketquellen nicht möglich, bietet es sich an, Qt manuell
-zu installieren\footnote{\url{https://wiki.qt.io/Install_Qt_5_on_Ubuntu}}. Dafür lädt
-man sich von der offiziellen Website einen Installer runter, der nach dem Start einen
-Installationsort erfragt. Dieser muss später beim Bauen des Projekts angegeben werden.
-
+\pagebreak
 \input{setup-qtcreator-linux.tex}
+\pagebreak
 
 \subsubsection{macOS}
-Im folgenden wird beschrieben, welche Schritte auf dem Betriebssystem macOS erfolgen sollten.
+
+Im folgenden wird beschrieben, welche Schritte auf dem Betriebssystem macOS
+erfolgen sollten.
+
 \paragraph{Qt installieren}
 
 Um Qt auf ein Mac-Computer zu installieren, bietet es sich an, den Installer zu
 verwenden, den man über die offizielle Website herunterladen kann
-\footnote{\url{https://www.qt.io/download/}}. Bei der Installation können neben der
-aktuellsten auch ältere Versionen des Framework heruntergeladen werden. Nach
+\footnote{\url{https://www.qt.io/download/}}. Bei der Installation können neben
+der aktuellsten auch ältere Versionen des Framework heruntergeladen werden. Nach
 der Installation befindet sich am angegebenen Installationspfad ein Ordner "Qt",
 in dem sich auch der QtCreator-IDE befindet.
 
@@ -319,12 +328,12 @@ Das Qt Installer Framework\footnote{\url{https://wiki.qt.io/Qt-Installer-Framewo
 		\node {\erasim}
 		child { node {installer/}
 			child { node {config/}
-				child {node {config.xml} } 
+				child {node {config.xml} }
 			}
 			child [missing]{}
-			child { node {packages/} 
-				child {node {erasim.base/} 
-					child {node {meta/} 
+			child { node {packages/}
+				child {node {erasim.base/}
+					child {node {meta/}
 						child {node{ package.xml} }
 					}
 					child [missing]{}
@@ -338,14 +347,14 @@ Das Qt Installer Framework\footnote{\url{https://wiki.qt.io/Qt-Installer-Framewo
 				child [missing]{}
 				child [missing]{}
 				child [missing]{}
-				child {node {erasim.shortcut/} 
+				child {node {erasim.shortcut/}
 					child { node {...} }
 				}
 			}
 		};
 		\end{tikzpicture}
 	\end{center}
-	
+
 	\caption{Struktur der Installerkonfiguration}
 	\label{dev-manual-installer}
 \end{figure}
@@ -361,5 +370,5 @@ Die Grundschritte sind:
 	\item Saubere Version mit Optimierung und ohne Debug-Symbole bauen
 	\item Executable und alle benötigten Qt- und Compiler-Bibliotheken sowie alle verwendeten QtQuick/QML Module zusammen mit \texttt{isa} und \texttt{themes}-Ordner mit \texttt{archivegen} in ein Archiv zusammenfügen.\\
 	Dieses Archiv kommt nach \texttt{installer/packages/erasim.base/data/}
-	\item \texttt{binarycreator} ausführen, um den Installer zu bauen 
+	\item \texttt{binarycreator} ausführen, um den Installer zu bauen
 \end{itemize}
