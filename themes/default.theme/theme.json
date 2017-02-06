@@ -359,7 +359,10 @@
             "fontSize": 12,
             "fontWeight": "normal",
             "marginLeft": -10,
-            "width": 90
+            "width": 90,
+            "lockSymbol": "x",
+            "lockColor": "red",
+            "lockFontSize": 12
         },
         "header": {
             "background": "transparent",
