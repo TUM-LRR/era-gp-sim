@@ -171,8 +171,7 @@ Intermediate-Darstellung in ein Objekt der Klasse \texttt{FinalRepresentation}
 umzuwandeln, kann die Funktion
 \texttt{IntermediateRepresentator::\allowbreak{}transform} aufgerufen werden.
 Diese Methode führt nacheinander folgende Schritte aus:
-
-\begin{enumerate}
+\begin{senumerate}{-0.2cm}
 	\item Aufrufen der \texttt{precompile} Funktion für alle Operationen. \item
 	Ersetzen aller Instruktionen, bei denen es sich um Makroaufrufe handelt, mit
 	Makro-Instruktionen. \item Reservieren von Speicher für alle Befehle mit
@@ -181,7 +180,7 @@ Diese Methode führt nacheinander folgende Schritte aus:
 	Funktion. \item "Ausführen" aller Operationen mit der
 	\texttt{execute}-Funktion, d.h. meistens Erzeugen eines Syntaxknotens und
 	Einfügen dieses Knotens in die \texttt{FinalRepresentation}.
-\end{enumerate}
+\end{senumerate}
 
 \subparagraph{Makros} Für das Parsen von Makros existieren zwei Direktiven:
 \texttt{Makro\-Directive} und \texttt{Makro\-End\-Directive}. Alle Befehle
@@ -215,12 +214,17 @@ konstruiert man einen \texttt{SymbolGraph} mit allen einzufügenden Symbolen
 einzelnen Symbole als Knoten und Abhängigkeiten zwischen ihnen als Kanten. Ein
 Symbol A ist dabei abhängig von einem Symbol B, wenn B in dem Ersetzungstext von
 A vorkommt. Im Symbolgraph würde hier dann eine Kante von B nach A geleitet
-werden. Anschließend können wir unseren \texttt{SymbolGraph} evaluieren. Dabei
-werden folgende Dinge überprüft: \begin {itemize} \item Sind die Namen
-(orientiert an C, d.h. Buchstabe oder \_ als erstes Zeichen, danach beliebig
-viele davon incl. von Zahlen) gültig? \item Existiert einer/mehrere Namen
-doppelt? \item Existiert eine zyklische Abhängigkeit unter den Symbolen (bzw. im
-Symbolgraph)? \end {itemize}
+werden. Anschließend können wir unseren \texttt{SymbolGraph} evaluieren.
+
+Dabei werden folgende Dinge überprüft:
+\begin{sitemize}{-0.4cm}
+  \item Sind die Namen (orientiert an C, d.h. Buchstabe oder \_ als erstes
+  Zeichen, danach beliebig viele davon incl. von Zahlen) gültig?
+  \item Existiert einer/mehrere Namen doppelt?
+  \item Existiert eine zyklische Abhängigkeit unter den Symbolen (bzw. im
+  Symbolgraph)?
+\end{sitemize}
+\vspace{-0.4cm}
 
 Während erste und zweite Eigenschaft leicht per Iterieren über die Symbole bzw.
 Einteilen in Äquivalenzklassen dieser (z.B. mittels einer Map) gelöst werden
@@ -238,32 +242,32 @@ unserem Fall genau eine Anordnung der Symbole, sodass das Symbol an Position $i$
 nur von allen Symbolen im Bereich $\{0,\dots,i-1\}$ abhängt. Damit können wir
 nun unsere Symbole insgesamt vereinfachen: Wir iterieren vorwärts über alle
 Symbole und setzen in Symbol $s_i$ alle Symbole ein, von denen $s_i$ abhängt.
-Wir wissen dabei, wegen der topologischen Sortierung, dass $$s_i$$ nur von
+Wir wissen dabei, wegen der topologischen Sortierung, dass $s_i$ nur von
 $s_0,\dots,s_{i-1}$ abhängt und diese Symbole haben wir schon so weit wie
 möglich ersetzt. Damit erhalten wir am Ende eine Darstellung, in der die Symbole
 weitestmöglich ersetzt sind. Diese können wir dann weitergeben an das
-Ersetzungssystem. Wir unterscheiden dabei noch zwischen statischen und
-dynamischen Symbolen: Statische Symbole haben dabei einen unveränderlichen Wert
-und werden daher wie geplant ersetzt. Für dynamische Symbole ist der Wert jedoch
-erst beim Ersetzen des Symbols im Programm bekannt, nicht, wenn der Symbolgraph
-ausgewertet wird. Daher werden diese Symbole \emph{nicht ersetzt} (sehr wohl
-aber auf wohlgeformte Namen und Duplikate geprüft), sondern verbleiben mit ihrem
-Namen in den weitestmöglich ersetzten Symbolen. Ein Einsatzzweck für solche
-dynamischen Symbole sind zum Beispiel relative Adressen: Da beim Generieren des
-Graphen nicht bekannt ist, bei welchen Befehlen das Symbol zum Einsatz kommt,
-kann es nicht ersetzt werden. All dies erfolgt, wenn man \texttt{evaluate} beim
+Ersetzungssystem.
+
+Wir unterscheiden dabei noch zwischen statischen und dynamischen Symbolen:
+Statische Symbole haben dabei einen unveränderlichen Wert und werden daher wie
+geplant ersetzt. Für dynamische Symbole ist der Wert jedoch erst beim Ersetzen
+des Symbols im Programm bekannt, nicht, wenn der Symbolgraph ausgewertet wird.
+Daher werden diese Symbole \emph{nicht ersetzt} (sehr wohl aber auf wohlgeformte
+Namen und Duplikate geprüft), sondern verbleiben mit ihrem Namen in den
+weitestmöglich ersetzten Symbolen. Ein Einsatzzweck für solche dynamischen
+Symbole sind zum Beispiel relative Adressen: Da beim Generieren des Graphen
+nicht bekannt ist, bei welchen Befehlen das Symbol zum Einsatz kommt, kann es
+nicht ersetzt werden. All dies erfolgt, wenn man \texttt{evaluate} beim
 Symbolgraphen aufruft. Würden wir nun parametrisierte Symbole zulassen, so
 hätten wir das Problem, dass wir hier selbst bei statischen Symbolen nicht
-feststellen können, ob ein Ersetzungsvorgang irgendwann beendet ist (vgl.
+feststellen könnten, ob ein Ersetzungsvorgang irgendwann beendet ist (vgl.
 Halteproblem, das ist sogar \emph{beweisbar} nicht möglich), also müssten wir ab
 irgendeiner Ersetzungstiefe abbrechen. Dennoch stünde es zukünftigen Projekten
-frei, dies zu implementieren.
+frei, dies zu realisieren.
 
-\pagebreak
-Die Laufzeiten im Worst-Case lässt sich wie folgt analysieren, wobei $N$ die
-Anzahl an Symbolen darstellt:
-
-\begin{itemize}
+\vspace{-0.2cm}
+Sei $N$ die Anzahl an Symbolen. Dann lassen sich die Höchstlaufzeiten wie folgt analysieren:
+\begin{sitemize}{-0.5cm}
     \item Namen überprüfen: $\mathcal{O}(N)$
 
     \item Duplikate finden: $\mathcal{O}(N \cdot f(N))$ (mit $f(M)$ als maximale
@@ -272,8 +276,10 @@ Anzahl an Symbolen darstellt:
     \item Zyklenfreiheit überprüfen und topologische Sortierung ermitteln:
     $\mathcal{O}(N^2)$ (dennoch, sehr unwahrscheinlich im normalen Gebrauch;
     Worst-Case wäre die transitive Hülle eines zusammenhängenden Symbolgraphen)
-\end{itemize}
+\end{sitemize}
+\vspace{-0.2cm}
 
+\pagebreak
 Die Evaluierung (Klasse \texttt{SymbolGraphEvaluation}) wird anschließend an den
 SymbolReplacer weitergegeben. Dieser ersetzt textuell bei einem gegebenen
 Eingabestring alle Symbolvorkommen über mehrere Iterationen hinweg, denn es ist
@@ -282,7 +288,7 @@ Symbol expandiert (wenn auch noch kein solcher Fall bekannt ist). In der Tat ist
 es wegen der Natur der dynamischen Symbole ebenfalls nicht möglich, zu sehen, ob
 eine Ersetzung mit Sicherheit terminiert (vgl. oben). Also brechen wir nach
 einer bestimmten Anzahl an Ersetzungsiterationen (standardmäßig auf 4 gesetzt)
-ab und geben einen Fehler zurück. Anmerkung: Die textuelle Ersetzungs ist noch
+ab und geben einen Fehler zurück. Anmerkung: Die textuelle Ersetzung ist noch
 alles andere als ideal, besser wäre, wenn die Ersetzung ausschließlich auf einem
 Stream von Tokens (siehe nächsten Abschnitt) arbeiten würde (und auch einen
 solchen zurückgibt).
@@ -302,7 +308,7 @@ starten den Automaten neu. Landen wir in einem Fehlerzustand, so geben wir einen
 Sequenzen $s_0$ und $s_0s_1$ stets $s_0s_1$ präferiert wird (d.h. im
 regulären Ausdruck wird $s_0s_1$ zuerst erwähnt).
 
-Das eigenliche Parsen des Token-Streams erfolgt mithilfe des
+Das eigentliche Parsen des Token-Streams erfolgt mithilfe des
 Shunting-Yard-Algorithmus \footnote{\url{http://wcipeg.com/wiki/Shunting_yard_algorithm}} in
 der Klasse \texttt{ExpressionParser}, welcher in linearer Zeit über der Eingabe
 arbeitet (und linear viel Speicher verbraucht). Dieser löst das Problem der
@@ -451,6 +457,7 @@ des Parsers selber aufrufen und Text assemblieren lassen. Das Deinitialisieren
 erfolgt ebenfalls über den eingebauten Destruktor automatisch. Eine Übersicht
 über diesen Prozess bietet \autoref{fig:parser-overview}.
 
+\vspace{0.5cm}
 \begin{figure}[H]
 	\begin{center}
 		\begin{tikzpicture}[node distance=1.0cm and 3.0cm] \tikzstyle{myarrow} =
@@ -480,8 +487,8 @@ erfolgt ebenfalls über den eingebauten Destruktor automatisch. Eine Übersicht
 	\end{center} \caption{Übersicht der Parserschnittstelle}
 	\label{fig:parser-overview}
 \end{figure}
-
 \pagebreak
+
 \subsubsection{Einschränkungen}
 
 Trotz der aktuellen Fähigkeiten des Parser-Moduls existieren noch folgende
