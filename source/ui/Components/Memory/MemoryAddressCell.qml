@@ -49,7 +49,7 @@ Component {
     Label {
         id: locklabel
         anchors.right: parent.right
-        anchors.rightMargin: 1
+        anchors.rightMargin: 0
         anchors.topMargin: 1
         color: Theme.memory.address.lockColor
         font.pixelSize: Theme.memory.address.lockFontSize

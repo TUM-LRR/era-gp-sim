@@ -360,7 +360,7 @@
             "fontWeight": "normal",
             "marginLeft": -10,
             "width": 90,
-            "lockSymbol": "\u2612",
+            "lockSymbol": "x",
             "lockColor": "red",
             "lockFontSize": 14
         },
