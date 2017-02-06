@@ -268,7 +268,7 @@ Die Bestimmung der Methoden eines Kindes von \texttt{AbstractSyntaxTree} sind be
   werden. \\ Beispielsweise könnte eine Additionsinstruktion
   \texttt{add rd, rs1, rs2} mit folgendem Konzept implementiert werden:
 
-\begin{lstlisting}{style=c++}
+\begin{c++}
 MemoryValue getValue(MemoryAccess memoryAccess) {
 	assert::that (_children.count == 3)
 	Value rs1 = _children[1].getValue(memoryAccess);
@@ -280,7 +280,7 @@ MemoryValue getValue(MemoryAccess memoryAccess) {
 	Value pc = memoryAccess.getRegisterValue("pc");
 	return pc;
 	}
-\end{lstlisting}
+\end{c++}
 
 	Durch die allgemein gehaltenen Operanden, kann der gleiche Code auch für
 	\texttt{add rd, rs1, immediate}, für \texttt{add rd, rs1, [rs2]} oder
@@ -408,10 +408,10 @@ Das folgende Beispiel definiert eine \texttt{data}-Sektion gefolgt von einer
 \texttt{text}-Sektion. Beide Sektionen sind mit 4 Bytes im Speicher ausgerichtet,
 die möglichen Daten in diesen Sektionen sind unausgerichtet.
 
-\begin{lstlisting}{style=c++}
+\begin{c++}
 MemoryAllocator allocator({MemorySectionDefinition("data", 4u, 1),
                               MemorySectionDefinition("text", 4u, 1)});
-\end{lstlisting}
+\end{c++}
 
 \item Ein Funktionsobjekt vom Typ
 \texttt{Syntax\-Tree\-Generator::\allowbreak{}Argument\-Node\-Generator}, das
@@ -422,7 +422,7 @@ einem Immediate-Knoten werden soll.
 Im Folgenden ein vereinfachtes Beispiel, bei dem alle Argumente nur
 Registernamen sind:
 
-\begin{lstlisting}{style=c++}
+\begin{c++}
 const SyntaxTreeGenerator::ArgumentNodeGenerator
     MeinParser::argumentGeneratorFunction = [](
         const PositionedString& operandPositional,
@@ -435,7 +435,7 @@ const SyntaxTreeGenerator::ArgumentNodeGenerator
   const auto& operand = operandReplaced.string();
   return nodeFactories.createRegisterNode(operand);
 };
-\end{lstlisting}
+\end{c++}
 
 \item Objekte vom Type \texttt{Architecture} und
 \texttt{Node\-Factory\-Collection}. Das Architekturobjekt sollte meistens beim
@@ -450,7 +450,7 @@ entsprechende andere Objekt erstellt werden.
 Ist all dies gegeben, kann die notwendige Funktion \texttt{parse} einfach
 implementiert werden:
 
-\begin{lstlisting}{style=c++}
+\begin{c++}
 FinalRepresentation MeinParser::parse(const std::string& text) {
   IntermediateRepresentator intermediate;
   CompileErrorList errors;
@@ -464,7 +464,7 @@ FinalRepresentation MeinParser::parse(const std::string& text) {
   readText(text, errors, intermediate);
   return intermediate.transform(parameters, errors, _memoryAccess);
 }
-\end{lstlisting}
+\end{c++}
 
 Für ein detaillierteres Beispiel, das auch die Verwendung des Compilers für
 arithmetische Ausdrücke umfasst, siehe die \texttt{RiscvParser}-Klasse.
@@ -621,15 +621,13 @@ diesen im Übrigen auch selbst gleich ausführen und im selben Schritt das
 python3 scripts/theme2json.py ~/.erasim/themes/<theme>.theme
 \end{lstlisting}
 
- \subsection{Weitere Anmerkungen}
-
- \subsubsection{Lokalisierung}
+ \subsection{Lokalisierung}
 
  Eine Anforderung an den Simulator ist die Möglichkeit, jeden angezeigten Text
- übersetzbar zu machen. Zum Zeitpunkt der ersten Version des Simulators existiert
- lediglich eine englische Version der Hilfetexte. Damit der Simulator auch in
- Zukunft vollständig übersetzbar bleibt, muss auch die Erweiterung um eine neue
- Architektur einige Maßnahmen treffen.\\
+ übersetzbar zu machen. Zum Zeitpunkt der ersten Version des Simulators
+ existiert lediglich eine englische Version der Hilfetexte. Damit der Simulator
+ auch in Zukunft vollständig übersetzbar bleibt, muss auch die Erweiterung um
+ eine neue Architektur einige Maßnahmen treffen.
 
  Wir haben uns dazu entschieden die Übersetzungsfunktionalitäten von Qt zu
  verwenden\footnote{\url{http://doc.qt.io/qt-5/i18n-source-translation.html}}. Kurze
@@ -645,24 +643,22 @@ python3 scripts/theme2json.py ~/.erasim/themes/<theme>.theme
 
  Die obigen Maßnahmen müssen zwingend durchgeführt werden, denn sollte eine
  Lokalisierung aller Texte vorgenommen werden wollen, wird das wie folgt
- ablaufen:\\
+ ablaufen:
 
  Ein Unterprogramm von QtLinguist (lupdate) sucht im \textbf{Quelltext} des
- Simulators nach allen zur Übersetzung markierten Stringliteralen und erzeugt daraus Translateable Source-Dateien. Diese werden anschließend mit QtLinguist übersetzt
- und in QM-Dateien (gepackt, für schnellen Zugriff) mit dem Simulator ausgeliefert.
- Die Qt-Library lädt die QM Dateien bei Start des Programms.\\
-
- Findet die Qt-Library aber keine Dateien für die Übersetzung (wie zum Zeitpunkt der
- ersten Version der Fall), dann greift sie auf die Rückfalllösung -- die
+ Simulators nach allen zur Übersetzung markierten Stringliteralen und erzeugt
+ daraus Translateable Source-Dateien. Diese werden anschließend mit QtLinguist
+ übersetzt und in QM-Dateien (gepackt, für schnellen Zugriff) mit dem Simulator
+ ausgeliefert. Die Qt-Library lädt die QM Dateien bei Start des Programms.
+ Findet die Qt-Library aber keine Dateien für die Übersetzung (wie zum Zeitpunkt
+ der ersten Version der Fall), dann greift sie auf die Rückfalllösung -- die
  Stringliterale im Quellcode -- zurück\footnote{Für ausfühlichere Informationen
- siehe \url{http://doc.qt.io/qt-5/qtlinguist-index.html}}.\\
-
- Jetzt ist klar, wieso keine Texte des Typs \texttt{std::string} oder zur
- Laufzeit zusammengebaute Texte verwendet werden dürfen. lupdate könnte sonst
- den Text nicht (vollständig) in die Übersetzungstabelle einfügen und die
- Übersetzung klappt nicht mehr.\\
-
- Zur Kapselung eines potentiell übersetzbaren Texts gibt es die Klasse
- \texttt{Translateable} (zu finden in \texttt{commons/translateable.hpp}). Sie
- enthält Methoden zum Qt-konformen Zusammenfügen von Texten und kann nur durch
- Stringliterale erzeugt werden, um Fehler vorzubeugen.
+ siehe \url{http://doc.qt.io/qt-5/qtlinguist-index.html}}. Jetzt ist klar, wieso
+ keine Texte des Typs \texttt{std::string} oder zur Laufzeit zusammengebaute
+ Texte verwendet werden dürfen. lupdate könnte sonst den Text nicht
+ (vollständig) in die Übersetzungstabelle einfügen und die Übersetzung klappt
+ nicht mehr. Zur Kapselung eines potentiell übersetzbaren Texts gibt es die
+ Klasse \texttt{Translateable} (zu finden in
+ \texttt{commons/translateable.hpp}). Sie enthält Methoden zum Qt-konformen
+ Zusammenfügen von Texten und kann nur durch Stringliterale erzeugt werden, um
+ Fehler vorzubeugen.

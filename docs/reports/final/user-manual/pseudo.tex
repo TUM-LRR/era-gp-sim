@@ -2,7 +2,6 @@
 % ERA-Großpraktikum: Benutzeranleitung -- Pseudoinstruktionen
 
 \newcommand{\pseudoinst}[3]{
-  \centering
   \begin{tikzpicture}[thick]
     \node [align=center, text width=4.5cm] (inst) at (0, 0) {\texttt{#1}};
     \node [align=left, text width=12cm] (op) at (8.5, 0) {#2};
@@ -18,7 +17,6 @@
 }
 
 \newcommand{\pseudoinsttwo}[3]{
-  \centering
   \begin{tikzpicture}[thick, node distance=0.1cm]
     \node (inst) at (0, 0) {\texttt{#1}};
     \node [below = of inst] (desc) [align=center, text width=\textwidth] {#2};
@@ -363,8 +361,6 @@ umgewandelt}
 
 \pagebreak
 Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
-\vspace{0.5cm}
-
 
 \pseudoinsttwo
 {
