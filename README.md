@@ -1,8 +1,14 @@
-# era-gp-sim
+# ERASIM
 
 [![Stories in Ready](https://badge.waffle.io/TUM-LRR/era-gp-sim.png?label=ready&title=Ready)](https://waffle.io/TUM-LRR/era-gp-sim) [![Build Status](https://travis-ci.org/TUM-LRR/era-gp-sim.svg?branch=master)](https://travis-ci.org/TUM-LRR/era-gp-sim) [![AUR](https://img.shields.io/aur/license/yaourt.svg?maxAge=2592000)]()
 
-ERA-Großpraktikum Simulatorentwicklung
+_ERASIM_ ist ein architekturunabhängiger Assembler-Simulator, welcher momentan (Stand 06.02.2017) die Grundzüge der RISC-V-ISA unterstützt.
+
+# Abhängigkeiten
+
+* Qt 5.6 oder Qt 5.7 **(Qt 5.8 funktioniert noch nicht, verursacht Qt-interne Fehler)**
+
+Für nähere Beschreibung, siehe Abschlussbericht.
 
 # License
 > C++ Assembler Interpreter
