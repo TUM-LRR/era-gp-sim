@@ -362,7 +362,9 @@
             "width": 90,
             "lockSymbol": "x",
             "lockColor": "red",
-            "lockFontSize": 12
+            "lockFontSize": 12,
+            "lockRightMargin": 0,
+            "lockTopMargin": 1
         },
         "header": {
             "background": "transparent",
