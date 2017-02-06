@@ -23,7 +23,7 @@ Klassen zu implementieren sind, sollte man den Prozess verstehen, wie ein
 Assembler-Paket geladen und angesprochen wird. Einen groben Überblick bietet
 \autoref{dev-manual-extension-overview}. Die Namen der Komponenten finden sich
 so nicht im Code wieder, sie dienen lediglich als Oberbegriff für eine ganze
-Reihe von Klassen und -strukturen die grob dieselbe Aufgabe haben.
+Reihe von Klassenstrukturen die grob dieselbe Aufgabe haben.
 
 \begin{figure}
 	\centering
@@ -145,7 +145,7 @@ für den Parser zum Bau eines Syntaxbaumes.
 Für diesen Bereich ist keine Zeile Code nötig. Da eine Implementierung von
 Datenklassen zur Beschreibung der Eigenschaften sich inhaltlich, aber nicht
 strukturell unterscheiden wird, muss für eine Erweiterung lediglich eine
-Beschreibungsdatei im ISA-Format\todo{Verweis zur Beschreibung der ISA-Sprache}
+Beschreibungsdatei im ISA-Format (siehe \autoref{dev:arch-yaml})
 erstellt werden. Die Datei wird in YAML geschrieben, dann per Script nach JSON
 übersetzt und in Ordner mit \texttt{isa}-Suffix abgelegt. Dort wird dann
 bei Programmstart und entsprechender Auswahl die JSON Datei eingelesen und

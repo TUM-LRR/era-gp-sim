@@ -540,7 +540,7 @@ Ein kleines Beispiel verdeutlicht dies wohl am besten.
 Falls man sich den Umweg über die Ansteuerung über Speicheradressen sparen möchte,
 kann man die einzelnen Leuchtsegmente auch durch einen Klick mit der linken Maustaste aktivieren bzw. deaktivieren.
 
-Für die Anzeige gibt es zwei Einstellungen, die man über das Zahnrad rechts unten aufrufen kann:\\
+Für die Anzeige gibt es zwei Einstellungen, die man über das Zahnrad aufrufen kann:\\
 \begin{itemize}
 \item \texttt{Memory Source (Address):} definiert den Speicherbereich, der für die 7-Segment Ausgabe herangezogen wird. Default ist 0.
 \item \texttt{Number of Digits:} die Anzahl der angezeigten 7-Segment Zeichen. Für jedes der Zeichen wird ein Byte im Speicher benötigt.
@@ -576,5 +576,29 @@ einstellbar.
 Bei einem Clear Aufruf über das Kontextmenü wird auch der Speicherbereich
 zurückgesetzt, in dem der Text der Konsole steht.
 \end{warningblock}
+
+
+\subsubsection{Ein-/Ausgabe -- Pixel Display}
+Das Pixel Display liest Daten aus dem Hauptspeicher und stellt diese graphisch
+dar. Das Pixel Display hat verschiedene Einstellungsmöglichkeiten, darunter:
+
+\begin{itemize}
+\item Pixel Base Address: 32 Bit Addresse des Pointers auf den Pixel Buffer im
+Hauptspeicher. Der Pixel Buffer enthält alle Pixel des darzustellenden Bildes
+in Form der Daten die jedes Pixel hält, das heißt Farbe oder Farbindex.
+
+\item Color Base Address: 32 Bit Addresse des Pointers auf den Color Buffer im
+Hauptspeicher. Der Color Buffer enthält, sofern der ausgewählte Farbmodus dies
+unterstützt, alle Farben in tabellarischer Weise.
+
+\item Width: die Breite des Displays in Pixel
+\item Height: die Höhe des Displays in Pixel
+
+\item ColorMode: Farbmodus des Displays. Es gibt bisher zwei Farbmodi, RGB und
+Monochrome. Im RGB Modus wird jedes Pixel als 32 bit RBG Farbe interpretiert.
+Im Monochrome Modus stellt jedes Pixel einen ein Bit Index dar, welcher den
+Eintrag aus der Farbtabelle die Farbe dieses Pixels darstellt.
+\end{itemize}
+
 
 %\subsection{Sonstige Features}

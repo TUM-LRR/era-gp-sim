@@ -2,7 +2,6 @@
 % ERA-Großpraktikum: Benutzeranleitung -- Übersicht Befehlssatz RISC-V
 
 \section{Übersicht Befehlssatz RISC-V}
-\todo[inline]{Hier Erläuterung: Unterschied Parser-direktiven, Instruktionen und Pseudo-instruktionen}
 
 Die Menge an verwendbaren Befehlen für den Simulator lässt sich grob in zwei
 Teile aufteilen. Die erste Menge an Befehlen sind die sogenannten
@@ -222,7 +221,6 @@ werden.
 \end{infoblock}
 
 \subsection{RISC-V Instruktionen}
-\todo[inline]{Erklärung Aufteilung in Module}
 Die RISC-V Instruktionen sind in verschiedene Module aufgeteilt. Durch eine Modularisierung des Dialekts kann ganz bewusst auf Arten von Instruktionen verzichtet werden. Es braucht z.B. nicht jeder Mikrocontroller Multiplikation oder atomare Operationen. Der Simulator unterstützt folgende Module:\\
 \begin{itemize}
 	\item \textbf{RV32I} Das ''Basispaket'' mit 32 Bit Arithmetik-, Sprung- und Verzweigungsinstruktionen
@@ -242,13 +240,16 @@ unveränderbar den Wert 0. Für eine gute Verwendungsmöglichkeit siehe
 \texttt{x<id>} angesprochen, wobei \texttt{id} die Nummer des Registers ist. So
 steht \texttt{x0} für das Register 0 und \texttt{x17} für das Register 17.\\
 Zur Angabe von Zahl-Konstanten (sog. ''Immediates'') unterstützt der Simulator
-folgende 3 Möglichkeiten:\\
-Mit dem Präfix \texttt{0b} lässt sich die Konstante in Binärdarstellung
-ausdrücken. \texttt{0b1101} steht z.B. für die Zahl 13.\\
-Mit dem Präfix \texttt{0x} werden Konstanten in Hexadezimal geschrieben.
-\texttt{0xaffe} $\widehat{=}$ 45 054.\\
-Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
-in Dezimaldarstellung.
+folgende 3 Möglichkeiten:
+\begin{itemize}
+	\item Mit dem Präfix \texttt{0b} lässt sich die Konstante in Binärdarstellung
+	ausdrücken. \texttt{0b1101} steht z.B. für die Zahl 13.
+	\item Mit dem Präfix \texttt{0x} werden Konstanten in Hexadezimal geschrieben.
+	\texttt{0xaffe} $\widehat{=}$ 45 054.
+	
+	\item Wird die Zahl ohne Präfix geschrieben, interpretiert sie der Simulator als Zahl
+	in Dezimaldarstellung.
+\end{itemize}
 
 \begin{infoblock}{Arithmetische Ausdrücke zur Übersetzungszeit}
 	Der Simulator unterstützt zudem arithmetische Ausdrücke für Konstanten. So ist \texttt{andi x1,x1, 2*3} gleichwertig zu \texttt{andi x1, x1, 6}. Das ist besonders hilfreich, da auch mit Labels und \texttt{.equ} definierten Konstanten gerechnet werden kann.\\
@@ -296,8 +297,8 @@ in Dezimaldarstellung.
   Befehl eine Konstante im Wertebereich von vorzeichenbehafteten 12 Bit
   erwartet. Die größte darstellbare Zahl ist $2^{11}-1 = 2047$ während 0xfff $
   \widehat{=} 4095$, also zu groß ist.\\
-  Es ist ein Fehler zu denken, dass die obige Instruktion -1 in das Register 1
-  schreibt. Um das zu erreichen, sollte \texttt{addi x1, x0, -1} oder
+  Die obige Instruktion schreibt also nicht -1 in das Register 1. 
+  Um das zu erreichen, sollte \texttt{addi x1, x0, -1} oder
   \texttt{addi x1, x0, -0x1} o.ä verwendet werden.
 \end{warningblock}
 
@@ -580,7 +581,7 @@ selben Stil implementiert.\\
 String-Literal. Wird diese Instruktion ausgeführt, terminiert das Programm und
 die eingegebene Nachricht wird angezeigt. Diese Simulatorinstruktion eignet sich
 also zur Absicherung des Codes, ähnlich wie Exceptions in höheren
-Programmiersprachen.\\ \todo[inline]{Evtl. Bild des Dialogs der angzeigt wird}
+Programmiersprachen.\\
 
 \textbf{simusleep }\texttt{<ms>} akzeptiert als einzigen Operanden eine
 ganzzahlige Konstante, die die Zeit in Millisekunden repräsentiert. Wird der
