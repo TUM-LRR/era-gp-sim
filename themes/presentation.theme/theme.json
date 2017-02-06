@@ -4,7 +4,7 @@
         "height": 0.9,
         "background": "white",
         "initialWidth": 300,
-        "initialHeight": 360
+        "initialHeight": 385
     },
     "createProject": {
         "width": 280,
@@ -47,9 +47,9 @@
     },
     "settings": {
         "minWidth": 420,
-        "minHeight": 405,
+        "minHeight": 420,
         "section": {
-            "height": 90,
+            "height": 96,
             "paddingTop": 10,
             "paddingLeft": 5,
             "paddingRight": 0
@@ -93,7 +93,7 @@
             }
         },
         "changed": {
-            "minHeight": 455,
+            "minHeight": 470,
             "status": {
                 "background": "#F44336",
                 "border": {
