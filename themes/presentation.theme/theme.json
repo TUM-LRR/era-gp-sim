@@ -4,7 +4,7 @@
         "height": 0.9,
         "background": "white",
         "initialWidth": 300,
-        "initialHeight": 385
+        "initialHeight": 395
     },
     "createProject": {
         "width": 280,
@@ -23,7 +23,7 @@
             "length": 80
         },
         "button": {
-            "marginTop": 10,
+            "marginTop": 15,
             "background": "#2196F3",
             "width": 160
         }
