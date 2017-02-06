@@ -75,9 +75,11 @@ Folgenden wird auf diese Klassen genauer eingegangen.
 \input{arch-impl.tex}
 
 \subsubsection{Der Syntaxbaum}
-
-Der Syntaxbaum mit durch Vererbung implementiert und in \emph{common} und
-\emph{riscv} (oder jede beliebige andere Architektur) gegliedert. Eine
+Zur abstrahierten Darstellung von ausführbaren Instruktionen wird ein Syntaxbaum verwendet.
+Jede Instruktion, die der Parser einliest, resultiert in einen Syntaxbaum; ein Programm ist also
+eine Liste dieser Bäume. Dabei bildet der Instruktionsknoten die Wurzel, seine Operanden werden als Kinder an den Baum gehängt.
+Der Syntaxbaum ist durch Vererbung implementiert und in \emph{common} und
+\emph{riscv} (bzw. den konkreten Teil jeder Architektur) gegliedert. Eine
 Übersicht bietet \autoref{fig:arch-syntax-tree}
 
 \begin{figure}[H]
@@ -146,9 +148,9 @@ Die aufgeführten Klassen haben folgende Funktion:
 
 \end{itemize}
 
-Mit diesen Knotentypen lassen sich alle RISC-V Instruktionen modellieren. Nicht
-RISC Architekturen stellen aber häufig die Möglichkeit bereit, einen
-Speicherzugriff während einer anderen Instruktion durchzuführen. Ein Beispiel in
+Mit diesen Knotentypen lassen sich alle RISC-V Instruktionen modellieren. Andere
+Architekturen stellen aber häufig die Möglichkeit bereit, einen
+Speicherzugriff im Zuge einer anderen Instruktion durchzuführen. Ein Beispiel aus
 x86:
 
 \begin{x86}
@@ -161,7 +163,7 @@ konzeptioniert, die jedoch nicht im Quellcode definiert sind:
 	\item \textbf{MemoryAccessNode} repräsentiert einen Inline Speicherzugriff,
 	im oben aufgeführten Beispiel also der Inhalt der eckigen Klammern.
 	\item \textbf{ArithmeticNode} stellt eine arithmetische Operation dar, im
-	obigen Beispiel also sowohl die Multiplikation, als auch die Addition.
+	obigen Beispiel also sowohl die Multiplikation als auch die Addition.
 \end{itemize}
 
 Die Oberklasse jedes Knotens ist die Klasse \texttt{AbstractSyntaxTreeNode}.

@@ -4,17 +4,17 @@
 \paragraph{Beschreibung einer Architektur in YAML}
 \label{dev:arch-yaml}
 
-Um die Flexibilität, die Wartbarkeit und die Sauberkeit unserer
+Um die Flexibilität, Wartbarkeit und Sauberkeit unserer
 Architekturimplementierung zu gewährleisten, haben wir uns entschieden, die
 konkrete Beschreibung einer Architektur (die "Daten") von der abstrakten
-Repräsentation im Code zu trennen. Genauer bedeutet das, dass die eben
-beschriebenen Informationsklassen im Architekturmodul lediglich die Struktur
-eines Befehlssatzes vorgeben und Klassen wie \texttt{RegisterInformation} oder
-\texttt{InstructionInformation} Platzhalter für konkrete Architekturen
-darstellen. Die eigentliche Spezifikation von Registernamen und -größen,
+Repräsentation im Code zu trennen. Die eben
+beschriebenen Informationsklassen im Architekturmodul geben also lediglich die Struktur
+eines Befehlssatzes vor. Weitere Klassen wie \texttt{RegisterInformation} oder
+\texttt{InstructionInformation} agieren als Platzhalter für konkrete Architekturen. 
+Die eigentliche Spezifikation von Registernamen und -größen,
 Instruktionsformaten und -operanden sowie Wortgröße, Endianness oder
 Vorzeichenrepräsentation einer Architektur erfolgen in unserer Implementierung
-über externe \emph{ISA}-Dateien. ISA-Dateien werden aufgrund seiner intuitiven
+über externe \emph{ISA}-Dateien. Diese werden aufgrund der intuitiven
 und menschenlesbaren Syntax im YAML\footnote{\url{yaml.org}} Format definiert
 und von diesem für die eigentliche Verarbeitung des Simulators schlussendlich
 nach JSON konvertiert\footnote{Für die YAML $\rightarrow$ JSON Konvertierung kann das \texttt{y2j.py} Skript im \texttt{scripts/} Verzeichnis genutzt werden.}.
@@ -73,7 +73,7 @@ Extensions einer fiktiven Architektur.
           .endm
     \end{lstlisting}
   \end{minipage}
-  \begin{lstlisting}[label={lst:isa}, caption={Zwei Beispiele einer ISA-Definition in YAML Syntax. Die linke Definition zeit eine \emph{unvollständige} Extension, welche lediglich eine Unit, aber keine Instruktionen definiert. Die rechte Definition erbt die linke und erweitert sie durch einen Instruktionssatz und einem Alignment-Attribut. Die rechte Extension ist somit vollständig.}]
+  \begin{lstlisting}[label={lst:isa}, caption={Zwei Beispiele einer ISA-Definition in YAML Syntax. Die linke Definition zeigt eine \emph{unvollständige} Extension, welche lediglich eine Unit, aber keine Instruktionen definiert. Die rechte Definition erbt von dieser und erweitert sie durch einen Instruktionssatz und einem Alignment-Attribut. Die rechte Extension ist somit vollständig.}]
   \end{lstlisting}
   \vspace{-1cm}
 \end{figure}
@@ -103,7 +103,7 @@ Tabellen \autoref{tbl:isa-top-keys}, \autoref{tbl:isa-reg} und
 
     word-size & Die Wortgröße & <number>\\
 
-    byte-size & Die Bytegröße & <number>\\
+    byte-size & Die Anzahl Bits im Byte & <number>\\
 
     alignment-behavior & Verhalten bei unausgerichteten Speicherzugriffen & \texttt{relaxed/strict}\\
 
@@ -128,7 +128,7 @@ Tabellen \autoref{tbl:isa-top-keys}, \autoref{tbl:isa-reg} und
 
     name & Name des Registers & <string>\\
 
-    id & Eindeutiger ID des Registers & <number>\\
+    id & Eindeutiger Schlüssel des Registers & <number>\\
 
     alias & Mögliche Aliase des Registers & <string>/list<string>\\
 
@@ -160,7 +160,7 @@ Tabellen \autoref{tbl:isa-top-keys}, \autoref{tbl:isa-reg} und
 \end{table}
 
 Das Schlüsselwort \texttt{extends} stellt die mächtigste Funktionalität der
-ISA-Spezifikationssprache dar: die Möglichkeit, Extensions von anderen erben zu
+ISA-Spezifikationssprache dar: die Möglichkeit, Extensions voneinander erben zu
 lassen. Das Konzept der Attributvererbung ist in vielen Situationen nicht nur
 intuitiv, sondern schützt insbesondere vor Duplikation und spart Schreibarbeit.
 Als anschauliches Beispiel lässt sich die Beziehung zwischen den \emph{RV32I}
@@ -211,4 +211,4 @@ ein Makro definieren, das für eine Architektur schon vordefiniert ist. Ein
 solches vordefiniertes Makro kann hierbei auch \emph{Pseudoinstruktion} genannt
 werden, da es dem Benutzer wie eine "eingebaute" Instruktion erscheint, jedoch
 nicht standardmäßig zum Befehlssatz gehört und auch nicht in C++ implementiert
-wird. Das Format eines solchen eingebauten Makros ist ident zu einem benutzerdefinierten Makro.
+wird. Das Format eines solchen eingebauten Makros ist identisch zu einem benutzerdefinierten Makro.
