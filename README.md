@@ -4,6 +4,8 @@
 
 _ERASIM_ ist ein architekturunabhängiger Assembler-Simulator, welcher momentan (Stand 06.02.2017) die Grundzüge der RISC-V-ISA unterstützt.
 
+[Downloads](https://github.com/TUM-LRR/era-gp-sim/releases)
+
 # Abhängigkeiten
 
 * Qt 5.6 oder Qt 5.7 **(Qt 5.8 funktioniert noch nicht, verursacht Qt-interne Fehler)**
