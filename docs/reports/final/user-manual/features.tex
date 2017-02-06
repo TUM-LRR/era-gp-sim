@@ -58,19 +58,23 @@ werden, was sich hauptsächlich auf die Länge der Register bezieht.
 
 \subsubsection{Speichern/Laden}
 
-Der Simulator unterstützt nicht das Speichern ganzer Projekte, sondern
-ermöglicht es stattdessen, den Assemblercode als Datei zu speichern, während der
-Prozessorzustand (Register- und Speicherinhalt) getrennt als Snapshot
-gespeichert werden können. Dies ermöglicht es, ein und denselben Snapshot in
-mehreren Projekten zu verwenden.
+Der Simulator unterstützt das Speichern ganzer Projekte, also dem Assemblercode
+und dem Prozessorzustand (Register- und Speicherinhalt) in einer Datei.
+Zusätzlich können Assemblercode und Prozessorzustand auch jeweils einzeln
+gespeichert werden, wobei letzteres Snapshot genannt wird. Dadurch kann ein
+Snapshot in mehreren Projekten verwendet werden.
 
-Um den Assemblercode eines Projekts zu speichern wählt man in der Menüleiste die
+Um ein Projekt zu speichern, wählt man in der Menüleiste \texttt{Project}
+$\rightarrow$ \texttt{Save Project} aus. Ein gespeichertes Projekt
+kann über \texttt{Project} $\rightarrow$ \texttt{Open Project} geladen werden.
+
+Um den Assemblercode eines Projekts zu speichern, wählt man in der Menüleiste die
 Option \texttt{Editor} $\rightarrow$ \texttt{Save File} aus und gibt einen Speicherort für
 die Datei an.
 
 Möchte man gespeicherten Assemblercode laden, so erstellt man zunächst ein neues
 Projekt und wählt dann über \texttt{Editor} $\rightarrow$ \texttt{Open File} die
-gewünschte Datei aus, deren Inhalt darauf im Editor erscheint.
+gewünschte Datei aus.
 
 Um den Inhalt der Register und des Speichers persistent zu speichern, werden wie
 bereits erwähnt, Snapshots verwendet, deren Benutzung im Folgenden Abschnitt
