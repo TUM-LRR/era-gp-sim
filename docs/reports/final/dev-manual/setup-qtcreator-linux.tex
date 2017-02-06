@@ -2,6 +2,7 @@
 % ERA-Großpraktikum: Entwickleranleitung -- QtCreator stup
 
 \paragraph{Aufsetzen von QtCreator}
+\label{para:setup-qtcreator}
 
 QtCreator ist eine integrierte Entwicklungsumgebung, die von Qt selbst zur
 Verfügung gestellt wird und somit alle Features von Qt (QML, Widget-Designer
@@ -15,7 +16,7 @@ QtCreator kann meist über den Paketmanager mit folgendem Befahl installiert wer
 
 \subparagraph{Repository klonen}
 
-Siehe \autoref{dev-report-cmake-build}. Endet die Ausführung von \texttt{cmake}
+Siehe \autoref{sec:cmake-make}. Endet die Ausführung von \texttt{cmake}
 in einem Fehler "Could not find a package configuration file provided by
 Qt5Widgets", dann ist vermutlich bei der Installation von
 \texttt{qtdeclarative5-dev} etwas missglückt.
@@ -48,7 +49,7 @@ Reiter \texttt{Build \& Run} wird jetzt der Build-Prozess konfiguriert. Bei
 
 Der Eintrag von \texttt{CMake Arguments} soll dabei der relative Pfad vom
 eingetragenen Build-Ordner zum obersten Ordner des Projekts sein. Im Beispiel
-ist der Build-Order unter \texttt{era-gp-sim/build\_qtcreator\_debug} angelegt,
+ist der Build-Order unter \\ \texttt{era-gp-sim/build\_qtcreator\_debug} angelegt,
 d.h. eine Ebene höher liegt der root-Ordner des Projekts. Das \texttt{-j4}
 Argument bei \texttt{make} erhöht die Geschwindigkeit beim Bauen, da 4 Jobs
 gleichzeitig ausgeführt werden. Im Anschluss zur Run-Konfiguration wechseln
