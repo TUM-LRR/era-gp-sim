@@ -1,0 +1,409 @@
+% !TEX root = ../combined/final.tex
+% ERA-Großpraktikum: Benutzeranleitung -- Pseudoinstruktionen
+
+\newcommand{\pseudoinst}[3]{
+  \centering
+  \begin{tikzpicture}[thick]
+    \node [align=center, text width=4.5cm] (inst) at (0, 0) {\texttt{#1}};
+    \node [align=left, text width=12cm] (op) at (8.5, 0) {#2};
+
+    \node (desc) at (6, -1.4) [align=center, text width=15cm] {#3};
+
+    \draw [rounded corners=1pt]
+          (inst.north west)+(-0.3, 0.6)
+          rectangle
+          (desc.south east)+(0.4, 0.4);
+  \end{tikzpicture}
+  \vspace{-0.5cm}
+}
+
+\newcommand{\pseudoinsttwo}[3]{
+  \centering
+  \begin{tikzpicture}[thick, node distance=0.1cm]
+    \node (inst) at (0, 0) {\texttt{#1}};
+    \node [below = of inst] (desc) [align=center, text width=\textwidth] {#2};
+    \draw [rounded corners=1pt]
+          ({-\textwidth / 2}, 0.6) rectangle ({\textwidth / 2}, -#3);
+  \end{tikzpicture}
+  \vspace{-0.5cm}
+}
+
+\pseudoinst
+{
+  \texttt{la <rd>, <symbol>}
+}
+{
+  \texttt{rd}: Register, in das die Adresse reingeladen wird \\
+  \texttt{symbol}: 32-Bit Adresse (relativ zum Programmzähler
+}
+{
+  Lädt die zum Programmzähler relative Adresse \texttt{symbol} in das Register \texttt{rd}. Im Gegensatz zu den Kontrollflussinstruktionen kann hier eine bis zu 32-Bit große Konstante verwendet werden.
+}
+
+\pseudoinsttwo
+{
+  lbg <rd>, <mem\_addr>
+}
+{
+  Gleiche Funktionalität wie \texttt{lb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf.
+}
+{1.5cm}
+
+\pseudoinsttwo
+{
+  lhg <rd>, <mem\_addr>
+}
+{
+  Gleiche Funktionalität wie \texttt{lh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf.
+}
+{1.5cm}
+
+\pseudoinsttwo
+{
+  lwg <rd>, <mem\_addr>
+}
+{
+  Gleiche Funktionalität wie \texttt{lw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf.
+}
+{1.5cm}
+
+\pseudoinsttwo
+{
+  sbg <rd>, <mem\_addr>, <rt>
+}
+{
+  Gleiche Funktionalität wie \texttt{sb}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf.\\\texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird.
+}
+{2cm}
+
+\pseudoinsttwo
+{
+  shg <rd>, <mem\_addr>, <rt>
+}
+{
+  Gleiche Funktionalität wie \texttt{sh}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf.\\\texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird.
+}
+{2cm}
+
+\pseudoinsttwo
+{
+  swg <rd>, <mem\_addr>, <rt>
+}
+{
+  Gleiche Funktionalität wie \texttt{sw}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf.\\\texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird.
+}
+{2cm}
+
+\pseudoinsttwo
+{
+  nop
+}
+{
+  Eine No-Operation. Es wird kein Register und keine Speicherzelle verändert.
+}
+{1.5cm}
+
+\pseudoinst
+{
+  li <rd>, <immediate>
+}
+{
+  \texttt{rd}: Zielregister, in das die Konstante geladen wird \\
+  \texttt{immediate}: 32-Bit Konstante
+}
+{
+  Lädt die gegebene 32-Bit Konstante in das Register \texttt{rd}.
+}
+
+\footnotetext{\label{user-manual-riscv-overview-pseudos-foot1}Da jede Marke eine
+Adresse darstellt führt die Verwendung einer Marke hier nicht zu einem
+Übersetzungsfehler. Anders als bei den relativen Kontrollflussinstruktionen wird
+hier eine Marke \textbf{nicht} automatisch in die passende relative Adresse
+umgewandelt}
+
+\pseudoinst
+{
+  mv <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, dessen Wert kopiert wird
+}
+{
+  Kopiert den Inhalt des Registers \texttt{rs} in Register \texttt{rd}.
+}
+
+\pseudoinst
+{
+  not <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, dessen Wert bitweise negiert wird
+}
+{
+  Negiert den Wert von \texttt{rs} bitweise und schreibt das Ergebnis nach
+  \texttt{rd} ($\equiv$ Negation im 1er-Komplement)
+}
+
+\pseudoinst
+{
+  neg <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, dessen Wert negiert wird
+}
+{
+  Ändert das Vorzeichen des Registers \texttt{rs} und schreibt das Ergebnis
+  nach \texttt{rd} ($\equiv$ Negation im 2er-Komplement).
+}
+
+\pseudoinst
+{
+  seqz <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, das überprüft wird
+}
+{
+  Legt in \texttt{rd} eine 1 ab, wenn \texttt{rs} $=$ \texttt{0} gilt, und
+  sonst eine 0.
+}
+
+\pseudoinst
+{
+  snez <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, das überprüft wird
+}
+{
+  Legt in \texttt{rd} eine 1 ab, wenn \texttt{rs} $\neq$ \texttt{0} gilt, und
+  sonst eine 0.
+}
+
+\pseudoinst
+{
+  sltz <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, das überprüft wird
+}
+{
+  Legt in \texttt{rd} eine 1 ab, wenn \texttt{rs} $<$ \texttt{0} gilt, und
+  sonst eine 0.
+}
+
+\pseudoinst
+{
+  sgtz <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, das überprüft wird
+}
+{
+  Legt in \texttt{rd} eine 1 ab, wenn \texttt{rs} $>$ \texttt{0} gilt, und
+  sonst eine 0.
+}
+
+\pseudoinst
+{
+  beqz <rs>, <marke>
+}
+{
+  \texttt{rs}: Register für die Rücksprungadresse und Vergleich mit 0 \\
+  \texttt{marke}: Sprungmarke, die angesprungen wird
+}
+{
+  Springt zur Marke, wenn \texttt{rs} $=$ \texttt{0} gilt.
+}
+
+\pseudoinst
+{
+  bnez <rs>, <marke>
+}
+{
+  \texttt{rs}: Register für die Rücksprungadresse und Vergleich mit 0 \\
+  \texttt{marke}: Sprungmarke, die angesprungen wird
+}
+{
+  Springt zur Marke, wenn \texttt{rs} $\neq$ \texttt{0} gilt.
+}
+
+\pseudoinst
+{
+  blez <rs>, <marke>
+}
+{
+  \texttt{rs}: Register für die Rücksprungadresse und Vergleich mit 0 \\
+  \texttt{marke}: Sprungmarke, die angesprungen wird
+}
+{
+  Springt zur Marke, wenn \texttt{rs} $\leq$ \texttt{0} gilt.
+}
+
+\pseudoinst
+{
+  bgez <rs>, <marke>
+}
+{
+  \texttt{rs}: Register für die Rücksprungadresse und Vergleich mit 0 \\
+  \texttt{marke}: Sprungmarke, die angesprungen wird
+}
+{
+  Springt zur Marke, wenn \texttt{rs} $\geq$ \texttt{0} gilt.
+}
+
+\pseudoinst
+{
+  bltz <rs>, <marke>
+}
+{
+  \texttt{rs}: Register für die Rücksprungadresse und Vergleich mit 0 \\
+  \texttt{marke}: Sprungmarke, die angesprungen wird
+}
+{
+  Springt zur Marke, wenn \texttt{rs} $<$ \texttt{0} gilt.
+}
+
+\pseudoinst
+{
+  bgtz <rs>, <marke>
+}
+{
+  \texttt{rs}: Register für die Rücksprungadresse und Vergleich mit 0 \\
+  \texttt{marke}: Sprungmarke, die angesprungen wird
+}
+{
+  Springt zur Marke, wenn \texttt{rs} $>$ \texttt{0} gilt.
+}
+
+\pseudoinst
+{
+  j <marke>
+}
+{
+  \texttt{marke}: Sprungmarke
+}
+{
+  Springt zu \texttt{marke} und verwirft die Rücksprungadresse
+}
+
+\pseudoinst
+{
+  jal <marke>
+}
+{
+  \texttt{marke}: Sprungmarke
+}
+{
+  Springt zu \texttt{marke} und speichert die Rücksprungandresse in Register \texttt{x1}.
+}
+
+\pseudoinst
+{
+  jr <reg>
+}
+{
+  \texttt{reg}: Enthält die Adresse, an die gesprungen wird
+}
+{
+  Springt an die Adresse in Register \texttt{reg} und verwirft die Rücksprungadresse.
+}
+
+\pseudoinst
+{
+  jalr <reg>
+}
+{
+  \texttt{reg}: Enthält die Adresse, an die gesprungen wird
+}
+{
+  Springt an die Adresse in Register \texttt{reg} und speichert die
+  Rücksprungadresse in Register \texttt{x1}
+}
+
+\pseudoinsttwo
+{
+  ret
+}
+{
+  Springt an die Adresse in Register x1.\footnotemark
+}
+{1.5cm}
+
+\pseudoinst
+{
+  tail <marke>
+}
+{
+  \texttt{marke}: Sprungmarke
+}
+{
+  Springt zu \texttt{marke} und verwirft die Rücksprungadresse. Für die Adressberechnung wird Register x6 verwendet. Es kann beliebige Adresse im 32-Bit Adressbereich angesprungen werden.
+}
+
+\pseudoinst
+{
+  call <marke>
+}
+{
+  \texttt{marke}: Sprungmarke
+}
+{
+  Springt zu \texttt{marke} und legt die Rücksprungadresse in Register x1 ab\textsuperscript{\ref{call-stack}}.  Für die Adressberechnung wird Register x6 verwendet. Es kann beliebige Adresse im 32-Bit Adressbereich angesprungen werden.
+}
+
+\footnotetext{\label{call-stack}Im Gegensatz zu x86 arbeiten die \texttt{call} bzw. \texttt{ret} Instruktionen nicht mit einem Callstack. \texttt{ret} kehrt also nur zum letzten Aufruf von \texttt{call} zurück, da x1 überschrieben wird.}
+
+\pagebreak
+Das 64Bit Basismodul von RISC-V fügt noch weitere Pseudoinstruktionen hinzu:\\
+\vspace{0.5cm}
+
+
+\pseudoinsttwo
+{
+  ldg <rd>, <mem\_addr>
+}
+{
+  Gleiche Funktionalität wie \textbf{ld}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf.
+}
+{2cm}
+
+\pseudoinsttwo
+{
+  sdg <rd>, <mem\_addr>, <rt>
+}
+{
+  Gleiche Funktionalität wie \textbf{sd}, nur dass \texttt{mem\_addr} bis zu 32-Bit lang sein darf. \texttt{rt} ist hier ein Transferregister, in das die Adresse geladen wird
+}
+{2cm}
+
+\pseudoinst
+{
+  negw <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, dessen untere 32Bit negiert werden
+}
+{
+  Ändert das Vorzeichen der unteren 32 Bit des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd}.
+}
+
+\pseudoinst
+{
+  sext.w <rd>, <rs>
+}
+{
+  \texttt{rd}: Zielregister \\
+  \texttt{rs}: Register, dessen untere 32 Bit mit dem\\ richtigen Vorzeichen erweitert werden
+}
+{
+  Erweitert die unteren 32Bit des Registers \texttt{rs} und schreibt das Ergebnis nach \texttt{rd}.
+}
