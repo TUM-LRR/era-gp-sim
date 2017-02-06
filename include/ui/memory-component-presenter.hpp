@@ -55,6 +55,14 @@ class MemoryComponentPresenter : public QAbstractListModel {
                             const QString &role);
 
   /**
+   * Returns whether the memory cell is write protected.
+   * A memory cell is considered protected if it contains executable code.
+   * \param address The address of the memory cell.
+   * \return true, if the cell is protected, otherwise false.
+   */
+  Q_INVOKABLE bool isMemoryProtected(size_t address);
+
+  /**
    * Sets the context information for memory cells (NOT IMPLEMENTED YET)
    *
    * \param addressStart the starting address of the memory cell the context

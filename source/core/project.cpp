@@ -190,8 +190,7 @@ void Project::resetRegisters() {
   }
 }
 
-void Project::loadSnapshot(const Json &snapshotData) {
-  Snapshot snapshot(snapshotData);
+void Project::loadSnapshot(const Snapshot &snapshot) {
   if (!snapshot.isValid()) {
     _errorCallback("Snapshot format is not valid.");
     return;
@@ -208,9 +207,9 @@ void Project::loadSnapshot(const Json &snapshotData) {
   }
 }
 
-Project::Json Project::generateSnapshot() const {
+Snapshot Project::generateSnapshot() const {
   Snapshot snapshot(_architectureFormula, _memory, _registerSet);
-  return snapshot.getJson();
+  return snapshot;
 }
 
 void Project::_setRegisterToZero(RegisterInformation registerInfo) {

@@ -43,6 +43,19 @@ Component {
           return Font.Normal;
         }
       }
+
+    }
+
+    Label {
+        id: locklabel
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.memory.address.lockRightMargin
+        anchors.topMargin: Theme.memory.address.lockTopMargin
+        color: Theme.memory.address.lockColor
+        font.pixelSize: Theme.memory.address.lockFontSize
+        // create a binding to styleData.value but discard value
+        // result: text gets updated properly
+        text: styleData.value.substr(0,0) + ((memoryModel.isMemoryProtected(styleData.row))? Theme.memory.address.lockSymbol : "")
     }
   }
 }

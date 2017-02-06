@@ -17,6 +17,7 @@
 
 #include "arch/riscv/simulator-instructions.hpp"
 #include "arch/riscv/utility.hpp"
+#include "core/memory-value.hpp"
 
 using namespace riscv;
 

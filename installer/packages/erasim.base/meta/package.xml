@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<Package>
+<!-- What is this package -->
+    <DisplayName>ERASIM Assembly Simulator</DisplayName>
+    <Description>Installs the ERASIM simulator on this pc</Description>
+    <Version>1.0.0</Version>
+    <ReleaseDate>2017-02-06</ReleaseDate>
+    <Name>erasim.base</Name>
+    <Default>true</Default>
+    <ForcedInstallation>true</ForcedInstallation>
+
+<!-- License -->
+    <Licenses>
+        <License name="LGPLv3 for the use of Qt" file="qt_license.txt" />
+	<License name="GPLv3 for ERASIM" file="GPLv3.txt" />
+    </Licenses>
+
+<!-- Styling -->
+    <SortingPriority>100</SortingPriority><!-- Highest prio sorts to the top-->
+
+<!-- Install -->
+    <!-- No script needed, extracting the zip at the location is sufficient -->
+</Package>

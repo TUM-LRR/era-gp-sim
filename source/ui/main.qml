@@ -60,6 +60,20 @@ ApplicationWindow {
   ProjectsTabView {
     id: tabView
     anchors.fill: parent
+
+    Connections {
+      target: ui
+      onProjectCreationFailed: {
+        if (tabView.count == 1) {
+          // Create a new empty project so the simulator doesn't exit.
+          window.createProject();
+        }
+        // delete the new project, as it might be in a bad state.
+        window.closeProject(index);
+        window.errorDialog.text = errorMessage;
+        window.errorDialog.open();
+      }
+    }
   }
 
   // This function should be called when the tab is switched
@@ -86,6 +100,26 @@ ApplicationWindow {
     window.height = Theme.window.height * Screen.desktopAvailableHeight;
     window.x = (Screen.width - window.width) / 2
     window.y = (Screen.height - window.height) / 2
+  }
+
+  function loadProject(path) {
+    var tab;
+    // create a new tab if there is already a real project in the current tab.
+    if (!tabView.currentProjectIsReady()) {
+      tab = tabView.currentProjectItem();
+    } else {
+      tab = tabView.addTab("", tabComponent);
+      tabView.currentIndex = tabView.count - 1;
+      tab = tab.item;
+    }
+    window.expand();
+    tab.setCreationScreenInvisible();
+    tab.projectId =
+        ui.loadProject(tab, projectComponent, path, tabView.currentIndex);
+    if (tab.projectId >= 0) {
+      // only if projet is valid
+      tab.tabReady();
+    }
   }
 
   function createProject() {
@@ -124,6 +158,17 @@ ApplicationWindow {
       // If there is a project for this tab in the backend, this is true.
       property bool projectValid: false
 
+      // The project item
+      property var projectItem: {
+        for (var index = 0; index < placeholderItem.children.length; ++index) {
+          var child = placeholderItem.children[index];
+          if (child.isProject) {
+            return child;
+          }
+        }
+        return undefined;
+      }
+
       // Index of the project in the project vector.
       property int projectId: -1
 
@@ -132,11 +177,32 @@ ApplicationWindow {
 
       anchors.fill: parent
 
+      // Disable the project creation screen.
+      function setCreationScreenInvisible() {
+        creationScreen.visible = false;
+        creationScreen.enabled = false;
+      }
+
+      // Complete the setup of the tab.
+      function tabReady() {
+        window.showMenus();
+        projectValid = true;
+      }
+
+      // stores the project settings to the settings object
+      function storeProjectSettings() {
+        if (projectValid) {
+          projectItem.projectSplitview.collectSettings();
+        }
+      }
+
       ProjectCreationScreen {
+        id: creationScreen
         anchors.fill: parent
         onCreateProject: {
-          enabled = false;
-          visible = false;
+          setCreationScreenInvisible();
+          // Expand before creating the project to set the size properly.
+          window.expand();
 
           parent.parent.title = projectName;
           placeholderItem.projectId = ui.addProject(placeholderItem,
@@ -144,12 +210,11 @@ ApplicationWindow {
             memorySize,
             architecture,
             optionName,
-            parser
+            parser,
+            projectName
           );
 
-          window.expand();
-          window.showMenus();
-          projectValid = true;
+          tabReady();
         }
       }
     }
@@ -159,8 +224,16 @@ ApplicationWindow {
   Component {
     id: projectComponent
     Item {
+      id: projectItem
       anchors.fill: parent
+
+      // A flag which identifies this as the project item.
+      property bool isProject: true
+
+      property alias projectSplitview: projectSplitview
+
       Splitview {
+        id: projectSplitview
         anchors.fill: parent
 
         SystemPalette { id: systemPalette }
@@ -172,24 +245,12 @@ ApplicationWindow {
           height: Theme.splitview.handleHeight
           color: Theme.splitview.handleColor
         }
-
-        Connections {
-          target: guiProject
-          onSaveTextAs: menubar.actionSaveAs();
-          onError: {
-            window.errorDialog.text = errorMessage;
-            window.errorDialog.open();
-          }
-          onExecutionStopped: {
-            editor.parse();
-            placeholderItem.running = false;
-          }
-        }
       }
 
       Connections {
         target: guiProject
         onSaveTextAs: menubar.actionSaveAs();
+        onSaveProjectAsSignal: menubar.actionSaveProjectAs();
         onError: {
           window.errorDialog.text = errorMessage;
           window.errorDialog.open();
@@ -201,6 +262,7 @@ ApplicationWindow {
           // Reparse in case a parse was blocked during execution.
           editor.parse();
         }
+        onProjectNameChanged: placeholderItem.parent.title = name;
       }
     }
   }

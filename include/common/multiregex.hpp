@@ -20,6 +20,7 @@
 #ifndef ERAGPSIM_COMMON_MULTIREGEX_HPP
 #define ERAGPSIM_COMMON_MULTIREGEX_HPP
 
+#include <functional>
 #include <regex>
 #include <string>
 #include <unordered_map>

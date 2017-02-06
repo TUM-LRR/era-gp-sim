@@ -39,10 +39,11 @@
 #include "third-party/json/json.hpp"
 #include "ui/console-component.hpp"
 #include "ui/editor-component.hpp"
-#include "ui/input-key-model.hpp"
 #include "ui/input-click-model.hpp"
+#include "ui/input-key-model.hpp"
 #include "ui/memory-component-presenter.hpp"
 #include "ui/output-component.hpp"
+#include "ui/project-settings.hpp"
 #include "ui/register-model.hpp"
 #include "ui/snapshot-component.hpp"
 
@@ -72,17 +73,19 @@ class GuiProject : QObject {
   /**
    * The Constructor
    *
-   * \param context for the components to register themselvs
-   * \param formula the architectures and extensions
-   * \param memorySize the size of the memory for the memoryComponent
-   * \param parserName the name of the parser
+   * \param context QMLContext to register the components.
+   * \param formula The architectures and extensions.
+   * \param memorySize The size of the memory for the memoryComponent.
+   * \param parserName The name of the parser.
+   * \param projectName The name of the project.
    * \param snapshotComponent A shared pointer to the snapshot component.
-   * \param parent the parent, its needed for the QObject
+   * \param parent The parent of this QObject.
    */
   GuiProject(QQmlContext* context,
              const ArchitectureFormula& formula,
              std::size_t memorySize,
              const std::string& parserName,
+             const std::string& projectName,
              const std::shared_ptr<SnapshotComponent>& snapshotComponent,
              QObject* parent = 0);
 
@@ -122,7 +125,7 @@ class GuiProject : QObject {
   void changeSystem(const std::string& base);
 
   /**
-   * parses the text
+   * Parses the text (Forced reparse).
    */
   void parse();
 
@@ -172,11 +175,52 @@ class GuiProject : QObject {
   void loadText(const QUrl& path);
 
   /**
-   * takes a snapshot
+   * Saves a snapshot (memory and register state).
    *
-   * \param qName name of the snapshot
+   * \param qName Name of the snapshot.
    */
   void saveSnapshot(const QString& qName);
+
+  /**
+   * Saves a project file (snapshot, code and settings) to the default path.
+   * If the default path is empty, the user is asked for a path.
+   */
+  void saveProject();
+
+  /**
+   * Saves a project file (snapshot, code and settings) to a specific path.
+   *
+   * \param url The path of the project.
+   */
+  void saveProjectAs(const QUrl& url);
+
+  /**
+   * Sets the text of the editor.
+   *
+   * \param text The new text.
+   */
+  void setText(const QString& text);
+
+  /**
+   * Load a snapshot in this project. Does not reparse the code.
+   *
+   * \param snapshot The snapshot object.
+   */
+  void loadSnapshot(const Snapshot& snapshot);
+
+  /**
+   * Loads project settings from a json object.
+   *
+   * \param The json object.
+   */
+  void loadProjectSettings(const Json& json);
+
+  /**
+   * Set the default path to save the project to.
+   *
+   * \param url The path as an url.
+   */
+  void setDefaultProjectPath(const QUrl& url);
 
   /**
    * Removes a snapshot.
@@ -252,6 +296,10 @@ class GuiProject : QObject {
    */
   void saveTextAs();
 
+
+  /** Ask the user to specify a path to save a project. */
+  void saveProjectAsSignal();
+
   /**
    * Display an error in the ui.
    *
@@ -290,6 +338,11 @@ class GuiProject : QObject {
    * Signal for ui synchronization during execution.
    */
   void guiSync();
+
+  /**
+   * Signal that the project-name changed.
+   */
+  void projectNameChanged(const QString& name);
 
 
  private:
@@ -335,9 +388,17 @@ class GuiProject : QObject {
   MemoryComponentPresenter _memoryModel;
 
   /**
+   * Component for the project settings.
+   */
+  ProjectSettings _projectSettings;
+
+  /**
    * The default path to save the text of this project to.
    */
   QUrl _defaultTextFileSavePath;
+
+  /** The default path to save this project. */
+  QUrl _defaultProjectSavePath;
 
   /**
    * A shared pointer to the snapshot component.
@@ -348,6 +409,12 @@ class GuiProject : QObject {
    * The architecture formula, needed to save snapshot configuration.
    */
   QString _architectureFormulaString;
+
+  /** The parser name, saved for serialization purposes. */
+  std::string _parserName;
+
+  /** The project name, saved for serialization purposes. */
+  std::string _projectName;
 
   /**
    * List of Final commands to access the documentation.

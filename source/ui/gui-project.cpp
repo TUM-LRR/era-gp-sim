@@ -19,12 +19,14 @@
 
 #include "ui/gui-project.hpp"
 
+#include <QByteArray>
 #include <QUrl>
 #include <functional>
 #include <string>
 
 #include "common/string-conversions.hpp"
 #include "common/utility.hpp"
+#include "core/snapshot.hpp"
 #include "ui/snapshot-component.hpp"
 #include "ui/translateable-processing.hpp"
 #include "ui/ui.hpp"
@@ -47,6 +49,7 @@ GuiProject::GuiProject(
     const ArchitectureFormula& formula,
     std::size_t memorySize,
     const std::string& parserName,
+    const std::string& projectName,
     const std::shared_ptr<SnapshotComponent>& snapshotComponent,
     QObject* parent)
 : QObject(parent)
@@ -67,9 +70,13 @@ GuiProject::GuiProject(
 , _memoryModel(_projectModule.getMemoryAccess(),
                _projectModule.getMemoryManager(),
                context)
+, _projectSettings(context)
 , _defaultTextFileSavePath()
+, _defaultProjectSavePath()
 , _snapshotComponent(snapshotComponent)
 , _architectureFormulaString(SnapshotComponent::architectureToString(formula))
+, _parserName(parserName)
+, _projectName(projectName)
 , _commandList()
 , _helpCache() {
   context->setContextProperty("guiProject", this);
@@ -156,7 +163,7 @@ void GuiProject::changeSystem(const std::string& base) {
 }
 
 void GuiProject::parse() {
-  _editorComponent.parse();
+  _editorComponent.parse(true);
 }
 
 void GuiProject::run() {
@@ -231,6 +238,7 @@ void GuiProject::saveSnapshot(const QString& qName) {
     .getMemoryManager()
     .generateSnapshot()
     .get()
+    .getJson()
     .dump(4);
   // clang-format on
 
@@ -245,6 +253,55 @@ void GuiProject::saveSnapshot(const QString& qName) {
   }
 }
 
+void GuiProject::saveProject() {
+  if (_defaultProjectSavePath.isEmpty()) {
+    emit saveProjectAsSignal();
+  } else {
+    saveProjectAs(_defaultProjectSavePath);
+  }
+}
+
+void GuiProject::saveProjectAs(const QUrl& url) {
+  _defaultProjectSavePath = url;
+  auto path = url.toLocalFile();
+  auto snapshot = _projectModule.getMemoryManager().generateSnapshot().get();
+
+  snapshot.setCode(_editorComponent.getText().toStdString());
+  snapshot.setParserName(_parserName);
+  snapshot.setProjectName(_projectName);
+  snapshot.setProjectSettings(_projectSettings.toJson());
+
+  auto snapshotString = QByteArray(snapshot.getJson().dump(4).c_str());
+
+  QFile file(path);
+
+  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    _throwError(Translateable(QT_TRANSLATE_NOOP(
+        "GUI error messages", "Could not open project file for writing")));
+  }
+
+  if (file.write(snapshotString) == -1) {
+    _throwError(Translateable(QT_TRANSLATE_NOOP(
+        "GUI error messages", "Could not write to project file")));
+  }
+}
+
+void GuiProject::setText(const QString& text) {
+  _editorComponent.setText(text);
+}
+
+void GuiProject::loadSnapshot(const Snapshot& snapshot) {
+  _projectModule.getMemoryManager().loadSnapshot(snapshot);
+}
+
+void GuiProject::loadProjectSettings(const Json& json) {
+  _projectSettings.loadSettings(json);
+}
+
+void GuiProject::setDefaultProjectPath(const QUrl& url) {
+  _defaultProjectSavePath = url;
+}
+
 void GuiProject::removeSnapshot(const QString& qName, bool removePermanently) {
   _snapshotComponent->removeSnapshot(
       _architectureFormulaString, qName, removePermanently);
@@ -254,7 +311,8 @@ void GuiProject::loadSnapshot(const QString& qName) {
   try {
     auto path =
         _snapshotComponent->snapshotPath(_architectureFormulaString, qName);
-    Json snapshot = Json::parse(Utility::loadFromFile(path));
+    Json snapshotData = Json::parse(Utility::loadFromFile(path));
+    Snapshot snapshot(snapshotData);
     _projectModule.getMemoryManager().loadSnapshot(snapshot);
     _editorComponent.parse(true);
   } catch (const std::exception& exception) {

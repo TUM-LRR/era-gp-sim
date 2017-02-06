@@ -91,6 +91,37 @@ MenuBar {
     }
 
     MenuItem {
+      id: openProject
+      text: "Open Project"
+      shortcut: "Ctrl+Alt+O"
+      onTriggered: {
+        main.fileDialog.onAcceptedFunction = function(path) {
+          main.loadProject(path);
+        };
+        main.fileDialog.selectExisting = true;
+        main.fileDialog.open();
+      }
+    }
+
+    MenuItem {
+      id: saveProject
+      text: "Save Project"
+      shortcut: "Ctrl+Alt+S"
+      onTriggered: {
+        // Call store settings method here directly, as a signal could be delayed.
+        tabView.currentProjectItem().storeProjectSettings();
+        ui.saveProject(tabView.currentProjectId());
+      }
+    }
+
+    MenuItem {
+      id: saveProjectAs
+      text: "Save Project As"
+      shortcut: "Ctrl+Shift+Alt+S"
+      onTriggered: actionSaveProjectAs();
+    }
+
+    MenuItem {
       id: openSnapshot
       text: "Open Snapshot"
       shortcut: "Ctrl+O"
@@ -118,6 +149,8 @@ MenuBar {
     }
 
     function enable(yes) {
+      saveProject.enabled = yes;
+      saveProjectAs.enabled = yes;
       openSnapshot.enabled = yes;
       saveSnapshot.enabled = yes;
     }
@@ -130,6 +163,17 @@ MenuBar {
   function actionSaveAs() {
     main.fileDialog.onAcceptedFunction = function(filePath) {
       ui.saveTextAs(tabView.currentProjectId(), filePath);
+    };
+
+    main.fileDialog.selectExisting = false;
+    main.fileDialog.open();
+  }
+
+  function actionSaveProjectAs() {
+    main.fileDialog.onAcceptedFunction = function(path) {
+      // Call store settings method here directly, as a signal could be delayed.
+      tabView.currentProjectItem().storeProjectSettings();
+      ui.saveProjectAs(tabView.currentProjectId(), path);
     };
 
     main.fileDialog.selectExisting = false;

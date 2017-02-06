@@ -93,11 +93,11 @@ void Memory::_put(size_t address,
                   const MemoryValue& value,
                   size_t amount,
                   bool ignoreProtection) {
-  if (!ignoreProtection && isProtected(address, amount)) {
-    // do not write anything
-    return;
+  if (ignoreProtection || !isProtected(address, amount)) {
+    _data.write(value, address * _byteSize);
   }
-  _data.write(value, address * _byteSize);
+  // always send update signal even if update was refused due to protection in
+  // order to give feedback to the caller
   _wasUpdated(address, amount);
 }
 

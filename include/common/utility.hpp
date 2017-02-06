@@ -105,7 +105,7 @@ struct LazyRange {
 
 
    private:
-    friend class LazyRange;
+    friend struct LazyRange;
 
     Iterator(T index, T step) : _index(index), _step(step) {
     }
@@ -418,7 +418,7 @@ bool contains(const Range &range, T &&element) {
   return iterator != end(range);
 }
 
-const std::string &rootPath();
+std::string rootPath();
 
 std::string joinPaths(const std::string &single);
 

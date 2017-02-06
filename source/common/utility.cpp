@@ -18,7 +18,10 @@
 */
 
 #include <algorithm>
+#include <cctype>
 #include <string>
+
+#include <QCoreApplication>
 
 #include "common/utility.hpp"
 #include "core/memory-value.hpp"
@@ -77,7 +80,13 @@ std::string toUpper(const std::string& string) {
   return transform(string, [](auto& c) { return std::toupper(c); });
 }
 
-const std::string& rootPath() {
+std::string rootPath() {
+  if (QCoreApplication::instance() != nullptr) {
+    // This happens, if the gui is running
+    return QCoreApplication::applicationDirPath().toStdString();
+  }
+
+  // Hacky way for tests
   static const std::string query("era-gp-sim");
   static std::string root;
 

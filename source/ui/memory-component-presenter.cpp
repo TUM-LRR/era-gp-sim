@@ -98,6 +98,9 @@ void MemoryComponentPresenter::setValue(int address,
   }
 }
 
+bool MemoryComponentPresenter::isMemoryProtected(size_t address) {
+  return _memoryAccess.isMemoryProtectedAt(address).get();
+}
 
 void MemoryComponentPresenter::setContextInformation(int addressStart,
                                                      int length,
