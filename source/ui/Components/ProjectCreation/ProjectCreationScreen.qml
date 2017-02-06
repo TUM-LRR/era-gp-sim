@@ -69,7 +69,7 @@ Rectangle {
 
     ProjectCreationButton {
       id: button
-      anchors.top: root.top
+      anchors.top: version.bottom
       onClicked: {
         createProject(
           projectName.text,
