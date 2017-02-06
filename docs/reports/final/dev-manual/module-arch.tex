@@ -75,57 +75,61 @@ Folgenden wird auf diese Klassen genauer eingegangen.
 \input{arch-impl.tex}
 
 \subsubsection{Der Syntaxbaum}
-Zur abstrahierten Darstellung von ausführbaren Instruktionen wird ein Syntaxbaum verwendet.
-Jede Instruktion, die der Parser einliest, resultiert in einen Syntaxbaum; ein Programm ist also
-eine Liste dieser Bäume. Dabei bildet der Instruktionsknoten die Wurzel, seine Operanden werden als Kinder an den Baum gehängt.
-Der Syntaxbaum ist durch Vererbung implementiert und in \emph{common} und
-\emph{riscv} (bzw. den konkreten Teil jeder Architektur) gegliedert. Eine
-Übersicht bietet \autoref{fig:arch-syntax-tree}
 
-\begin{figure}[H]
-	\begin{center}
-		\begin{tikzpicture}[node distance=0.5cm and 1.5cm]
+Zur abstrahierten Darstellung von ausführbaren Instruktionen wird ein Syntaxbaum
+verwendet. Jede Instruktion, die der Parser einliest, resultiert in einen
+Syntaxbaum; ein Programm ist also eine Liste dieser Bäume. Dabei bildet der
+Instruktionsknoten die Wurzel, seine Operanden werden als Kinder an den Baum
+gehängt. Der Syntaxbaum ist durch Vererbung implementiert und in \emph{common}
+und \emph{riscv} (bzw. den konkreten Teil jeder Architektur) gegliedert. Eine
+Übersicht bietet \autoref{fig:arch-syntax-tree}.
 
-		\node (super) [class] {AbstractSyntaxTreeNode};
-		\node (invisible) [right = of super] {};
-		\node (imm) [class, below = of invisible] {ImmediateNode};
-		\node (bin) [class, below = of imm] {BinaryDataNode};
-		\node (reg) [class, below = of bin] {AbstractRegisterNode};
-		\node (instr) [class, below = of reg] {AbstractInstructionNode};
-		\node (common) [below = of instr] {\textbf{common}};
-		\node (reg-riscv) [class, right = of reg] {riscv::RegisterNode};
-		\node (instr-riscv) [class, right = of instr] {riscv::AbstractInstructionNode};
-		\node (riscv) [below = of instr-riscv] {\textbf{riscv}};
+\begin{figure}[b!]
+  \centering
+	\scalebox{0.8}{
+  \begin{tikzpicture}[node distance=0.5cm and 1.5cm, font=\ttfamily]
+  	\node (super) [class] {AbstractSyntaxTreeNode};
+  	\node (invisible) [right = of super] {};
+  	\node (imm) [class, below = of invisible] {ImmediateNode};
+  	\node (bin) [class, below = of imm] {BinaryDataNode};
+  	\node (reg) [class, below = of bin] {AbstractRegisterNode};
+  	\node (instr) [class, below = of reg] {AbstractInstructionNode};
+  	\node (common) [below = of instr] {common};
+  	\node (reg-riscv) [class, right = of reg] {riscv::RegisterNode};
+  	\node (instr-riscv) [class, right = of instr]
+          {riscv::AbstractInstructionNode};
+  	\node (riscv) [below = of instr-riscv] {riscv};
 
-		\draw[inheritance-arrow] (imm) -- (imm -| super) -- (super);
-		\draw[inheritance-arrow] (bin) -- (bin -| super) -- (super);
-		\draw[inheritance-arrow] (instr) -- (instr -| super) -- (super);
-		\draw[inheritance-arrow] (reg) -- (reg -| super) -- (super);
+  	\draw[inheritance-arrow] (imm) -- (imm -| super) -- (super);
+  	\draw[inheritance-arrow] (bin) -- (bin -| super) -- (super);
+  	\draw[inheritance-arrow] (instr) -- (instr -| super) -- (super);
+  	\draw[inheritance-arrow] (reg) -- (reg -| super) -- (super);
 
-		\draw[inheritance-arrow] (instr-riscv) -- (instr);
-		\draw[inheritance-arrow] (reg-riscv) -- (reg);
+  	\draw[inheritance-arrow] (instr-riscv) -- (instr);
+  	\draw[inheritance-arrow] (reg-riscv) -- (reg);
 
-		\begin{pgfonlayer}{background}
-		\path (super.west |- super.north)+(-0.5,0.5) node (a1) {};
-		\path (instr.east |- instr.south)+(+0.5,-1.5) node (a2) {};
-		\path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
-		\end{pgfonlayer}
+  	\begin{pgfonlayer}{background}
+  	\path (super.west |- super.north)+(-0.5,0.5) node (a1) {};
+  	\path (instr.east |- instr.south)+(+0.5,-1.5) node (a2) {};
+  	\path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+  	\end{pgfonlayer}
 
-		\begin{pgfonlayer}{background}
-		\path (reg-riscv.west |- reg-riscv.north)+(-0.5,0.5) node (a1) {};
-		\path (instr-riscv.east |- instr-riscv.south)+(+0.5,-1.5) node (a2) {};
-		\path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
-		\end{pgfonlayer}
-		\end{tikzpicture}
-	\end{center}
-	\caption{Klassendiagramm Syntaxbaum}
+  	\begin{pgfonlayer}{background}
+  	\path (reg-riscv.west |- reg-riscv.north)+(-0.5,0.5) node (a1) {};
+  	\path (instr-riscv.east |- instr-riscv.south)+(+0.5,-1.5) node (a2) {};
+  	\path[rounded corners, draw=black!50, dashed] (a1) rectangle (a2);
+  	\end{pgfonlayer}
+	\end{tikzpicture}
+  }
+  \vspace{-0.2cm}
+	\caption{Das Klassendiagramm der Syntaxbaumhierarchie.}
 	\label{fig:arch-syntax-tree}
+  \vspace{-0.6cm}
 \end{figure}
 
 \label{module-arch-ast-node-types}
 Die aufgeführten Klassen haben folgende Funktion:
-\begin{itemize}
-
+\begin{sitemize}{-0.4cm}
   \item \textbf{AbstractSyntaxTreeNode} ist die Oberklasse jedes Syntax Knotens
   und definiert, welche Methoden die Unterklassen implementieren müssen. Des
   Weiteren enthält sie eine Liste an etwaige Kindknoten.
@@ -145,31 +149,27 @@ Die aufgeführten Klassen haben folgende Funktion:
 
 	\item \textbf{AbstractInstructionNode} ist die oberste Ebene eines jeden
 	Syntaxbaums und repräsentiert die auszuführende Instruktion.
-
-\end{itemize}
+  \vspace{-0.2cm}
+\end{sitemize}
 
 Mit diesen Knotentypen lassen sich alle RISC-V Instruktionen modellieren. Andere
-Architekturen stellen aber häufig die Möglichkeit bereit, einen
-Speicherzugriff im Zuge einer anderen Instruktion durchzuführen. Ein Beispiel aus
-x86:
-
-\begin{x86}
-add eax, [ebx*2+2]
-\end{x86}
+Architekturen stellen aber häufig die Möglichkeit bereit, einen Speicherzugriff
+im Zuge einer anderen Instruktion durchzuführen. Ein Beispiel aus x86 wäre die
+Instruktion \texttt{add eax, [ebx*2+2]}.
 
 Um diese Instruktionen modellieren zu können, wurden folgende Knotentypen
 konzeptioniert, die jedoch nicht im Quellcode definiert sind:
-\begin{itemize}
+\begin{sitemize}{-0.4cm}
 	\item \textbf{MemoryAccessNode} repräsentiert einen Inline Speicherzugriff,
 	im oben aufgeführten Beispiel also der Inhalt der eckigen Klammern.
 	\item \textbf{ArithmeticNode} stellt eine arithmetische Operation dar, im
 	obigen Beispiel also sowohl die Multiplikation als auch die Addition.
-\end{itemize}
+  \vspace{-0.3cm}
+\end{sitemize}
 
 Die Oberklasse jedes Knotens ist die Klasse \texttt{AbstractSyntaxTreeNode}.
 Folgende Methoden werden von ihr vorgegeben:
-
-\begin{itemize}
+\begin{sitemize}{-0.3cm}
 	\label{dev-manual-arch-node-functions}
 	\item \textbf{\texttt{getValue(MemoryAccess\&)}}: Diese Methode führt den
 	darunter liegenden Syntaxbaum aus, und ruft ggf. rekursiv dieselbe Methode
@@ -212,7 +212,7 @@ Folgende Methoden werden von ihr vorgegeben:
 	Mnemonic (z.B. \emph{addi}) und Register ihren Namen (z.B. \emph{x1})
 	zurück. Letzteres wird verwendet, um Schreibzugriffe auf ein Register
 	in einem Instruktionsknoten durchzuführen.
-\end{itemize}
+\end{sitemize}
 
 Die Aufgabe einer konkreten Architektur besteht nun darin, die eben beschriebenen
 Unterklassen inklusive ihrer Methoden entsprechend zu implementieren. In
@@ -269,7 +269,7 @@ Node Factory dem \emph{Abstract Factory Pattern} und wird als Diagramm in
 		\end{pgfonlayer}
 		\end{tikzpicture}
 	\end{center}
-	\caption{Klassendiagramm Node Factory}
+	\caption{Das Klassendiagramm \texttt{NodeFactory} Hierarchie.}
 	\label{fig:arch-node-factory}
 \end{figure}
 
@@ -280,9 +280,8 @@ schnell unübersichtlich werden kann. Um zu verhindern, dass andere Module
 mehrere Node Factory Objekte verwalten müssen, wird eine
 \texttt{NodeFactoryCollection} über das Architecture Objekt zur Verfügung
 gestellt, welches die einzelnen Factory Objekte kapselt und die
-\texttt{create()} Aufrufe weiterleitet.
-Die Factory Methoden geben einen \texttt{std::shared\_ptr} auf den erzeugten
-Knoten zurück.
+\texttt{create()} Aufrufe weiterleitet. Die Factory Methoden geben einen Smart
+Pointer auf den erzeugten Knoten zurück.
 
 Des Weiteren fällt auf, dass RISC-V die beiden letzten Node Factories nicht
 implementiert. Der Grund dafür wurde im vorherigen Abschnitt beschrieben:
@@ -300,21 +299,21 @@ weiteren Instruktionsknoten abgeleitet sind. Dies dient der Vermeidung von
 Redundanz, da Methoden wie \texttt{assemble()} und
 \texttt{getInstructionDocumentation()} für alle Instruktionen angewandt werden
 können. Des Weiteren definiert die Klasse hilfreiche Methoden, die in den
-Unterklassen verwendet werden, um zum Beispiel die Validierung der Operanden
+Unterklassen verwendet werden, um zum Beispiel die Verifikation der Operanden
 einer Instruktion zu vereinfachen.
 
 Die Knoten, die Instruktionen implementieren, sind ebenfalls darauf ausgelegt,
-Redundanz zu vermeiden. Beispielhaft seien hier die \emph{Integer
-Computational Instructions} (so der Name in der RISC-V Spezifikation)
-herangezogen (das sind Instruktionen wie \emph{add}, \emph{addi} oder
-\emph{and}). Da sich der Aufbau der Instruktionen lediglich in der
-auszuführenden Operation unterscheidet, existiert eine weitere abstrakte
-Oberklasse \texttt{riscv::AbstractIntegerInstructionNode}, die all jene
-Instruktionen abdeckt. In dieser Oberklasse wird die Validierung der
-Instruktionen vollständig behandelt und der Aufruf von \texttt{getValue()} so
-weit abstrahiert, dass die konkreten Anwendung der Operation effektiv auf einen
-einzeiligen Lamda Ausdruck reduziert werden kann. Die Implementierung befindet
-sich in der Datei \texttt{integer-instructions.hpp}.
+Redundanz zu vermeiden. Beispielhaft seien hier die \emph{Integer Computational
+Instructions} (so der Name in der RISC-V Spezifikation) herangezogen (das sind
+Instruktionen wie \texttt{add}, \texttt{addi} oder \texttt{and}). Da sich der
+Aufbau der Instruktionen lediglich in der auszuführenden Operation
+unterscheidet, existiert eine weitere abstrakte Oberklasse
+\texttt{riscv::AbstractIntegerInstructionNode}, die all jene Instruktionen
+abdeckt. In dieser Oberklasse wird die Validierung der Instruktionen vollständig
+behandelt und der Aufruf von \texttt{getValue()} so weit abstrahiert, dass die
+konkreten Anwendung der Operation effektiv auf einen einzeiligen Lambda-Ausdruck
+reduziert werden kann. Die Implementierung befindet sich in der Datei
+\texttt{integer-instructions.hpp}.
 
 Ein weiteres Konzept der RISC-V Instruktionen basiert auf der Unterstützung
 unterschiedlicher Wortgrößen. Derzeit bietet RISC-V ausgiebige Unterstützung für
@@ -329,39 +328,3 @@ voranschreiten, so könnte man das mit dem aktuellen C++ Standard nicht abdecken
 da kein 128 Bit Zahlentyp definiert ist. Man könnte dann aber eine vereinfachte
 Implementation eines \texttt{uint128\_t} schreiben, indem man z.B. zwei
 \texttt{uint64\_t} in einer Klasse kapselt.
-
-\subsubsection{Weiterführende Dokumentation}
-
-Die vorherigen Abschnitte geben einen Überblick über die Architektur.
-Weiterführende Dokumentation findet sich in denen für die Architektur relevanten
-Dateien, welche in \autoref{fig:arch-further} aufgelistet sind.
-
-\begin{figure}[H]
-	\begin{center}
-	\begin{tikzpicture}[%
-	grow via three points={one child at (0.8,-0.8) and
-		two children at (0.8,-0.8) and (0.8,-1.7)},
-	edge from parent path={($(\tikzparentnode\tikzparentanchor)+(.2cm,0pt)$) |- (\tikzchildnode\tikzchildanchor)},
-	growth parent anchor=west,
-	parent anchor=south west]
-	\tikzstyle{every node}=[draw=black,anchor=west]
-	\node {\erasim{}}
-	child { node {isa/}
-		child { node {riscv.isa/} }
-	}
-	child [missing] {}
-	child { node {$\{\text{tests/}, \text{include/}, \text{source/}\}$}
-		child { node {arch/}
-			child { node {common/} }
-			child { node {riscv/} }
-		}
-	}
-	child [missing] {}
-	child [missing] {}
-	child [missing] {};
-	\end{tikzpicture}
-	\end{center}
-
-	\caption{Relevante Dateien des Architekturmoduls}
-	\label{fig:arch-further}
-\end{figure}

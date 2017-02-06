@@ -10,7 +10,7 @@ konkrete Beschreibung einer Architektur (die "Daten") von der abstrakten
 Repräsentation im Code zu trennen. Die eben
 beschriebenen Informationsklassen im Architekturmodul geben also lediglich die Struktur
 eines Befehlssatzes vor. Weitere Klassen wie \texttt{RegisterInformation} oder
-\texttt{InstructionInformation} agieren als Platzhalter für konkrete Architekturen. 
+\texttt{InstructionInformation} agieren als Platzhalter für konkrete Architekturen.
 Die eigentliche Spezifikation von Registernamen und -größen,
 Instruktionsformaten und -operanden sowie Wortgröße, Endianness oder
 Vorzeichenrepräsentation einer Architektur erfolgen in unserer Implementierung
@@ -83,23 +83,23 @@ Attributen der Informationsklassen der Architektur. Beispielsweise hat jede
 Extension einen Namen, welcher dann über die \texttt{name()} Methode einer
 \texttt{ExtensionInformation} Instanz abgerufen werden kann. Eine vollständige
 Auflistung aller möglichen Schlüsselnamen und erlaubter Werte findet sich in
-Tabellen \autoref{tbl:isa-top-keys}, \autoref{tbl:isa-reg} und
-\autoref{tbl:isa-inst}. Die folgenden zwei Absätze beleuchten die Schlüssel
-\texttt{extends} und \texttt{builtin-macros} näher.
+Tabellen \ref{tbl:isa-top-keys}, \ref{tbl:isa-reg} und \ref{tbl:isa-inst}. Die
+folgenden zwei Absätze beleuchten die Schlüssel \texttt{extends} und
+\texttt{builtin-macros} näher.
 
 \begin{table}[p]
   \centering
-  \small
-  \begin{tabular}{>{\ttfamily}l p{8.3cm} >{\ttfamily}p{3.5cm}}
+  \fontsize{10}{12}
+  \begin{tabular}{>{\ttfamily}l >{\small}p{7.8cm} >{\ttfamily}p{3.6cm}}
     {\normalfont\bfseries Schlüssel} & \textbf{Beschreibung} & \textbf{Erlaubte Werte}\\
     \toprule
     name & Name der Extension & <string> \\
 
     extends & Nam(en) der Basis-Extension(s) & <string>/list<string>\\
 
-    reset-units & Kontrolliert Registerübernahme bei Erweiterung & true/false\\
+    reset-units & Setzt vererbte Register zurück & true/false\\
 
-    reset-instructions & Kontrolliert Instruktionsübernahme bei Erweiterung & true/false\\
+    reset-instructions & Setzt vererbte Instruktionen zurück & true/false\\
 
     word-size & Die Wortgröße & <number>\\
 
@@ -117,12 +117,12 @@ Tabellen \autoref{tbl:isa-top-keys}, \autoref{tbl:isa-reg} und
 
     instructions & Der Instruktionssatz der Extension & list<instruction>
   \end{tabular}
-  \caption{Die erlaubten Schlüssel und Werte zur Beschreibung einer Extension im YAML Format. Die erste Spalte nennt den jeweiligen Schlüsselnamen, die zweite Spalte beschreibt diesen und die dritte Spalte gibt die erlaubten Werte an. Mit \texttt{<string>} ist eine beliebige Zeichenkette gemeint, mit \texttt{<number>} eine beliebige Ganzzahl und mit \texttt{list<type>} eine Liste mit Elementen vom Typ \texttt{<type>}.}
+  \caption{Die erlaubten Schlüssel und Werte zur Beschreibung einer Extension im YAML Format. Die erste Spalte nennt den jeweiligen Schlüsselnamen, die zweite Spalte beschreibt diesen und die dritte Spalte gibt die erlaubten Werte an. Mit \texttt{<string>} ist eine beliebige Zeichenkette gemeint, mit \texttt{<number>} eine beliebige Ganzzahl und mit \texttt{list<type>} eine Liste mit Elementen vom Typ \texttt{type}.}
   \label{tbl:isa-top-keys}
 
   \vspace{0.7cm}
 
-  \begin{tabular}{>{\ttfamily}l p{8.5cm} >{\ttfamily}p{3.5cm}}
+  \begin{tabular}{>{\ttfamily}l >{\small}l >{\ttfamily}l}
     {\normalfont\bfseries Schlüssel} & \textbf{Beschreibung} & \textbf{Erlaubte Werte}\\
     \toprule
 
@@ -141,7 +141,7 @@ Tabellen \autoref{tbl:isa-top-keys}, \autoref{tbl:isa-reg} und
 
   \vspace{0.7cm}
 
-  \begin{tabular}{>{\ttfamily}l p{8.5cm} >{\ttfamily}p{3.5cm}}
+  \begin{tabular}{>{\ttfamily}l >{\small}l >{\ttfamily}l}
     {\normalfont\bfseries Schlüssel} & \textbf{Beschreibung} & \textbf{Erlaubte Werte}\\
     \toprule
     mnemonic & Kürzel der Instruktion & <string>\\
@@ -203,6 +203,7 @@ so eine fertige Architektur.
 \end{lstlisting}
 \begin{lstlisting}[caption={Ein Ausschnitt der Definition der RV64I-Extension des RISC-V Befehlssatzes. Zur Vererbung der Attribute von RV32I benötigt es lediglich der Spezifikation der \texttt{extends} Klausel. Zusätzlich wird die Wortgröße sowie eine Hand voll weiterer Befehle neu definiert.}, label={lst:rv64i}]
 \end{lstlisting}
+\vspace{-0.5cm}
 \end{table}
 
 Neben dem \texttt{extends} Schlüssel ist letztlich noch \texttt{builtin-macros}

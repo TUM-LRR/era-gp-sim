@@ -17,13 +17,27 @@ Zur Modellierung sämtlicher bestehender Befehlssätze wie x86, ARM oder RISC-V,
 aber auch beliebiger, zukünftiger und noch unbekannter Architekturen benötigten
 wir gewiss ein flexibles Design. Unser hauptsächlicher Leitfaden bei der
 Konzeption eines abstrakten Architekturinterfaces war das modulare Design von
-RISC-V. Dieses sticht durch eine enorme Flexibilität hervor. Es definiert nicht nur einen
-monolithischen und rundherum vollständigen Befehlssatz, sondern viele
+RISC-V. Dieses sticht durch eine enorme Flexibilität hervor. Es definiert nicht
+nur einen monolithischen und rundherum vollständigen Befehlssatz, sondern viele
 kleine, spezifische \emph{Extensions}. Eine solche Extension kann hierbei neue
 Instruktionen oder neue Registersätze definieren, ebenso aber auch einfach eine
 Veränderung der Wortgröße, der Repräsentation eines Vorzeichens oder der
 Endianness mit sich bringen. Nach diesem Prinzip ist auch in unserem Design eine
 Architektur die Vereinigung mehrerer Extensions.
+
+Neben der Gliederung einer Architektur in viele Extensions haben wir auch die
+weitere Definition und Implementierung einer Extension offen und modular
+gehalten. Zudem besteht eine Extension neben Attributen wie Endianness oder
+Wortgröße noch aus zwei weiteren möglicherweise leeren Mengen: einer Menge von
+\texttt{Unit}s und einer Menge von \texttt{Instruction}s. Eine \texttt{Unit}
+repräsentiert hierbei einen Registersatz mit Namen, besteht also selbst im
+Weiteren aus einer Menge von Registern, welche ebenso Attribute, Namen und
+andere Eigenschaften besitzen können. Ein Beispiel aus der Praxis für eine Unit wäre eine CPU
+mit Ganzzahl-Registern, oder eine FPU mit Gleitkommazahl-Registern.
+Die Instruktionen einer Extension werden hingegen in einem
+\texttt{InstructionSet} gesammelt, wobei Instruktionen selbst ein Format, einen
+Mnemonic und einen Opcode spezifizieren. \autoref{fig:arch-design} fasst unser
+Design einer Architektur zusammen.
 
 \begin{figure}[h!]
 	\centering
@@ -116,26 +130,15 @@ Architektur die Vereinigung mehrerer Extensions.
 	\vspace{-0.2cm}
 \end{figure}
 
-Neben der Gliederung einer Architektur in viele Extensions haben wir auch die
-weitere Definition und Implementierung einer Extension offen und modular
-gehalten. Zudem besteht eine Extension neben Attributen wie Endianness oder
-Wortgröße noch aus zwei weiteren möglicherweise leeren Mengen: einer Menge von
-\texttt{Unit}s und einer Menge von \texttt{Instruction}s. Eine \texttt{Unit}
-repräsentiert hierbei einen Registersatz mit Namen, besteht also selbst im
-Weiteren aus einer Menge von Registern, welche ebenso Attribute, Namen und
-andere Eigenschaften besitzen können. Ein Beispiel aus der Praxis für eine Unit wäre eine CPU
-mit Ganzzahl-Registern, oder eine FPU mit Gleitkommazahl-Registern.
-Die Instruktionen einer Extension werden hingegen in einem
-\texttt{InstructionSet} gesammelt, wobei Instruktionen selbst ein Format, einen
-Mnemonic und einen Opcode spezifizieren. \autoref{fig:arch-design} fasst unser
-Design einer Architektur zusammen.
-
 Es sei noch angemerkt, dass wie bei RISC-V bestimmte Extensions einen speziellen
 Sonderstatus haben können, wenn sie \emph{vollständig} bzw. im RISC-V Jargon
 \emph{Base-Extensions} sind. Ein Modul ist dann vollständig, wenn es alle
 nötigen Attribute und Eigenschaften besitzt, um eine eigenständige und
-funktionsfähige Architektur zu bilden. Genauer definieren wir drei
-Anforderungen:
+funktionsfähige Architektur zu bilden.
+
+\pagebreak
+Genauer definieren wir drei Anforderungen für eine vollständige Extension:
+
 \begin{enumerate}
   \item Die Extension hat mindestens eine Instruktion,
   \item Die Extension hat mindestens eine nicht leere Unit (also ein Register),
