@@ -178,36 +178,36 @@ TextEdit {
   }
 
   function scrollUp(cursor) {
-    if (cursor.y < (scrollView.flickableItem.contentY / scale.zoom)) {
-      scrollView.flickableItem.contentY = (cursor.y - textMargin) * scale.zoom;
+    if (cursor.y < (scrollView.flickableItem.contentY / item.zoom)) {
+      scrollView.flickableItem.contentY = (cursor.y - textMargin) * item.zoom;
     }
   }
 
   function scrollDown(cursor) {
-    var viewportHeight = scrollView.viewport.height / scale.zoom;
-    var bottomBoundary = scrollView.flickableItem.contentY / scale.zoom
+    var viewportHeight = scrollView.viewport.height / item.zoom;
+    var bottomBoundary = scrollView.flickableItem.contentY / item.zoom
                        + viewportHeight - textMargin;
     if (cursor.y + cursor.height >= bottomBoundary) {
       var newY = cursor.y + cursor.height - viewportHeight + textMargin;
-      scrollview.flickableItem.contentY = newY * scale.zoom;
+      scrollView.flickableItem.contentY = newY * item.zoom;
     }
   }
 
   function scrollLeft(cursor) {
-    if (cursor.x < scrollView.flickableItem.contentX / scale.zoom) {
-      scrollView.flickableItem.contentX = (cursor.x - textMargin) * scale.zoom;
+    if (cursor.x < scrollView.flickableItem.contentX / item.zoom) {
+      scrollView.flickableItem.contentX = (cursor.x - textMargin) * item.zoom;
     }
   }
 
   function scrollRight(cursor) {
-    var topBoundary = (scrollView.flickableItem.contentX / scale.zoom)
-                    + (scrollView.viewport.width / scale.zoom)
+    var topBoundary = (scrollView.flickableItem.contentX / item.zoom)
+                    + (scrollView.viewport.width / item.zoom)
                     - textMargin;
     if (cursor.x + textRegion.x >= topBoundary) {
       var newX = cursor.x
-               - (scrollView.viewport.width / scale.zoom)
+               - (scrollView.viewport.width / item.zoom)
                + textRegion.x + textMargin;
-      scrollView.flickableItem.contentX = newX * scale.zoom;
+      scrollView.flickableItem.contentX = newX * item.zoom;
     }
   }
 

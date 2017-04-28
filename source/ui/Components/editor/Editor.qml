@@ -76,6 +76,8 @@ ScrollView {
       id: item
       anchors.fill: parent
 
+      property alias zoom: scale.zoom
+
       // Scaling transofmation for zooming
       transform: Scale {
         id: scale
