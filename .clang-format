@@ -1,5 +1,5 @@
 Language: Cpp
-Standard: Cpp11
+Standard: Cpp17
 BasedOnStyle: Google
 
 AllowAllParametersOfDeclarationOnNextLine: true

@@ -17,12 +17,12 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     #    message(FATAL_ERROR "21st century, anyone?")
     #endif()
 else()
-    check_cxx_compiler_flag("-std=c++14" COMPILER_SUPPORTS_CXX_14)
+    check_cxx_compiler_flag("-std=c++17" COMPILER_SUPPORTS_CXX_17)
 
-    if (COMPILER_SUPPORTS_CXX_14)
-        set(CMAKE_CXX_STANDARD 14)
+    if (COMPILER_SUPPORTS_CXX_17)
+        set(CMAKE_CXX_STANDARD 17)
     else()
-        message(FATAL_ERROR "21st century, anyone?")
+        message(FATAL_ERROR "Please use a compiler with C++17 support")
     endif()
 endif()
 
@@ -38,6 +38,9 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 # Interpret warnings as errors
 add_compile_options(-Werror)
+
+# compile big assembler files
+add_compile_options(-Wa,-mbig-obj)
 
 # Debug specific options
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
