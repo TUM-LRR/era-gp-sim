@@ -39,7 +39,7 @@ class MemoryComponentPresenter : public QAbstractListModel {
   MemoryComponentPresenter(const MemoryAccess &access,
                            const MemoryManager &manager,
                            QQmlContext *projectContext,
-                           QObject *parent = 0);
+                           QObject *parent = nullptr);
 
   /**
    * Stores a value to memory.

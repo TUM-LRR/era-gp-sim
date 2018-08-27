@@ -87,7 +87,7 @@ class GuiProject : QObject {
              const std::string& parserName,
              const std::string& projectName,
              const std::shared_ptr<SnapshotComponent>& snapshotComponent,
-             QObject* parent = 0);
+             QObject* parent = nullptr);
 
   /**
    * Destructor

@@ -77,7 +77,7 @@ class PixelDisplayPaintedItem : public QQuickPaintedItem {
    * \brief constructs a new PixelDisplayPaintedItem
    * \param parent the parent
    */
-  PixelDisplayPaintedItem(QQuickItem *parent = 0);
+  PixelDisplayPaintedItem(QQuickItem *parent = nullptr);
 
   /**
    * \brief paints the image held by this onto the painter

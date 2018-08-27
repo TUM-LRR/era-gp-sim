@@ -31,10 +31,9 @@ class AbstractArithmeticNodeFactory {
 
   enum class Operation { ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION };
 
-  AbstractArithmeticNodeFactory() {
-  }
+  AbstractArithmeticNodeFactory() = default;
 
-  virtual ~AbstractArithmeticNodeFactory();
+    virtual ~AbstractArithmeticNodeFactory();
 
   /**
    * \brief createArithmeticerationNode

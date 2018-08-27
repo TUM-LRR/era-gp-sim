@@ -51,7 +51,7 @@ class EditorComponent : public QObject {
   explicit EditorComponent(QQmlContext *projectContext,
                            ParserInterface &parserInterface,
                            CommandInterface &commandInterface,
-                           QObject *parent = 0);
+                           QObject *parent = nullptr);
 
   /**
    * \brief creates a new syntax-highlighter for this editor

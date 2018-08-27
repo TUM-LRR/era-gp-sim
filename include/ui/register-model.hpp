@@ -64,7 +64,7 @@ class RegisterModel : public QAbstractItemModel {
                          MemoryManager &memoryManager,
                          MemoryAccess &memoryAccess,
                          QQmlContext *projectContext,
-                         QObject *parent = 0);
+                         QObject *parent = nullptr);
 
   /**
    * RegisterModelRole enum Identifies different kinds of data stored
