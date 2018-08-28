@@ -21,6 +21,7 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
           packages:
             - clang-5.0
             - gdb
