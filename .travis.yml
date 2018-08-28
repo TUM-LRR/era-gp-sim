@@ -36,7 +36,6 @@ before_install:
  - cat /proc/sys/kernel/core_pattern
 
 install:
-  - cmake --version
   - CMAKE_VERSION_MM=3.12
   - CMAKE_VERSION_FULL=$CMAKE_VERSION_MM.0
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
@@ -54,10 +53,10 @@ install:
 
 before_script:
   - export CXX=$COMPILER
-  - cmake --version
+  - usr/local/cmake --version
   - mkdir build
   - cd build
-  - cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - usr/local/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
   - cp ../scripts/logbt.sh .
   - sudo chmod a+x logbt.sh
   - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
