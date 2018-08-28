@@ -55,11 +55,11 @@ install:
 
 before_script:
   - export CXX=$COMPILER
-  - ls $CMAKE_INSTALL_DIR/cmake/bin
-  - $CMAKE_INSTALL_DIRcmake/bin/cmake --version
+  - ls $CMAKE_INSTALL_DIR
+  - $CMAKE_INSTALL_DIR/cmake --version
   - mkdir build
   - cd build
-  - $CMAKE_INSTALL_DIR/cmake/bin/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - $CMAKE_INSTALL_DIR/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
   - cp ../scripts/logbt.sh .
   - sudo chmod a+x logbt.sh
   - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
