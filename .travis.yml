@@ -21,11 +21,11 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
+            - llvm-toolchain-precise-5.0
           packages:
             - clang-4
             - gdb
-      env: COMPILER=clang++-4
+      env: COMPILER=clang++-5.0
 
 before_install:
  # What is the current file size max for core files?
@@ -53,7 +53,7 @@ install:
 
 before_script:
   - export CXX=$COMPILER
-  - usr/local/cmake --version
+  - ~/usr/local/cmake --version
   - mkdir build
   - cd build
   - ~/usr/local/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
