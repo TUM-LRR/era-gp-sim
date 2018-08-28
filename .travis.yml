@@ -21,7 +21,6 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-5.0
           packages:
             - clang-5.0
             - gdb
@@ -53,11 +52,11 @@ install:
 
 before_script:
   - export CXX=$COMPILER
-  - ls /usr/local/cmake
-  - /usr/local/cmake --version
+  - ls /usr/local/cmake/bin
+  - /usr/local/cmake/bin/cmake --version
   - mkdir build
   - cd build
-  - /usr/local/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - /usr/local/cmake/bin/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
   - cp ../scripts/logbt.sh .
   - sudo chmod a+x logbt.sh
   - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
