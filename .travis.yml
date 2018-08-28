@@ -36,6 +36,7 @@ before_install:
  - cat /proc/sys/kernel/core_pattern
 
 install:
+  - ls /usr/local/cmake/bin
   - CMAKE_VERSION_MM=3.12
   - CMAKE_VERSION_FULL=$CMAKE_VERSION_MM.0
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
