@@ -53,6 +53,7 @@ install:
 
 before_script:
   - export CXX=$COMPILER
+  - ls /usr/local/cmake
   - /usr/local/cmake --version
   - mkdir build
   - cd build
