@@ -39,11 +39,13 @@ install:
   - ls /usr/local/cmake/bin
   - CMAKE_VERSION_MM=3.12
   - CMAKE_VERSION_FULL=$CMAKE_VERSION_MM.0
+  - CMAKE_INSTALL_DIR=/usr/local/cmake_new
+  - mkdir $CMAKE_INSTALL_DIR
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
       sudo apt-get update -qq
       && sudo apt-get install -qq qt5-qmake qtbase5-dev qtdeclarative5-dev libqt5svg5-dev
       && wget --no-check-certificate http://www.cmake.org/files/v${CMAKE_VERSION_MM}/cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh
-      && sudo sh cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir;
+      && sudo sh cmake-${CMAKE_VERSION_FULL}-Linux-x86_64.sh --prefix=$CMAKE_INSTALL_DIR --exclude-subdir;
     fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
     brew update
@@ -54,11 +56,11 @@ install:
 
 before_script:
   - export CXX=$COMPILER
-  - ls /usr/local/cmake/bin
-  - /usr/local/cmake/bin/cmake --version
+  - ls $CMAKE_INSTALL_DIR/cmake/bin
+  - $CMAKE_INSTALL_DIRcmake/bin/cmake --version
   - mkdir build
   - cd build
-  - /usr/local/cmake/bin/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - $CMAKE_INSTALL_DIR/cmake/bin/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
   - cp ../scripts/logbt.sh .
   - sudo chmod a+x logbt.sh
   - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
