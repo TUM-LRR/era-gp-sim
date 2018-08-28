@@ -56,7 +56,7 @@ before_script:
   - usr/local/cmake --version
   - mkdir build
   - cd build
-  - usr/local/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+  - ~/usr/local/cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
   - cp ../scripts/logbt.sh .
   - sudo chmod a+x logbt.sh
   - sudo bash -c "echo '/tmp/logbt-coredumps/core.%p.%E' > /proc/sys/kernel/core_pattern"
