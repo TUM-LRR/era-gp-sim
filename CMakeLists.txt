@@ -39,8 +39,10 @@ endif(NOT CMAKE_BUILD_TYPE)
 # Interpret warnings as errors
 add_compile_options(-Werror)
 
-# compile big assembler files
-add_compile_options(-Wa,-mbig-obj)
+# MinGw on windows has problem that the assembler files get too large - testing with different compilers
+if (WIN32)
+    add_compile_options(-Wa,-mbig-obj)
+endif (WIN32)
 
 # Debug specific options
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
