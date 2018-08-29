@@ -151,10 +151,10 @@ Output rangeContainer(T start, T end, const T &step = 1) {
 
   if (step < 0) {
     // If the step is negative, we go backwards, so loop while start > end
-    relation = std::greater<>{};
+    relation = std::greater<const T &>{};
   } else {
     // If the step is positive, we go forward, so loop while start < end
-    relation = std::less<>{};
+    relation = std::less<const T &>{};
   }
 
   auto amount = (end - start) / step;
@@ -488,7 +488,7 @@ std::vector<bool> convertToBinary(T value, std::size_t minSize = 0) {
     value >>= 1;
   }
 
-  auto size = tmp.size();
+  auto size = tmp.size(); //TODO : why is this using int here?
   for (int i = 0; i < size; i++) {
     binary.push_back(tmp.back());
     tmp.pop_back();
